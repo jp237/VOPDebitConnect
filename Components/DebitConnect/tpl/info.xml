@@ -1,0 +1,397 @@
+<?xml version='1.0' encoding="ISO-8859-1"?>
+<jtlshop3plugin>
+<Name>EAP BoniGateway</Name>
+<Description>Anbindung an EAP BoniGateway</Description>
+<Author>Jens Perzewski</Author>
+<URL>https://eaponline.de/bonigateway</URL>
+<XMLVersion>100</XMLVersion>
+<ShopVersion>316</ShopVersion>
+<Shop4Version>400</Shop4Version>
+<PluginID>jtl_eap</PluginID>
+<Install>
+    <Version nr="100">
+        <CreateDate>2013-07-20</CreateDate>
+        <SQL>eap.sql</SQL>
+    </Version>
+	  <Version nr="103">
+        <CreateDate>2015-07-21</CreateDate>
+    <SQL>eap.sql</SQL>
+    </Version>
+	<Version nr="107">
+        <CreateDate>2015-10-05</CreateDate>
+		<SQL>kundengruppen.sql</SQL>
+    </Version>
+ 	<Version nr="117">
+	  <CreateDate>2017-01-17</CreateDate>
+	  <SQL>update.sql</SQL>
+	  </Version>
+	   	<Version nr="118">
+	  <CreateDate>2017-02-15</CreateDate>
+	  <SQL>update.sql</SQL>
+	  </Version>
+	  <Version nr="201">
+	  <CreateDate>2017-05-04</CreateDate>
+	 <SQL>update-whitelist.sql</SQL>
+	  </Version>
+	 <Version nr="204">
+	  <CreateDate>2017-08-16</CreateDate>
+	  </Version>
+    <Hooks>
+    <Hook id="140">eap_bonigateway.php</Hook>
+    </Hooks>
+    <Adminmenu>
+	  <Customlink sort="0">
+        <Name>Informationen</Name>
+            <Filename>eap_info.php</Filename>
+        </Customlink>
+        <Settingslink sort="1">
+        <Name>Grundeinstellungen</Name>
+            <Setting type="text" initialValue="Gateway Benutzer" sort="1" conf="Y">
+                <Name>Gateway Benutzername</Name>
+                <Description>Ihr BoniGateway Benutzername</Description>
+                <ValueName>jtl_eap_userid</ValueName>
+            </Setting>
+            <Setting type="password" initialValue="passwort" sort="2" conf="Y">
+                <Name>Gateway Passwort</Name>
+                <Description>Ihr BoniGateway Passwort</Description>
+                <ValueName>jtl_eap_passwort</ValueName>
+            </Setting>
+			<Setting type="selectbox" initialValue="0" sort="3" conf="Y">
+                <Name>Art des Shops</Name>
+                <Description>Die Art des Shops</Description>
+                <ValueName>jtl_eap_shopart</ValueName>
+                <SelectboxOptions>
+                    <Option value="0" sort="1">B2C+B2B</Option>
+                    <Option value="1" sort="2">B2C</Option>
+					<Option value="2" sort="2">B2B</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="selectbox" initialValue="1" sort="4" conf="Y">
+                <Name>Protokollierung Aktivieren</Name>
+                <Description>Möchten Sie die Protokollierung Aktivieren?</Description>
+                <ValueName>jtl_eap_protokoll</ValueName>
+                <SelectboxOptions>
+                    <Option value="1" sort="1">Ja</Option>
+                    <Option value="0" sort="2">Nein</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="text" initialValue="" sort="5" conf="Y">
+                <Name>Fehlerbenachrichtung per eMail</Name>
+                <Description>Bitte geben Sie ihre e-Mailadresse an wohin Fehlerberichte versendet werden * Nur SHOP4</Description>
+                <ValueName>jtl_eap_error_mail_notice</ValueName>
+            </Setting>
+			<Setting type="text" initialValue="#footer" sort="6" conf="Y">
+                <Name>Selector Footer</Name>
+                <Description>Diese Daten bitte nur bei angepassten Templates verändern</Description>
+                <ValueName>jtl_eap_selector_footer</ValueName>
+            </Setting>
+			<Setting type="text" initialValue="#zahlung" sort="7" conf="Y">
+                <Name>Selector Zahlung</Name>
+                <Description>Diese Daten bitte nur bei angepassten Templates verändern</Description>
+                <ValueName>jtl_eap_selector_zahlung</ValueName>
+            </Setting>
+				<Setting type="text" initialValue=".list-group" sort="8" conf="Y">
+                <Name>Selector Alert</Name>
+                <Description>Diese Daten bitte nur bei angepassten Templates verändern</Description>
+                <ValueName>jtl_eap_selector_alert</ValueName>
+            </Setting>	
+				<Setting type="text" initialValue="#cart-form" sort="9" conf="Y">
+                <Name>Selector Warenkorb</Name>
+                <Description>Diese Daten bitte nur bei angepassten Templates verändern</Description>
+                <ValueName>jtl_eap_selector_warenkorb</ValueName>
+            </Setting>	
+				<Setting type="text" initialValue="#complete_order" sort="10" conf="Y">
+                <Name>Selector Confirm</Name>
+                <Description>Diese Daten bitte nur bei angepassten Templates verändern</Description>
+                <ValueName>jtl_eap_selector_confirm</ValueName>
+            </Setting>	
+        </Settingslink>
+		<Settingslink sort="2">
+		<Name>Bonitätsprüfung</Name>
+		    <Setting type="selectbox" initialValue="0" sort="5" conf="Y">
+                <Name>Abweichende Lieferadresse sperren?</Name>
+                <Description>Soll die Zahlungsart bei abweichender Lieferadresse gesperrt werden?</Description>
+                <ValueName>jtl_eap_abweichend</ValueName>
+                <SelectboxOptions>
+				    <Option value="0" sort="0">Nein</Option>
+                    <Option value="1" sort="1">Ja</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="selectbox" initialValue="0" sort="4" conf="Y">
+                <Name>Verhalten im Fehlerfall</Name>
+                <Description>z.B. Bei Serverunerreichbarkeit</Description>
+                <ValueName>jtl_eap_exception_boni_action</ValueName>
+                <SelectboxOptions>
+				    <Option value="0" sort="0">Zahlungsart(en) sperren</Option>
+                    <Option value="1" sort="1">Zahlungsart(en) freigeben</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="selectbox" initialValue="0" sort="3" conf="Y">
+                <Name>Auslandsabfrage</Name>
+                <Description>Verhalten bei Anfragen ausserhalb Deutschlands</Description>
+                <ValueName>jtl_eap_ausland</ValueName>
+                <SelectboxOptions>
+				    <Option value="0" sort="0">Prüfen</Option>
+                    <Option value="1" sort="1">Sperren</Option>
+					<Option value="2" sort="2">Freigeben</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="selectbox" initialValue="0" sort="1" conf="Y">
+                <Name>Anfrage Privatpersonen</Name>
+                <Description>B2C Prüfungen Aktivieren</Description>
+                <ValueName>jtl_eap_b2c</ValueName>
+                <SelectboxOptions>
+				    <Option value="0" sort="0">Prüfen</Option>
+                    <Option value="1" sort="1">Sperren</Option>
+					<Option value="2" sort="2">Freigeben</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="selectbox" initialValue="2" sort="2" conf="Y">
+                <Name>Anfrage Firmen</Name>
+                <Description>B2B Prüfungen Aktivieren</Description>
+                <ValueName>jtl_eap_b2b</ValueName>
+                <SelectboxOptions>
+				 <Option value="0" sort="0">Prüfen</Option>
+                    <Option value="1" sort="1">Sperren</Option>
+					<Option value="2" sort="2">Freigeben</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="selectbox" initialValue="0" sort="6" conf="Y">
+                <Name>DeviceSecure verwenden</Name>
+                <Description>SCHUFA DeviceSecure</Description>
+                <ValueName>jtl_eap_devicesecure</ValueName>
+                <SelectboxOptions>
+				 <Option value="0" sort="0">Nein</Option>
+                 <Option value="1" sort="1">Ja</Option>
+                </SelectboxOptions>
+            </Setting>
+		</Settingslink>
+		<Settingslink sort="3">
+		<Name>Alters-/Identitätsprüfung</Name>
+		<Setting type="selectbox" initialValue="0" sort="1" conf="Y">
+                <Name>Altersprüfung verwenden</Name>
+                <Description>Altersprüfung verwenden</Description>
+                <ValueName>jtl_eap_identcheck_use</ValueName>
+                <SelectboxOptions>
+				 <Option value="0" sort="0">Nein</Option>
+                 <Option value="1" sort="1">QBIT</Option>
+				 <Option value="2" sort="2">QBIT+PostIdent</Option>
+                </SelectboxOptions>
+            </Setting>
+				<Setting type="selectbox" initialValue="0" sort="2" conf="Y">
+                <Name>Art der Abfrage</Name>
+                <Description>Altersprüfung verwenden</Description>
+                <ValueName>jtl_eap_identcheck_use_art</ValueName>
+                <SelectboxOptions>
+				 <Option value="0" sort="0">Immer</Option>
+                 <Option value="1" sort="1">Funktionsattribut</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="selectbox" initialValue="1" sort="3" conf="Y">
+                <Name>Datenabweichung an Endkunden ausgeben</Name>
+                <Description>Datenabweichung ausgeben</Description>
+                <ValueName>identcheck_qbit_output</ValueName>
+                <SelectboxOptions>
+				 <Option value="0" sort="0">Nie</Option>
+                 <Option value="1" sort="1">Ja</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="text" initialValue="Agecheck" sort="4" conf="Y">
+                <Name>Funktionsattribut</Name>
+                <Description>Attributname, Wenn es enthalten ist dann wird Altersprüfung ausgelöst</Description>
+                <ValueName>jtl_eap_attributname</ValueName>
+            </Setting>
+			<Setting type="text" initialValue="" sort="5" conf="Y">
+                <Name>PostIdent Client-ID</Name>
+                <Description>DPAG Client ID</Description>
+                <ValueName>jtl_eap_postident_clientID</ValueName>
+            </Setting>
+            <Setting type="text" initialValue="" sort="6" conf="Y">
+                <Name>PostIdent ClientSecret</Name>
+                <Description>Ihr Postident Client Secret</Description>
+                <ValueName>jtl_eap_postident_clientsecret</ValueName>
+            </Setting>
+			 <Setting type="selectbox" initialValue="0" sort="7" conf="Y">
+                <Name>Identitätsprüfung ab Warenkorbhöhe</Name>
+                <Description>Identitätsprüfung Postident IDCARD3</Description>
+                <ValueName>jtl_eap_postident_warenkorb</ValueName>
+				<SelectboxOptions>
+				<Option value="0" sort="0">Nicht verwenden</Option>
+                <Option value="1" sort="1">Ab 100 EUR</Option>
+				<Option value="2" sort="2">Ab 200 EUR</Option>
+				<Option value="3" sort="3">Ab 300 EUR</Option>
+				<Option value="4" sort="4">Ab 400 EUR</Option>
+				<Option value="5" sort="5">Ab 500 EUR</Option>
+				<Option value="6" sort="6">Ab 600 EUR</Option>
+				<Option value="7" sort="7">Ab 700 EUR</Option>
+				<Option value="8" sort="8">Ab 800 EUR</Option>
+				<Option value="9" sort="9">Ab 900 EUR</Option>
+				<Option value="10" sort="10">Ab 1000 EUR</Option>
+				</SelectboxOptions>
+            </Setting>
+				<Setting type="selectbox" initialValue="0" sort="8" conf="Y">
+                <Name>Neuprüfung Adressänderung</Name>
+                <Description>Neueprüfung bei Adressänderung</Description>
+                <ValueName>jtl_eap_ident_recheck</ValueName>
+                <SelectboxOptions>
+				 <Option value="0" sort="0">Nein</Option>
+                 <Option value="1" sort="1">Ja</Option>
+                </SelectboxOptions>
+            </Setting>
+		</Settingslink>
+		<Settingslink sort="4">
+		<Name>Darstellungsoptionen</Name>
+		<Setting type="selectbox" initialValue="disable" sort="1" conf="Y">
+                <Name>Zahlungsarten sperren</Name>
+                <Description>Zahlungsarten entfernen oder Deaktivieren</Description>
+                <ValueName>jtl_eap_payment_disableremove</ValueName>
+                <SelectboxOptions>
+                    <Option value="disable" sort="1">Deaktivieren</Option>
+                    <Option value="remove" sort="2">Entfernen</Option>
+                </SelectboxOptions>
+            </Setting>
+			 <Setting type="selectbox" initialValue="0" sort="2" conf="Y">
+                  <Name>Telefonnummerabfrage</Name>
+                <Description>Soll die Telefonnummer durch Benutzereingabe abgefragt werden?</Description>
+                <ValueName>jtl_eap_tel</ValueName>
+                <SelectboxOptions>
+                    <Option value="1" sort="1">Ja</Option>
+                    <Option value="0" sort="2">Nein</Option>
+                </SelectboxOptions>
+				</Setting>
+		<Setting type="selectbox" initialValue="2" sort="3" conf="Y">
+                <Name>Geburtsdatum Abfrage</Name>
+                <Description>Soll das Geburtsdatum durch Benutzereingabe abgefragt werden? Die Trefferquote wird dadurch erhöht.</Description>
+                <ValueName>jtl_eap_geb</ValueName>
+                <SelectboxOptions>
+				 	<Option value="2" sort="2">Ja</Option>
+                    <Option value="0" sort="2">Nein</Option>
+                </SelectboxOptions>
+            </Setting>
+		<Setting type="selectbox" initialValue="1" sort="4" conf="Y">
+                <Name>Datepicker verwenden</Name>
+                <Description>Datepicker verwenden? * Nur SHOP 4</Description>
+                <ValueName>jtl_eap_datepicker</ValueName>
+                <SelectboxOptions>
+				    <Option value="0" sort="0">Nein</Option>
+                    <Option value="1" sort="1">Ja</Option>
+                </SelectboxOptions>
+            </Setting>
+			<Setting type="text" initialValue="#FFB164" sort="5" conf="Y">
+                <Name>Hinweis Farbe</Name>
+                <Description>Wenn eine Zahlungsart für den Kunden nicht verfügbar ist erscheint der Text mit folgender Hintergrundfarbe ( weitere css einstellungen möglich class eap_hinweis)</Description>
+                <ValueName>jtl_eap_hinweis_color</ValueName>
+            </Setting>
+			        <Setting type="selectbox" initialValue="prepend" sort="6" conf="Y">
+                <Name>Position Hinweisfenster</Name>
+                <Description>Bestimmen Sie hier die Position des Hinweises.</Description>
+                <ValueName>jtl_eap_hinweis_pos</ValueName>
+                <SelectboxOptions>
+                    <Option value="prepend" sort="1">Vor den Zahlungsarten</Option>
+                    <Option value="append" sort="2">Nach den Zahlungsarten</Option>
+                </SelectboxOptions>
+            </Setting>
+		</Settingslink>
+		<Customlink sort="5">
+        <Name>Prüfungseinstellungen</Name>
+            <Filename>eap_regeln.php</Filename>
+        </Customlink>
+		<Customlink sort="6">
+        <Name>Log</Name>
+            <Filename>eap_log.php</Filename>
+        </Customlink>
+    </Adminmenu>
+    <Locales>
+           <Variable>
+            <Name>jtl_eap_pruefung_vor_zahlung</Name> 
+            <Description>Hinweis das die gewünschte Zahlungsart für den Kunden nicht zur Verfügung steht - Zahlungsart wurde deaktiviert</Description> 
+            <VariableLocalized iso="GER">Diese Zahlungsart ist leider nicht möglich.</VariableLocalized> 
+        </Variable>
+		<Variable>
+            <Name>jtl_eap_pruefung_removed_payment</Name> 
+            <Description>Hinweis das die gewünschte Zahlungsart für den Kunden nicht zur Verfügung steht - Zahlungsart wurde entfernt</Description> 
+            <VariableLocalized iso="GER">Bitte wählen Sie eine alternative Zahlungsart.</VariableLocalized> 
+        </Variable>
+		    <Variable>
+            <Name>jtl_eap_eingabe_notice</Name> 
+            <Description>Geburtsdatum Abfrage ( nicht mit OPC )</Description> 
+            <VariableLocalized iso="GER">Um diese Zahlart nutzen zu können müssen Sie ihr Geburtsdatum eingeben</VariableLocalized> 
+        </Variable>
+				 <Variable>
+            <Name>jtl_eap_abbrucbbutton</Name> 
+            <Description>Zahlart Abbrechen</Description> 
+            <VariableLocalized iso="GER">Abbrechen</VariableLocalized> 
+        </Variable>
+			 <Variable>
+            <Name>jtl_eap_continuebutton</Name> 
+            <Description>Weiter mit Zahlart</Description> 
+            <VariableLocalized iso="GER">Mit Bestellung fortfahren</VariableLocalized> 
+        </Variable>
+		 <Variable>
+            <Name>jtl_eap_geb_text</Name> 
+            <Description>Geburtsdatum</Description> 
+            <VariableLocalized iso="GER">Geburtsdatum(*)</VariableLocalized> 
+        </Variable>
+			 <Variable>
+            <Name>jtl_eap_tel_text</Name> 
+            <Description>Telefon</Description> 
+            <VariableLocalized iso="GER">Telefonnummer(*)</VariableLocalized> 
+        </Variable>
+		 <Variable>
+            <Name>jtl_eap_abweichend_adresse</Name> 
+            <Description>Lieferadresse abweichend</Description> 
+            <VariableLocalized iso="GER">Zahlungsart bei abweichender Lieferadresse nicht möglich</VariableLocalized> 
+        </Variable>
+			<Variable>
+            <Name>jtl_eap_fortfahren_text</Name> 
+            <Description>Hinweis nach der FancyBox das der Kunde auf Bestellung fortfahren klicken soll</Description> 
+            <VariableLocalized iso="GER">Bitte klicken Sie auf Bestellung fortfahren</VariableLocalized> 
+        </Variable>
+			<Variable>
+            <Name>jtl_eap_identcheck_notice</Name> 
+            <Description>Hinweis auf Altersüberprüfung</Description> 
+            <VariableLocalized iso="GER">Sie haben Artikel mit Altersbeschränkung in Ihrem Warenkorb. Um fortfahren zu können, müssen Sie ihr Alter bestätigen.</VariableLocalized> 
+        </Variable>
+			<Variable>
+            <Name>jtl_eap_identcheck_addrchange</Name> 
+            <Description>Adresse korrigieren</Description> 
+            <VariableLocalized iso="GER">Adresse korrigieren</VariableLocalized> 
+        </Variable>
+				<Variable>
+            <Name>jtl_eap_identcheck_failed_headline</Name> 
+            <Description>Identitätsprüfung fehlgeschlagen überschrift</Description> 
+            <VariableLocalized iso="GER">Identitätsprüfung fehlgeschlagen</VariableLocalized> 
+        </Variable>
+				<Variable>
+            <Name>jtl_eap_identcheck_required</Name> 
+            <Description>Identitätsprüfung wird benötigt überschrift</Description> 
+            <VariableLocalized iso="GER">Identitätsprüfung wird benötigt</VariableLocalized> 
+        </Variable>
+			<Variable>
+            <Name>jtl_eap_identcheck_failed_msg</Name> 
+            <Description>Identitätsprüfung fehlgeschlagen Text</Description> 
+            <VariableLocalized iso="GER">Sie haben die Möglichkeit Ihre Adresse zu korrigieren, andernfalls kontaktieren Sie bitte unseren Support</VariableLocalized> 
+        </Variable>
+		<Variable>
+            <Name>identcheck_qbit_dataerror_msg</Name> 
+            <Description>Folgende Eingegebenen Daten weichen vom Bestand ab</Description> 
+            <VariableLocalized iso="GER">Folgende eingegebenen Daten weichen vom Bestand ab</VariableLocalized> 
+        </Variable>
+				<Variable>
+            <Name>agecheck_warenkorb_msg</Name> 
+            <Description>Hinweis auf Altersverifizierung im Warenkorb</Description> 
+            <VariableLocalized iso="GER">Sie haben altersbeschränkte Artikel in Ihrem Warenkorb</VariableLocalized> 
+        </Variable>
+			<Variable>
+            <Name>alertmsg_shipping</Name> 
+            <Description>Hinweis das die Versandarten nicht zur Verfügung stehen</Description> 
+            <VariableLocalized iso="GER">Aufgrund altersbeschränkter Artikel stehen diese Versandarten nicht zur Verfügung</VariableLocalized> 
+        </Variable>
+			<Variable>
+            <Name>EAP_COMPANY_NOTICE</Name> 
+            <Description>Hinweis auf eine nicht erkannte Firmeneingabe</Description> 
+            <VariableLocalized iso="GER"><![CDATA[Sie haben in Ihrer Rechnungsadresse <b>{$Kunde->cFirma}</b> als Firma angegeben<br>Bitte wählen Sie die Rechtsform aus]]></VariableLocalized> 
+        </Variable>
+    </Locales>
+</Install>
+</jtlshop3plugin>

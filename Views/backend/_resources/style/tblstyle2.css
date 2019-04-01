@@ -1,0 +1,38 @@
+.auftragtable {
+  border-collapse: separate;
+  border-spacing: 0;
+  width:100%;
+  color: #4a4a4d;
+  font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.auftragtable th,
+td {
+  padding: 10px 15px;
+  vertical-align: middle;
+}
+.auftragtable thead {
+  background: #a4b5c0;
+  color: #fff;
+}
+.auftragtable th {
+  font-weight: bold;
+}
+.auftragtable th:first-child {
+  text-align: left;
+}
+.auftragtable tbody tr:nth-child(even) {
+  background: #f0f0f2;
+}
+.auftragtable td {
+  border-bottom: 1px solid #cecfd5;
+}
+.auftragtable td:first-child {
+  border-left: 1px solid #cecfd5;
+}
+.auftragtable td:last-child {
+ border-right: 1px solid #cecfd5;
+}
+
+tbody tr:last-child {
+  background: #f0f0f2;
+}

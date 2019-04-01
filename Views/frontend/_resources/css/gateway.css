@@ -1,0 +1,135 @@
+/* STANDARDEINSTELLUNGEN */
+.eap_note{
+/* Hinweistext an Kunden */ 
+font-style:italic;
+font-size:14px;
+margin-top:7px;
+}
+
+.eap_err{
+/* Eingabefehler der Daten */
+color:red;
+font-weight:bold;
+margin-top:7px;
+}
+
+.eap_hinweis{
+/* Zeile Geburtsdatum + Telefon */ 
+margin-top:5px;
+}
+#eap_hinweis{
+
+}
+.eap_hinweis > .birthday {
+/* eingabefeld geburtstag */
+margin-left:106px;
+width:100px;
+}
+.eap_h1{
+   font-weight: bold;
+   color:black;
+   border-bottom:1px solid black;
+   
+}
+#tel_error {
+
+}
+.eap_geb{
+margin-top:7px;
+}
+
+.eap_tel{
+margin-top:7px;
+}
+#geb_error{
+
+}
+.eap_hinweis .telefon
+{
+margin-top:10px;
+}
+
+.eap_continue_postident_ausweisen{
+	background-image:url('../img/DP_POSTID_jetzt_ausweisen_inaktiv.png');
+		width:204px !important;
+		height:38px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-top:15px;
+}
+.eap_continue_postident_ausweisen:hover{
+		background-image:url('../img/DP_POSTID_jetzt_ausweisen_aktiv.png');
+		width:204px !important;
+		height:38px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-top:15px;
+}
+.eap_continue_postident_identifizieren{
+	background-image:url('../img/DP_POSTID_jetzt_identifizieren_inaktiv.png');
+		width:222px !important;
+		height:38px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-top:15px;
+}
+.eap_continue_postident_identifizieren:hover{
+		background-image:url('../img/DP_POSTID_jetzt_identifizieren_aktiv.png');
+		width:222px !important;
+		height:38px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-top:15px;
+}
+.eap_continue_postident_register{
+	background-image:url('../img/DP_POSTID_jetzt_registrieren_inaktiv.png');
+		width:209px !important;
+		height:38px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-top:15px;
+		
+}
+.eap_continue_postident_register:hover{
+		background-image:url('../img/DP_POSTID_jetzt_registrieren_aktiv.png');
+		width:209px !important;
+		height:38px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-top:15px;
+}
+#eap_hr {
+border: 0;
+height: 1px;
+background: #333;
+background-image: -webkit-linear-gradient(left, #ccc, #333, #ccc);
+background-image: -moz-linear-gradient(left, #ccc, #333, #ccc);
+background-image: -ms-linear-gradient(left, #ccc, #333, #ccc);
+background-image: -o-linear-gradient(left, #ccc, #333, #ccc);
+margin-top:5px;
+}
+.eap_back{
+/* Abbrechen Button */
+margin-left:10px;
+margin-top:10px;
+}
+.deaktiviert{
+background-color:#f3f0f0;
+/*Deaktivierte Zahlart bei Auswahl kann z.B ausgegraut werden */
+
+}
+.fancybox eap_test
+{
+	background-color:green;
+}
+.eap_continue {
+margin-top:9px;
+margin-left:20px;
+}
+
+#fancybox-content{
+background-color:white;
+}
+.datepicker{
+z-index:999999;
+}

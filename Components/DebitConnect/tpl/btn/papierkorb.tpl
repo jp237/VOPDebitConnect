@@ -1,0 +1,1 @@
+<input class='button' type="submit" name="resetPapierkorb" value='Wiederherstellen' /><input class='button' type="submit" name="sendTrash" value='Endgültig Löschen' />

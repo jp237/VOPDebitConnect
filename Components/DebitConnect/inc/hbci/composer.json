@@ -1,0 +1,5 @@
+{
+    "require": {
+        "mschindler83/fints-hbci-php": "^1.0"
+    }
+}

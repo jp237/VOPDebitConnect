@@ -1,0 +1,195 @@
+.first {
+margin-top:0px !important;
+}
+#progressbar{
+border:1px solid #d4d4d4;
+margin:3px;
+}
+
+.auftragTable thead input {
+height:25px;
+}
+.auftragTable thead{
+font-size:14px;
+vertical-align:top;
+}
+.auftragTable {
+  width: 100%;
+  min-width: 500px;
+  border-collapse: collapse;
+  color: black;
+  border: rgba(0, 0, 0, 0.05) 1px solid;
+  margin-bottom:15px;
+ 
+}
+.auftragTable tbody{
+  font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #4a4a4d;
+}
+
+
+.auftragTable tr {
+  height: 25px;
+  border-top: rgba(0, 0, 0, 0.05) 1px solid;
+  border-left: rgba(0, 0, 0, 0.05) 1px solid;
+  border-right: rgba(0, 0, 0, 0.05) 1px solid;
+}
+
+.auftragTable td {
+  box-sizing: border-box;
+  padding-left:10px;
+  padding-top:5px !important;
+  padding-right:10px;
+}
+.auftragTable .titleTr {
+  height: auto;
+  color: black;
+  background: #418a95;
+  border: 0px solid;
+}
+.auftragTable .headingTr a{
+	color: black;
+
+}
+.auftragTable .plusTd {
+  background: url(https://i.imgur.com/3hSkhay.png) center center no-repeat, rgba(0, 0, 0, 0.1);
+}
+.auftragTable .controlTd {
+  position: relative;
+  width: 80px;
+  background: url(https://i.imgur.com/9Q5f6cv.png) center center no-repeat;
+  cursor: pointer;
+}
+.auftragTable thead tr
+{
+ height: auto;
+  background: #a4b5c0;
+  color: black;
+	
+  border: 0px solid;
+}
+.auftragTable .headingTr {
+  height: auto;
+  background: #a4b5c0;
+  color: black;
+  border: 0px solid;
+  vertical-align:top !important;
+}
+.headingTr {
+  height: auto;
+  background: #a4b5c0;
+  color: black;
+  border: 0px solid;
+}
+.button {
+  text-align: center;
+  cursor: pointer;
+}
+.sForm {
+  position: absolute;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100%;
+  background: #d4d1d5;
+  overflow: hidden;
+  transition: width 1s, right .3s;
+  padding: 0px;
+  box-sizing: border-box;
+}
+.sForm .close {
+  float: right;
+  height: 70px;
+  width: 80px;
+  padding-top: 25px;
+  box-sizing: border-box;
+  background: rgba(255, 0, 0, 0.4);
+}
+.sForm .title {
+  width: 100%;
+  height: 70px;
+  padding-top: 20px;
+  padding-left: 20px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.1);
+}
+.open {
+  right: 0;
+  width: 400px !important;
+}
+.settingsIcons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  overflow: hidden;
+}
+.display {
+  width: 300px;
+}
+.settingsIcon {
+  float: right;
+  background: #418a95;
+  color: #f6f3f7;
+  height: 50px;
+  width: 80px;
+  padding-top: 15px;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  transition: width 1s;
+}
+.settingsIcon:hover {
+  background: #1f6873;
+}
+tr:nth-child(3) .settingsIcon {
+  height: 51px;
+}
+.openIcon {
+  width: 80px;
+}
+
+.auftragtable tbody tr:nth-child(even) {
+  background: #fcfcfc;
+}
+
+.auftragTable tbody tr:hover{
+  background-color:#f0f0f0;
+}
+.sumRow{
+background-color:#f0f0f0;
+}
+.box-group {
+border:1px solid #d7d1d1;
+background-color:#fff;
+padding:0px 30px 25px 15px;
+border-radius:5px;
+margin-top:30px;
+
+}
+
+.list {
+min-width:1800px;
+min-height:300px;
+}
+.box-group h5 {
+border-bottom:1px solid #f2f2f2 ;
+color:#9e1616;
+text-align:left;
+}
+.box-group h4 {
+
+color:#9e1616;
+
+}
+.box-group td {
+padding-top:10px;
+padding-left:15px;
+}
+.box-group #headline {
+padding-top:0px;
+}
+.box-group #hr {
+	width:100%;
+	border-bottom:1px solid #f2f2f2 ;
+}

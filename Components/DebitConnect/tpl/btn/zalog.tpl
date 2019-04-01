@@ -1,0 +1,1 @@
+<input class='button' type="submit" name="removeUmsatz" value='Zahlung zurücksetzen' />

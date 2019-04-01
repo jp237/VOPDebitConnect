@@ -1,0 +1,2 @@
+{$listview.header}
+{$listview.table}

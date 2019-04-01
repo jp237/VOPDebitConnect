@@ -1,0 +1,1 @@
+ALTER TABLE `dc_tZahlung` ADD `orderStatusHistory` INT NULL , ADD `paymentStatusHistory` INT NULL ;
