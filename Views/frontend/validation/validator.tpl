@@ -41,7 +41,6 @@
                           }
                       })
                           .done(function( data ) {
-
                               if(data.actionRequired == true) {
                                   $.modal.open(data.htmlModal, {
                                       title: '{$eap_validation_headline}',
