@@ -355,7 +355,9 @@ class DebitConnectCore{
 					}
 			}else
 			{
-				$this->Log("Upload","Error : ".$res->status,10);
+
+				$this->Log("Upload","Error : ".$res->ErrorMsg,10);
+                $this->View("ERROR_MSG","Fehler bei der Datenübertragung");
 			}
 		} else $this->Log("Upload","Missing Data",10);
 	}
@@ -447,6 +449,7 @@ class DebitConnectCore{
 		from dc_auftrag inner join dc_firma on dc_auftrag.subshopID = dc_firma.shopID and dc_firma.activated = 1 left outer join dc_status statustab on statustab.pkOrder = dc_auftrag.pkOrder where ( VOPStatus = 55 OR  VOPStatus = 59 OR  VOPStatus = 95 OR  VOPStatus = 99 )";
 		if($cronJob) $syncQuery.=" and lastSync < ".date("Ymd"). " LIMIT ".(int)$cronjobLimit;
 		$this->syncList = $this->db->getSQLResults($syncQuery);
+
 		if(count($this->syncList)>0){
 			$this->Log("Synchronisierung","Starte Synchronisierung ".count($this->syncList)." Vorgänge",0);
 		}
@@ -568,16 +571,46 @@ class DebitConnectCore{
 	}
 	public function getAuftragSynch($syncObject)
 	{
-			
-		    
-				
-			
+
+
+        $ret = array();
+        $ret["error"] = false;
+        $soap = $this->API->mahnwesen();
+        $auftrag = $syncObject;
+
+
+                try{
+                    // SYNC ZU VOP IMMER ZUERST
+                    $syncVOP = $this->getSyncAuftragDetail($auftrag["pkOrderAuftrag"]);
+                    $ret["push"] = array();
+
+                    if(count($syncVOP->_new)>0)
+                    {
+                        foreach($syncVOP->_new as $newEntry)
+                        {
+                            $ret["push"]["new"][] = 	$this->updateVOPAuftragDetail("new",$newEntry,$auftrag);
+                        }
+                    }
+                    if(count($syncVOP->_change)>0)
+                    {
+                        foreach($syncVOP->_change as $changedEntry)
+                        {
+                            $ret["push"]["change"][] = 	$this->updateVOPAuftragDetail("change",$changedEntry,$auftrag);
+                        }
+                    }
+                    if(count($syncVOP->_deleted)>0)
+                    {
+                        foreach($syncVOP->_deleted as $deletedEntry)
+                        {
+                            $ret["push"]["delete"][] = $this->updateVOPAuftragDetail("delete",$deletedEntry,$auftrag);
+                        }
+                    }
+                }catch(Exception $exception){
+                    $this->Log("Synchronisierung",$exception->getMessage(),10);
+                }
 				try
 				{
-					$ret = array();
-					$ret["error"] = false;
-					$soap = $this->API->mahnwesen();
-					$auftrag = $syncObject;
+
 					$syncText = "Akte in Kürze verfügbar";
 					$token = md5($auftrag["vopToken"]);
 					$syncXML = $this->getRechnungSyncXML($auftrag["pkOrderAuftrag"]);
@@ -705,8 +738,8 @@ class DebitConnectCore{
 							// SETZE SHOPWARE STATUS ZUM INKASSO
 							if($auftrag["nMandart"] == 0 && $newvopstatus == 95){
 								$this->dataTypes->changeOrder((int)$auftrag["pkOrderAuftrag"],null,$this->settings->currentSetting->statusIN,0);
-								$this->BoniGatewayBlackListe($pkOrder,2,true);
-								$this->Log("Inkasso","aus Mahnservice in Inkasso übernommen",0,(int)$pkOrder);
+								$this->BoniGatewayBlackListe((int)$auftrag["pkOrderAuftrag"],2,true);
+								$this->Log("Inkasso","aus Mahnservice in Inkasso übernommen",0,(int)$auftrag["pkOrderAuftrag"]);
 							}
 							
 						if($status->art == 0){
@@ -725,32 +758,10 @@ class DebitConnectCore{
 							}
 					}else{
 					    $ret["soapError"] = $res;
+                        $this->Log("Synchronisierung",print_r($ret,true),10);
                     }
 					
-					$syncVOP = $this->getSyncAuftragDetail($auftrag["pkOrderAuftrag"]);
-					$ret["push"] = array();
-					
-					if(count($syncVOP->_new)>0)
-					{
-						foreach($syncVOP->_new as $newEntry)
-						{
-						 $ret["push"]["new"][] = 	$this->updateVOPAuftragDetail("new",$newEntry,$auftrag);
-						}
-					}
-					if(count($syncVOP->_change)>0)
-					{
-						foreach($syncVOP->_change as $changedEntry)
-						{
-                            $ret["push"]["change"][] = 	$this->updateVOPAuftragDetail("change",$changedEntry,$auftrag);
-						}
-					}
-					if(count($syncVOP->_deleted)>0)
-					{
-						foreach($syncVOP->_deleted as $deletedEntry)
-						{
-                            $ret["push"]["delete"][] = $this->updateVOPAuftragDetail("delete",$deletedEntry,$auftrag);
-						}
-					}
+
 				 // SYNC KUNDE -> VOP
 				 
 				 
