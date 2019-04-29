@@ -1049,6 +1049,7 @@ public function getAuftragDetail($pkOrder)
 			  LEFT JOIN dc_umsatz on dc_umsatz.kUmsatz = dc_tzahlung.kUmsatz WHERE dc_umsatz.nType = 1 AND  dc_tzahlung.nType != 8  and  dc_tzahlung.nType != 1 and `pkOrder` = ".(int) $pkOrder."  
 			  group by dc_tzahlung.kUmsatz,dc_umsatz.dBuchung ";
 
+	//echo $query;
 	
 	return DC()->db->getSQLResults($query);
 }
