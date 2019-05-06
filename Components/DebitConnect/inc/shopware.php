@@ -592,7 +592,7 @@ public function submitDocumentsVOP($pkOrder,$dbUpload = false)
 			if(strlen($request["pdfDocument"])>10) { 
 			$res = $soap->newAllDoc($user,$pass,"1",$docId."-shopware","0","0","0",$request['pdfDocument'],$pkOrder,"0");
 				if($res->status == "OK"){
-					DC()->Log("Dokument","Dokument ".$docId ." übermittelt",1);
+					DC()->Log("Dokument","Dokument ".$docId ." übermittelt",0);
 					$ret++;
 				}
 			
