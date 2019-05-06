@@ -308,12 +308,12 @@ class DebitConnectCore{
 					$user = $this->settings->registration["vopUser"];
 					$token = md5($this->settings->registration["vopToken"]);
 					$response = $soap->setBlackList($user,$token,$vars["firstname"],$vars["lastname"],$vars["zipcode"],$vars["city"],$vars["street"],$vars["DateOfBirth"],(int) $pkOrder);
-					if($response=="ok"){
-						$update = new stdClass();
-						$update->nBlacklist = 1;
-						$this->db->dbUpdate("dc_auftrag", $update,"pkOrder = ".(int) $pkOrder);
-						$this->Log("Blackliste","Blackliste eingetragen",0,(int)$pkOrder);
-					}
+                        if($response=="ok"){
+                            $update = new stdClass();
+                            $update->nBlacklist = 1;
+                            $this->db->dbUpdate("dc_auftrag", $update,"pkOrder = ".(int) $pkOrder);
+                            $this->Log("Blackliste","Blackliste eingetragen",0,(int)$pkOrder);
+                        }
 					}
 				}
 			}else{
