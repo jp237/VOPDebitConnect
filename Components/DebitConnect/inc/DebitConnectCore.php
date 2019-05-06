@@ -138,6 +138,7 @@ class DebitConnectCore{
 			return $exists["checkval"]==0 ? DC()->db->dbInsert("dc_auftrag",$insert,false): DC()->db->dbUpdate("dc_auftrag",$insert,"pkOrder = ".$pkOrder,false);
 		}
 		return false;
+		//test
 		
 	}
 	
