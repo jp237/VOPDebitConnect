@@ -176,7 +176,7 @@ class listView {
 		DC()->Export = $this->export;
 		$exportButton = "";
 		if(count(DC()->Export->csv)>1){
-			$exportButton = "<a href='VOPDebitConnect?export' target='_new' class='button'>CSV-Export</a>";
+			$exportButton = "<a href='VOPDebitConnect?export' target='_new' class='btn btn-primary'>CSV-Export</a>";
 		}
 		$output.="</table>";
 		
@@ -235,7 +235,7 @@ class listView {
 			if ($html != "") $html .= "<br>";
 			$standardElement = array("id" => "" , "description" => "");
 			array_unshift($fieldModeArr,$standardElement);
-			$html .= "<select name='setFieldMode[".$db_field."]' size='1' style='max-width:150px;' onchange='showLoader();document.fmResults.submit();'>";
+			$html .= "<select class='form-control input-sm' name='setFieldMode[".$db_field."]' size='1' style='max-width:150px;' onchange='showLoader();document.fmResults.submit();'>";
 			foreach ($fieldModeArr as $arrayRow) {
 		
 				$showbez = $arrayRow['description'];
@@ -253,11 +253,11 @@ class listView {
 			if (isset($this->filter[$db_field])) $fieldValue = $this->filter[$db_field];
 				else $fieldValue = "";
 			if (!$noBR) $html .= "<br>";
-			$html .= "<input type='text' name='setFilter[".$db_field."]' style='max-width:150px;width:".$fieldLength."px;' value='".$fieldValue."' maxlength='30'>";
+			$html .= "<input type='text' class='form-control' name='setFilter[".$db_field."]' style='max-width:150px;width:".$fieldLength."px;' value='".$fieldValue."' maxlength='30'>";
 		}
 		if (!$fieldLength AND $fieldData) {
 			if (!$noBR) $html .= "<br>";
-			$html .= "<select name='setFilter[".$db_field."]' size='1' onchange='showLoader();document.fmResults.submit();'><option value=''>&nbsp;</option>";
+			$html .= "<select name='setFilter[".$db_field."]' size='1' class='form-control' onchange='showLoader();document.fmResults.submit();'><option value=''>&nbsp;</option>";
 			foreach ($fieldData as $value => $showbez) {
 				if (isset($this->filter[$db_field]) AND $this->filter[$db_field] == $value) $selected = " selected";
 					else $selected = "";
