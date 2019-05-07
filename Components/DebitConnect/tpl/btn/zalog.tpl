@@ -1,1 +1,1 @@
-<input class='button' type="submit" name="removeUmsatz" value='Zahlung zurücksetzen' />
+<input class='btn btn-danger' type="submit" name="removeUmsatz" value='Zahlung zurücksetzen' />

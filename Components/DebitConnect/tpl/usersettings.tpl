@@ -11,27 +11,32 @@ vertical-align:top;
 <div class='box-group'>
 <table>
   <td colspan="2"><h5>Registrierung</h5></td></tr>
-  <tr><td width="9%">Firma</td><td width="91%"><input type='text' class='full'  required value='{if !$firma}{$CompanyData.company}{else if $firma}{$firma}{/if}' name='reg[firma]'></td></tr><tr><td>Unternehmer</td><td><input type='text' class='full'  value='{$unternehmer}' name='reg[unternehmer]'></td></tr>
-  <tr><td>Strasse</td><td colspan="3"><input type='text' class='full'  required  value='{$strasse}' name='reg[strasse]'></td></tr>
-  <tr><td>PLZ</td><td><input type='text' class='full'  required  value='{$plz}' name='reg[plz]'></td></tr><tr><td>Ort</td><td><input type='text' class='full'   value='{$ort}'  name='reg[ort]'></td></tr>
-  <tr><td>Land</td><td colspan="3"><input type='text' class='full'   value='{$land}'  required name='reg[land]'></td></tr>
-  <tr><td>Tel</td><td><input type='text' class='full'  required  value='{$tel}' name='reg[tel]'></td></tr><tr><td>Fax</td><td><input type='text' class='full'   value='{$fax}' name='reg[fax]'></td></tr>
-  <tr><td>E-Mail</td><td colspan="3"><input type='text' class='full'   value='{if !$email}{$CompanyData.mail}{else if $email}{$email}{/if}' required name='reg[email]'></td></tr>
-  <tr><td>USTID</td><td><input type='text' class='full'   value='{$ustid}' required name='reg[ustid]'></td></tr><tr><td>Vorsteuerabzugsberechtigt</td><td><select class='full' name='reg[vorsteuer]' required>
-  <option value=''>Bitte auswählen</option>
-  <option {if $vorsteuer == 'True'} selected {/if} value='True'>Vorsteuerabzugsberechtigt</option>
-  <option {if $vorsteuer == 'False'} selected {/if} value='False'>Nicht Vorsteuerabzugsberechtigt</option>
-  </select></td></tr>
+  <tr><td width="9%">Firma</td><td width="91%"><input type='text' class='form-control'  required value='{if !$firma}{$CompanyData.company}{else if $firma}{$firma}{/if}' name='reg[firma]'></td></tr>
+    <tr><td>Unternehmer</td><td><input type='text' class='form-control'  value='{$unternehmer}' name='reg[unternehmer]'></td></tr>
+  <tr><td>Strasse</td><td colspan="3"><input type='text' class='form-control'  required  value='{$strasse}' name='reg[strasse]'></td></tr>
+  <tr><td>PLZ</td><td><input type='text' class='form-control'  required  value='{$plz}' name='reg[plz]'></td></tr>
+    <tr><td>Ort</td><td><input type='text' class='form-control'   value='{$ort}'  name='reg[ort]'></td></tr>
+  <tr><td>Land</td><td colspan="3"><input type='text' class='form-control'   value='{$land}'  required name='reg[land]'></td></tr>
+  <tr><td>Tel</td><td><input type='text' class='form-control'  required  value='{$tel}' name='reg[tel]'></td></tr>
+    <tr><td>Fax</td><td><input type='text' class='form-control'   value='{$fax}' name='reg[fax]'></td></tr>
+  <tr><td>E-Mail</td><td colspan="3"><input type='text' class='form-control'   value='{if !$email}{$CompanyData.mail}{else if $email}{$email}{/if}' required name='reg[email]'></td></tr>
+  <tr><td>USTID</td><td><input type='text' class='form-control'   value='{$ustid}' required name='reg[ustid]'></td></tr>
+    <tr><td>Vorsteuerabzugsberechtigt</td><td><select class='form-control' name='reg[vorsteuer]' required>
+      <option value=''>Bitte auswählen</option>
+      <option {if $vorsteuer == 'True'} selected {/if} value='True'>Vorsteuerabzugsberechtigt</option>
+      <option {if $vorsteuer == 'False'} selected {/if} value='False'>Nicht Vorsteuerabzugsberechtigt</option>
+  </select></td>
+    </tr>
   <tr>
     <td>EAPID</td><td>{$vopUser}</td>
-   </tr><tr> <td>Aktivierungskey</td><td><input type='text' class='full'  {if $activated == 1}   required    {/if} {if $not_registered}   disabled    {/if} value = '{if $activated == 2}{$vopToken}{/if}' name='reg[key]'></td>
+   </tr><tr> <td>Aktivierungskey</td><td><input type='text' class='form-control'  {if $activated == 1}   required    {/if} {if $not_registered}   disabled    {/if} value = '{if $activated == 2}{$vopToken}{/if}' name='reg[key]'></td>
     </tr>
      {if $not_registered}
      <tr><td colspan="4"><input type="checkbox" name='agb' required  /><a target='_new' href='https://www.inkasso-vop.de/agbs/Rahmenvereinbarung.pdf'>Bestätigung der Rahmenvereinbarung</a></td></tr>
-   <tr><td colspan="4"><input type="submit" class="button" value='Registrieren' name="register"></td></tr>
+   <tr><td colspan="4"><input type="submit" class="btn btn-success" value='Registrieren' name="register"></td></tr>
     {/if}
     {if $activated == 1}
-   <tr><td colspan="4"><input type="submit" class="button" value='Aktivieren' name="activate"></td></tr>
+   <tr><td colspan="4"><input type="submit" class="btn btn-success" value='Aktivieren' name="activate"></td></tr>
    {/if}
 </table>
 </div>
@@ -47,23 +52,24 @@ vertical-align:top;
     <tr>
       <td colspan="2"><h5>Systemeinstellungen</h5></td>
       <td></td></tr>
-     <tr><td>Shopware APIURL</td><td width="1481"><input  type='text' class='full'  class='full' value='{$shopwareapiurl}' name='settings[shopwareapiurl]'></td></tr>
-     <tr><td>Shopware APIUser</td><td width="1481"><input  type='text' class='full'   class='full' value='{$shopwareapiuser}' name='settings[shopwareapiuser]'></td></tr>
-     <tr><td>Shopware APIKey</td><td><input  type='password' class='full'  value='{$shopwareapikey}' name='settings[shopwareapikey]'></td></tr>
-    <tr>         <td>API Verwenden</td><td><select class='full' class='full' required name='settings[shopwareapibenutzen]'>
+     <tr><td width="200px">Shopware API URL</td><td width="1481"><input  type='text' class='form-control'   value='{$shopwareapiurl}' name='settings[shopwareapiurl]'></td></tr>
+     <tr><td>Shopware API User</td><td width="1481"><input  type='text' class='form-control'  value='{$shopwareapiuser}' name='settings[shopwareapiuser]'></td></tr>
+     <tr><td>Shopware API Key</td><td><input  type='password' class='form-control'  value='{$shopwareapikey}' name='settings[shopwareapikey]'></td></tr>
+    <tr>         <td>API Verwenden</td><td>
+            <select  class='form-control' required name='settings[shopwareapibenutzen]'>
       <option  {if $shopwareapibenutzen == 0} selected {/if}value='0'>Keinen Status über API Setzen</option>
       <option {if $shopwareapibenutzen == 1} selected {/if} value='1'>Status über API setzen</option>
       </select></td>
       </tr>
      {if $shopwareapibenutzen == 1} <tr><td>API-Status</td><td>{$apiteststatus}</td></tr>{/if}
        <tr><td>Gutschriften behandeln als</td><td>
-  <select required name="settings[gutschriften]" /> 
+  <select required  class="form-control" name="settings[gutschriften]" />
   <option {if $gutschriften==0} selected {/if} value='0'>Neue Rechnung</option>
   <option  {if $gutschriften==1} selected {/if} value='1'>Abzug der Positionen</option>
   </select>
   </td>
   </tr>
-  <tr><td>B2B-Shop</td><td><input type="checkbox" {if $mahnwesenvorkasse} checked  {/if} name="settings[mahnwesenvorkasse]" /> 
+  <tr><td>B2B-Shop</td><td><input type="checkbox" {if $mahnwesenvorkasse} checked  {/if} name="settings[mahnwesenvorkasse]" />
   B2B-Shop ( Volles Mahnwesen bei Vorkasse )</td></tr>
       </table>
 
@@ -117,7 +123,7 @@ vertical-align:top;
       <tr><td colspan="2"><strong>Berechnungsdatum Mahnwesen ( Rechnungskauf ) </strong></td> </tr>
       <tr><td>Versanddatum Benutzen</td>
           <td>
-              <select name="shipping[overrideInvoice]" class="full">
+              <select name="shipping[overrideInvoice]" class="form-control">
                   <option {if $settingsShipping->overrideInvoice == 0} selected {/if} value="0">Nein</option>
                   <option {if $settingsShipping->overrideInvoice == 1} selected {/if}  value="1">Ja</option>
               </select>
@@ -126,14 +132,14 @@ vertical-align:top;
     <td  id='headline' ><strong>Zahlungserinnerung</strong></td>
     </tr>
     <tr><td>Status nach Versand</td><td width="81%">
-    <select class='full' required name="settings[statusZE]">
+    <select class='form-control' required name="settings[statusZE]">
     <option value=''>Bitte Auswählen</option>
     {foreach from=$states item=state}
 	<option {if $state.id == $statusZE} selected {/if} value='{$state.id}'>{$state.description}</option>
   {/foreach}
     </select></td></tr>
     <tr>
-    	<td>Frist nach Rechnungsstellung</td><td><select class='full' required name="settings[fristZE]">
+    	<td>Frist nach Rechnungsstellung</td><td><select class='form-control' required name="settings[fristZE]">
           <option value=''>Bitte auswählen</option>
           {for $counter=1 to 31}
     	<option {if $fristZE == $counter} selected {/if}value='{$counter}'>{$counter} Tag/e</option>
@@ -142,31 +148,31 @@ vertical-align:top;
         </td>
     </tr>
         <tr>
-    	<td>Art</td><td><select  onchange="showEditor();" class='zeArt full' required name="settings[zeArt]">
+    	<td>Art</td><td><select  onchange="showEditor();" class='zeArt form-control' required name="settings[zeArt]">
           <option value=''>Bitte auswählen</option>
     	<option {if $zeArt == 1} selected {/if} value='1'>Eigener Mailversand</option>
         </select>
         </td>
     </tr>
 
-   <tr class='editorhide'><td>Betreff</td><td><input class='full'  type="text" value='{$smtpbetreff}' name="settings[smtpbetreff]" /></td></tr>
-    <tr class='editorhide'><td>Absender</td><td><input class='full' type="text" value='{$smtpabsender}' name="settings[smtpabsender]" /></td></tr>
-    <tr class='editorhide'><td>Kopie</td><td><input class='full'  type="text" value='{$smtpkopie}'  name="settings[smtpkopie]" /></td></tr>
+   <tr class='editorhide'><td>Betreff</td><td><input class='form-control'  type="text" value='{$smtpbetreff}' name="settings[smtpbetreff]" /></td></tr>
+    <tr class='editorhide'><td>Absender</td><td><input class='form-control' type="text" value='{$smtpabsender}' name="settings[smtpabsender]" /></td></tr>
+    <tr class='editorhide'><td>Kopie</td><td><input class='form-control'  type="text" value='{$smtpkopie}'  name="settings[smtpkopie]" /></td></tr>
    	<tr class='editorhide'>
-    <td colspan="1"></td><td><a href='#' class='fancyboxfullscreen button' data-fancybox-href='VOPDebitConnect?switchTo=template&noncss=1&fancy=1&art=zetpl'>Template anpassen</a></td>
+    <td colspan="1"></td><td><a href='#' class='fancyboxfullscreen btn btn-info' data-fancybox-href='VOPDebitConnect?switchTo=template&noncss=1&fancy=1&art=zetpl'>Template anpassen</a></td>
     </tr>  
         <tr>
     	<td id='headline' ><strong>Mahnservice</strong></td><td></td></tr>
- <tr><td>Gebühr</td><td><input type='text'   class='maskednumber full' disabled name='settings[mahngeb]' value='7.50'/>
+ <tr><td>Gebühr</td><td><input type='text'   class='maskednumber form-control' disabled name='settings[mahngeb]' value='7.50'/>
             <tr><td>Status nach Versand</td><td>
-                <select class='full' required name="settings[statusMA]">
+                <select class='form-control' required name="settings[statusMA]">
                 <option value=''>Bitte Auswählen</option>
                 {foreach from=$states item=state}
                 <option {if $state.id == $statusMA} selected {/if} value='{$state.id}'>{$state.description}</option>
               	{/foreach}
                 </select>
     		</td></tr>
-    	<tr><td>Frist nach Zahlungserinnerung</td><td><select class='full' required name="settings[fristMA]">
+    	<tr><td>Frist nach Zahlungserinnerung</td><td><select class='form-control' required name="settings[fristMA]">
         <option value=''>Bitte auswählen</option>
         {for $counter=1 to 31}
     	<option {if $fristMA == $counter} selected {/if}value='{$counter}'>{$counter} Tag/e</option>
@@ -176,7 +182,7 @@ vertical-align:top;
     </tr>  
     <tr><td id='headline'  colspan="2"><strong>Inkasso</strong></td></tr>
     <tr><td>Status nach Versand</td><td>
-                <select class='full' required name="settings[statusIN]">
+                <select class='form-control' required name="settings[statusIN]">
                 <option value=''>Bitte Auswählen</option>
                 {foreach from=$states item=state}
                 <option {if $state.id == $statusIN} selected {/if} value='{$state.id}'>{$state.description}</option>
@@ -193,7 +199,7 @@ vertical-align:top;
   </td></tr>
  <tr><td id='headline' colspan="2"><strong>Blackliste BoniGateway B2C</strong></td></tr>
  <tr><td>Setzen ab:</td><td>
- <select name="settings[blackliste]">
+ <select class="form-control" name="settings[blackliste]">
  	<option {if $blackliste == '0'} selected {/if} value="0">Nie</option>
     <option {if $blackliste == '1'} selected  {/if} value="1">Mahnung</option>
     <option  {if $blackliste == '2'} selected  {/if}  value="2">Inkasso</option>
@@ -202,7 +208,7 @@ vertical-align:top;
 </table>
 </div>
  
-<input type="submit" class="button"value="Ändern">
+<input type="submit" class="btn btn-success" value="Ändern">
 </form>
 {else if $setting_art == "hbci"}
 <form method="post">
@@ -212,12 +218,12 @@ vertical-align:top;
 <tr><td colspan="2"><h5>HBCI-Einstellungen Zahlungsabgleich</h5></td></tr>
          <tr>
          <td width="30%"><strong>{$zugangsprofile} Zugangsprofile</strong></td>
-         <td width="70%"><a class='button' href='VOPDebitConnect?switchTo=hbciProfiles'>Profile verwalten</a></td></tr>
+         <td width="70%"><a class='btn btn-info' href='VOPDebitConnect?switchTo=hbciProfiles'>Profile verwalten</a></td></tr>
      <tr>
        <td><strong>Status</strong></td>
        <td></td></tr>
          <tr><td>Bezahlstatus Komplett Bezahlt</td><td>
-    <select class='full' required name="hbci[statusbezahlt]">
+    <select class='form-control' required name="hbci[statusbezahlt]">
     <option value=''>Bitte Auswählen</option>
     <option {if 'null' == $hbci.statusbezahlt} selected {/if} value='null'>Nicht setzen</option>
     {foreach from=$states item=state}
@@ -225,7 +231,7 @@ vertical-align:top;
   {/foreach}
     </select></td></tr>
          <tr><td>Bezahlstatus Teilzahlung</td><td>
-    <select class='full' required name="hbci[teilzahlung]">
+    <select class='form-control' required name="hbci[teilzahlung]">
     <option value=''>Bitte Auswählen</option>
      <option {if 'null' == $hbci.teilzahlung} selected {/if} value='null'>Nicht setzen</option>
     {foreach from=$states item=state}
@@ -233,7 +239,7 @@ vertical-align:top;
   {/foreach}
     </select></td></tr>
          <tr><td>Bezahlstatus Bankrücklast</td><td>
-    <select class='full' required name="hbci[bankruecklast]">
+    <select class='form-control' required name="hbci[bankruecklast]">
     <option value=''>Bitte Auswählen</option>
      <option {if 'null' == $hbci.bankruecklast} selected {/if} value='null'>Nicht setzen</option>
     {foreach from=$states item=state}
@@ -241,7 +247,7 @@ vertical-align:top;
   {/foreach}
     </select></td></tr>
      <tr><td>Bestellstatus Vorkasse - Komplett Bezahlt</td><td>
-    <select class='full' required name="hbci[orderstatus]">
+    <select class='form-control' required name="hbci[orderstatus]">
     <option value=''>Bitte Auswählen</option>
      <option {if 'null' == $hbci.orderstatus} selected {/if} value='null'>Nicht setzen</option>
     {foreach from=$orderstates item=state}
@@ -249,7 +255,7 @@ vertical-align:top;
   {/foreach}
     </select></td></tr>
          <tr><td>Zahlungsdatum setzen - Komplett Bezahlt</td><td>
-    <select class='full' required name="hbci[setpaymentdate]">
+    <select class='form-control' required name="hbci[setpaymentdate]">
     <option value=''>Bitte Auswählen</option>
      <option {if '0' == $hbci.setpaymentdate} selected {/if} value='0'>Nicht setzen</option>
    	<option {if '1' == $hbci.setpaymentdate} selected {/if} value='1'>Datum  setzen</option>
@@ -259,7 +265,7 @@ vertical-align:top;
        <td></td></tr>
     <tr>
     <td>Zahlungsbestätigung</td>
-    <td><select class='full' name='hbci[bestaetigung]'>
+    <td><select class='form-control' name='hbci[bestaetigung]'>
     	<option  {if $hbci.bestaetigung == 0 }selected {/if} value='0'>Nicht versenden</option>
         <option  {if $hbci.bestaetigung == 1 }selected {/if} value='1'>ab Teilzahlung versenden</option>
         <option  {if $hbci.bestaetigung == 2 }selected {/if} value='2'>Komplett bezahlt versenden</option>
@@ -268,11 +274,11 @@ vertical-align:top;
   </tr>
       <tr>
     <td>Betreff</td>
-    <td><input type="text" class='full' value='{$hbci.betreff}' name='hbci[betreff]'></td>
+    <td><input type="text" class='form-control' value='{$hbci.betreff}' name='hbci[betreff]'></td>
   </tr>
    <tr>
     <td>Absender</td>
-    <td><input type="text" class='full' value='{$hbci.absender}' name='hbci[absender]'></td>
+    <td><input type="text" class='form-control' value='{$hbci.absender}' name='hbci[absender]'></td>
   </tr>
     <tr><td id='headline' colspan="4"><strong>Kundengruppen ausschliessen</strong></td></tr>
     <tr><td colspan="4">
@@ -282,10 +288,10 @@ vertical-align:top;
             {/foreach}
         </td></tr>
   <tr>
-  <td colspan="1"></td><td><a href='#' class='fancyboxfullscreen button' data-fancybox-href='VOPDebitConnect?switchTo=template&noncss=1&fancy=1&art=zatpl'>Template anpassen</a></td>
+  <td colspan="1"></td><td><a href='#' class='fancyboxfullscreen btn btn-info' data-fancybox-href='VOPDebitConnect?switchTo=template&noncss=1&fancy=1&art=zatpl'>Template anpassen</a></td>
   </tr>
     <tr><td>Zahlungsausgänge</td><td>
-            <select name="hbci[zahlungsausgang]" class="full">
+            <select name="hbci[zahlungsausgang]" class="form-control">
                 <option {if $hbci.zahlungsausgang == 0} selected {/if} value="0">Anzeigen</option>
                 <option <option {if $hbci.zahlungsausgang == 1} selected {/if} value="1">Nicht Anzeigen</option></select></td></tr>
   <tr><td colspan="2"><input type="submit" class='button' value="Speichern" /></td></tr>
@@ -302,13 +308,13 @@ vertical-align:top;
 <form method="post">
 <input type="hidden" name="deleteBlacklist" />
 <input type='hidden' name='deleteId' value='{$idEntry}' />
-<tr><td>{if $blacklist->art == 0 } Name {elseif $blacklist->art == 1} Verwendungszweck {/if}</td><td>{$blacklist->cString}</td><td><input type='submit' name='del' class='button' value='Löschen' /></td></tr>
+<tr><td>{if $blacklist->art == 0 } Name {elseif $blacklist->art == 1} Verwendungszweck {/if}</td><td>{$blacklist->cString}</td><td><input type='submit' name='del' class='btn btn-danger' value='Löschen' /></td></tr>
 </form>
 {/foreach}
 <form method="post">
 <input type="hidden" name="setblacklist" />
 <tr><td colspan="2">Neuer Eintrag:</td></tr>
-<tr><td><select  required name='blacklist[art]'><option  value=''>Bitte auswählen</option><option value='0'>Name</option><option value='1'>Verwendungszweck</option></select></td><td><input type='text' name='blacklist[cString]' /><input type="submit" name="newEntry" value='Neuen Eintrag hinzufügen' class='button' /></td></tr>
+<tr><td><select  required name='blacklist[art]'><option  value=''>Bitte auswählen</option><option value='0'>Name</option><option value='1'>Verwendungszweck</option></select></td><td><input type='text' name='blacklist[cString]' /><input type="submit" name="newEntry" value='Neuen Eintrag hinzufügen' class='btn btn-success' /></td></tr>
 </form>
 </table>
 </div>
@@ -319,7 +325,7 @@ vertical-align:top;
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr><td colspan="2"><h5>Globale Einstellung Matching</h5></td></tr>
 	<tr><td width="30%">Matching - Eindeutig</td><td width="86%">
-    <select class='full' required name="eindeutig">
+    <select class='form-control' required name="eindeutig">
     <option {if $eindeutig == 30}selected{/if} value='30'>30 Punkte</option>
     <option {if $eindeutig == 40}selected{/if} value='40'>40 Punkte</option>
     <option {if $eindeutig == 50}selected{/if} value='50'>50 Punkte</option>
@@ -328,7 +334,7 @@ vertical-align:top;
     </select>
     </td></tr>
     <tr><td>Matching - Ähnlich</td><td>
-    <select class='full' required name="aehnlich">
+    <select class='form-control' required name="aehnlich">
     <option {if $aehnlich == 10}selected{/if} value='10'>10 Punkte</option>
     <option  {if $aehnlich == 20}selected{/if} value='20'>20 Punkte</option>
     </select>
@@ -337,7 +343,7 @@ vertical-align:top;
     <tr>
     <td>Matching - Zahlstatus Ignorieren</td>
     <td>
-    <select class='full' required name="matching_ignore_paymentstate">
+    <select class='form-control' required name="matching_ignore_paymentstate">
     <option value=''>Bitte auswählen</option>
     <option {if $matching_ignore_paymentstate == 1}selected{/if} value='1'>Ja</option>
     <option  {if $matching_ignore_paymentstate == 0}selected{/if} value='0'>Nein</option>
@@ -363,7 +369,7 @@ vertical-align:top;
        <td id='regextestvalue' colspan="5">Vorschau:<br /><input type="text" class='full' name="newRegex[erg]" /></td></tr>
       </table>
     </td></tr>
-    <tr><td colspan="2"><input type="submit" class="button" name="savematching" value='Speichern' />
+    <tr><td colspan="2"><input type="submit" class="btn btn-success" name="savematching" value='Speichern' />
 </table>
 </div>
 </form>
@@ -417,48 +423,40 @@ function testregex()
 <tr>
 <td>{$zahlungsart.description}</td>
 <td>
-{foreach from=$skr.skr_payment key=objkey item=skrvalue}
-{if $objkey==$zahlungsart.id}
-<input type='text' class='full'  name='skrpayment[{$zahlungsart.id}]' value='{$skrvalue}' />
-{/if}
-{/foreach}</td>
+
+<input type='text' class='form-control'  name='skrpayment[{$zahlungsart.id}]' value='{foreach from=$skr.skr_payment key=objkey item=skrvalue}{if $objkey==$zahlungsart.id}{$skrvalue}{/if}{/foreach}'>
+</td>
 <td>
-{foreach from=$skr.skonto key=objkey item=skrvalue}
-{if $objkey==$zahlungsart.id}
-<input type='text' name='skonto[{$zahlungsart.id}]' class='full maskednumber' value='{$skrvalue}' />
-{/if}
-{/foreach}</td>
+<input type='text' name='skonto[{$zahlungsart.id}]' class='form-control maskednumber' value='{foreach from=$skr.skonto key=objkey item=skrvalue}{if $objkey==$zahlungsart.id}{$skrvalue}{/if}{/foreach}'/>
+</td>
 <td>
-<select class='full' name='zeitraum[{$zahlungsart.id}]'>
- <option value='0'>Bitte auswählen</option>
- {foreach from=$skr.zeitraum key=objkey item=skrvalue}
-	{if $objkey==$zahlungsart.id}
+<select class='form-control' name='zeitraum[{$zahlungsart.id}]'>
+    <option value='0'>Bitte auswählen </option>
         {for $counter=1 to 31}
-    	<option {if $skrvalue == $counter} selected {/if}value='{$counter}'>{$counter} Tag/e</option>
+
+    	<option  {foreach from=$skr.zeitraum key=objkey item=skrvalue}{if $objkey==$zahlungsart.id && $skrvalue == $counter} selected {break} {/if}{/foreach} value='{$counter}'>{$counter} Tag/e</option>
 		{/for}
-    {/if}
-{/foreach}
 </select>
 </td>
 </tr>
 {/foreach}
 <tr><td  id='headline'  colspan="4"><b>Sachkontorahmen Buchungspositionen</b></td></tr>
-<tr><td>Mahnkosten</td><td><input type='text' class='full'  name='skr[mahnkosten]' value='{$skr.skr_buchungpos->mahnkosten}'/></td>
+<tr><td>Mahnkosten</td><td><input type='text' class='form-control'  name='skr[mahnkosten]' value='{$skr.skr_buchungpos->mahnkosten}'/></td>
 <td>Überzahlung</td>
-<td><input type='text' class='full'  name='skr[ueberzahlung]' value='{$skr.skr_buchungpos->ueberzahlung}'/></td></tr>
+<td><input type='text' class='form-control'  name='skr[ueberzahlung]' value='{$skr.skr_buchungpos->ueberzahlung}'/></td></tr>
 <tr>
   <td>Erstattung</td>
-  <td><input type='text' class='full'  name='skr[erstattung]' value='{$skr.skr_buchungpos->erstattung}'/></td>
+  <td><input type='text' class='form-control'  name='skr[erstattung]' value='{$skr.skr_buchungpos->erstattung}'/></td>
   <td>Bankrücklastkosten</td>
-  <td><input type='text' class='full'  name='skr[bankruecklastkosten]' value='{$skr.skr_buchungpos->bankruecklastkosten}'/></td>
+  <td><input type='text' class='form-control'  name='skr[bankruecklastkosten]' value='{$skr.skr_buchungpos->bankruecklastkosten}'/></td>
 </tr>
 <tr>
   <td>Skontoausgleich</td>
-  <td><input type='text' class='full'  name='skr[skontoausgleich]' value='{$skr.skr_buchungpos->skontoausgleich}'/></td>
+  <td><input type='text' class='form-control'  name='skr[skontoausgleich]' value='{$skr.skr_buchungpos->skontoausgleich}'/></td>
   <td>Gutschrift</td>
-  <td><input type='text' class='full'  name='skr[gutschrift]' value='{$skr.skr_buchungpos->gutschrift}'/></td>
+  <td><input type='text' class='form-control'  name='skr[gutschrift]' value='{$skr.skr_buchungpos->gutschrift}'/></td>
 </tr>
-<tr><td colspan="4"><input type='submit' class='button'name='saveSKR' value='Speichern'/></td></tr>
+<tr><td colspan="4"><input type='submit' class='btn btn-success' name='saveSKR' value='Speichern'/></td></tr>
 </table>
 </div>
 </form>
@@ -467,9 +465,13 @@ function testregex()
 <script>
 $(document).ready(function(){
 tinymce.init({
+
   selector: 'form textarea',
   height: 500,
   cleanup:false,
+    convert_urls:true,
+    relative_urls:false,
+    remove_script_host:false,
     verify_html:false,
     extended_valid_elements : '*[*]',
   theme: 'modern',
@@ -690,7 +692,7 @@ tinymce.init({
 {/literal}
 <form method="post">
 <input type="hidden" name="updatetemplate">
-{if $tpl_saved}<div class='success full'>Änderung erfolgreich gespeichert</div>{/if}
+{if $tpl_saved}<div class='alert alert-success'>Änderung erfolgreich gespeichert</div>{/if}
 <input type="submit" class="button" name="save" value='Template Ändern'/>
 <textarea id='htmleditor'  name="tpl">{$tpl}</textarea>
 </form>
@@ -705,14 +707,14 @@ tinymce.init({
   </tr>
   <tr>
     <td width="30%">Aktiv</td>
-    <td width="82%"><select class='full' required="required" name='cronjob[ze][active]'>
+    <td width="82%"><select class='form-control' required="required" name='cronjob[ze][active]'>
       <option {if $cronjob->ze->active == 0} selected="selected" {/if} value='0'>Nicht automatisieren</option>
       <option  {if $cronjob->ze->active == 1} selected="selected" {/if}  value='1'>Automatisieren</option>
     </select></td>
   </tr>
     <tr>
     <td width="18%">Mindestbetrag</td>
-    <td width="82%"><input type="text" class="maskednumber full" name="cronjob[ze][minvalue]" value='{$cronjob->ze->minvalue}' /></td>
+    <td width="82%"><input type="text" class="maskednumber form-control" name="cronjob[ze][minvalue]" value='{$cronjob->ze->minvalue}' /></td>
   </tr>
       <tr>
     <td  class='valign-top'  width="18%">Kundengruppen ausschliessen</td>
@@ -737,14 +739,14 @@ tinymce.init({
   </tr>
   <tr>
     <td width="18%">Aktiv</td>
-    <td width="82%"><select  class='full' required="required" name='cronjob[ma][active]'>
+    <td width="82%"><select  class='form-control' required="required" name='cronjob[ma][active]'>
       <option {if $cronjob->ma->active == 0} selected="selected" {/if} value='0'>Nicht automatisieren</option>
       <option  {if $cronjob->ma->active == 1} selected="selected" {/if}  value='1'>Automatisieren</option>
     </select></td>
   </tr>
     <tr>
     <td width="18%">Mindestbetrag</td>
-    <td width="82%"><input type="text"  class="maskednumber full" name="cronjob[ma][minvalue]" value='{$cronjob->ma->minvalue}' /></td>
+    <td width="82%"><input type="text"  class="maskednumber form-control" name="cronjob[ma][minvalue]" value='{$cronjob->ma->minvalue}' /></td>
   </tr>
       <tr>
     <td class='valign-top'  width="18%">Kundengruppen ausschliessen</td>
@@ -760,7 +762,7 @@ tinymce.init({
   </tr>
   <tr>
     <td width="18%">Aktiv</td>
-    <td width="82%"><select  class='full' required name='cronjob[zahlungsabgleich]'>
+    <td width="82%"><select  class='form-control' required name='cronjob[zahlungsabgleich]'>
     <option {if $cronjob->zahlungsabgleich == 0} selected {/if} value='0'>Nicht automatisieren</option>
     <option  {if $cronjob->zahlungsabgleich == 1} selected {/if}  value='1'>Automatisieren</option>
     </select>
@@ -768,6 +770,6 @@ tinymce.init({
   </tr>
  </table>
  </div>
- <input type="submit" class='button' value='Speichern' name="Speichern" />
+ <input type="submit" class='btn btn-success' value='Speichern' name="Speichern" />
 </form>
 {/if}
