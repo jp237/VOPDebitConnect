@@ -1,4 +1,6 @@
-<strong></strong>
+{if $differenz != 0}
+    <div class="alert alert-warning">Sie haben {$differenz} nicht zugeordnet. Sie müssen den Umsatz komplett zuordnen um ihn Verbuchen zu können.</div>
+{/if}
 <form method="post">
   <input type="hidden" name="submitaction" value='setVerbuchen'>
   <div class='box-group'>
@@ -29,28 +31,31 @@
 <div class='box-group'>
 <table class='full'><tr ><td colspan="4"><h5>Gewählte Bestellung</h5></td></tr>
 <tr>
-  <td width="59">Ähnliche</td><td colspan="4">
-<select style='width:600px' class='getSort' onchange='showLoader();this.form.submit()' name="changeselected">
+  <td width="59">Ähnliche</td><td colspan="2">
+<select style='width:600px' class='getSort form-control' onchange='showLoader();this.form.submit()' name="changeselected">
 {foreach from=$buchungsPos item=pos}
 <option class='sort' sortValue='{$pos->matchedvalue}'  value='{$pos->pkOrder}'>{$pos->bestellung.ordernumber} {$pos->bestellung.RechnungsNr}  {$pos->bestellung.firstname} {$pos->bestellung.lastname} ({$pos->matchedvalue})</option>
 {/foreach}
-</select>{if $selectedBestellung > 0 and $buchungsPos[$selectedBestellung]->zugeordnet == false}<input class='button' type="submit" value='Hinzufügen' name="add">{/if}<a class='button fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=open&vwz={$umsatz.cVzweck}'>Suche (Offene Bestellungen )</a><a class='button fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=all&vwz={$umsatz.cVzweck}'>Suche (Alle Bestellungen )</a>
+</select></td><td colspan="3">{if $selectedBestellung > 0 and $buchungsPos[$selectedBestellung]->zugeordnet == false}
+    <input class='btn btn-success' type="submit" value='Hinzufügen' name="add">{/if}
+        <a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=open&vwz={$umsatz.cVzweck}'>Suche (Offene Bestellungen )</a>        <a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=all&vwz={$umsatz.cVzweck}'>Suche (Alle Bestellungen )</a>
 {if $dtaList}
-<a class='button fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=open&dta=1&vwz={$umsatz.cVzweck}'>Suche (Lastschriften)</a>
+<a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=open&dta=1&vwz={$umsatz.cVzweck}'>Suche (Lastschriften)</a>
 {/if}</td></tr>
   <tr>
-   <td>Vorname</td><td width="663"><input  class='full {if $buchungsPos[$selectedBestellung]->matchedfirstname} success{/if}' type='text' value='{$buchungsPos[$selectedBestellung]->bestellung.firstname}' name='name3'></td>
-   <td width="67">Name</td><td width="827"><input class='full  {if $buchungsPos[$selectedBestellung]->matchedlastname} success{/if}'  type='text' name='name' value='{$buchungsPos[$selectedBestellung]->bestellung.lastname}'></td></tr>
+   <td>Vorname</td><td width="663"><input  class='form-control {if $buchungsPos[$selectedBestellung]->matchedfirstname} success{/if}' type='text' value='{$buchungsPos[$selectedBestellung]->bestellung.firstname}' name='name3'></td>
+   <td width="67">Name</td><td width="827"><input class='form-control  {if $buchungsPos[$selectedBestellung]->matchedlastname} success{/if}'  type='text' name='name' value='{$buchungsPos[$selectedBestellung]->bestellung.lastname}'></td></tr>
    </tr>
    <tr>
-   <td>Firma</td><td><input  class='full {if $buchungsPos[$selectedBestellung]->matchedfirma} success{/if}' type='text' value='{$buchungsPos[$selectedBestellung]->bestellung.firma}' name='name2' /></td><td>Kunde</td><td><input class='full  {if $buchungsPos[$selectedBestellung]->matchedkundennr} success{/if}'  type='text' name='name4' value='{$buchungsPos[$selectedBestellung]->bestellung.KundenNr}'></td>
+   <td>Firma</td><td><input  class='form-control {if $buchungsPos[$selectedBestellung]->matchedfirma} success{/if}' type='text' value='{$buchungsPos[$selectedBestellung]->bestellung.firma}' name='name2' /></td>
+       <td>Kunde</td><td><input class='form-control  {if $buchungsPos[$selectedBestellung]->matchedkundennr} success{/if}'  type='text' name='name4' value='{$buchungsPos[$selectedBestellung]->bestellung.KundenNr}'></td>
    </tr>
    <tr>
-   <td>Auftrag</td><td><input class='full  {if $buchungsPos[$selectedBestellung]->matchedauftragsnr} success{/if}'  type='text' name='name5' value='{$buchungsPos[$selectedBestellung]->bestellung.ordernumber}'></td>
-  <td>Rechnung</td><td><input class='full  {if $buchungsPos[$selectedBestellung]->matchedrechnungsnr} success{/if}'  type='text' name='name5' value='{$buchungsPos[$selectedBestellung]->bestellung.RechnungsNr}' ></td></tr>
+   <td>Auftrag</td><td><input class='form-control  {if $buchungsPos[$selectedBestellung]->matchedauftragsnr} success{/if}'  type='text' name='name5' value='{$buchungsPos[$selectedBestellung]->bestellung.ordernumber}'></td>
+  <td>Rechnung</td><td><input class='form-control  {if $buchungsPos[$selectedBestellung]->matchedrechnungsnr} success{/if}'  type='text' name='name5' value='{$buchungsPos[$selectedBestellung]->bestellung.RechnungsNr}' ></td></tr>
   </tr>
-	<tr><td>Betrag</td><td><input class='full' type="text" name='_betrag' value='{$buchungsPos[$selectedBestellung]->bestellung.betrag}' /></td>
- <td>Offen</td><td><input class='full  {if $buchungsPos[$selectedBestellung]->matchedbetrag} success{/if}'  type='text' name='name5' value='{$buchungsPos[$selectedBestellung]->bestellung.offen}' ></td></tr>
+	<tr><td>Betrag</td><td><input class='form-control' type="text" name='_betrag' value='{$buchungsPos[$selectedBestellung]->bestellung.betrag}' /></td>
+ <td>Offen</td><td><input class='form-control  {if $buchungsPos[$selectedBestellung]->matchedbetrag} success{/if}'  type='text' name='name5' value='{$buchungsPos[$selectedBestellung]->bestellung.offen}' ></td></tr>
 </table>
 </form>
 </div>
@@ -77,11 +82,11 @@
     <td><input type="text" name="Rechnr"  value="{$position->bestellung.RechnungsNr}"></td>
     <td><input type="text" name="auftragnr" value="{$position->bestellung.ordernumber}"></td>
     <td><input type="text" name="offen"    value="{$position->bestellung.offen}"></td>
-    <td><input type="text" name="zahlbetrag"  class='autosubmitnumber' required value="{$position->Zahlbetrag}"></td>
-    <td><input type="text" name="mahnkosten"  class='autosubmitnumber' required value="{$position->mahnkosten}"></td>
-    <td><input type="text" name="Ueberzahlung"  class='autosubmitnumber' required value="{$position->Ueberzahlung}"></td>
-    <td><input type="text" name="skonto"  class='autosubmitnumber' required value="{$position->skonto}"></td>
-    <td><input type='submit' class='button' value='Löschen' name='delete'><input class='button' type="submit"  value='Ändern' name="change"></td>
+    <td><input type="text" name="zahlbetrag"  class='autosubmitnumber form-control' required value="{$position->Zahlbetrag}"></td>
+    <td><input type="text" name="mahnkosten"  class='autosubmitnumber form-control' required value="{$position->mahnkosten}"></td>
+    <td><input type="text" name="Ueberzahlung"  class='autosubmitnumber form-control' required value="{$position->Ueberzahlung}"></td>
+    <td><input type="text" name="skonto"  class='autosubmitnumber form-control' required value="{$position->skonto}"></td>
+    <td><input type='submit' class='btn btn-danger' value='Löschen' name='delete'><input class='btn btn-success' type="submit"  value='Ändern' name="change"></td>
   </tr>
 </form>
   {/if}

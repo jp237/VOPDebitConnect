@@ -19,7 +19,7 @@
     <td style="padding-left:0px">{$transaction.nAnzahl}</td>
     <td style="padding-left:0px">{$transaction.fSumme}</td>
     <td style="padding-left:0px">{$transaction.dDownload|date_format:"%d.%m.%Y"}</td>
-    <td style="padding-left:0px"><a class='button' href='VOPDebitConnect?downloadDTA={$transaction.id}'>Download</a></td>
+    <td style="padding-left:0px"><a class='btn btn-info' href='VOPDebitConnect?downloadDTA={$transaction.id}'>Download</a></td>
 </tr>
 {/foreach}
 </tbody>

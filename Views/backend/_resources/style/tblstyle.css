@@ -160,10 +160,7 @@ tr:nth-child(3) .settingsIcon {
 background-color:#f0f0f0;
 }
 .box-group {
-border:1px solid #d7d1d1;
-background-color:#fff;
-padding:0px 30px 25px 15px;
-border-radius:5px;
+  padding:0px 30px 25px 15px;
 margin-top:30px;
 
 }
@@ -176,6 +173,8 @@ min-height:300px;
 border-bottom:1px solid #f2f2f2 ;
 color:#9e1616;
 text-align:left;
+  font-size:25px;
+  padding-top:-10px;
 }
 .box-group h4 {
 

@@ -5,7 +5,6 @@
 <script src='https://code.jquery.com/jquery-3.2.1.js'></script>
 <link type='text/css' rel='stylesheet' href="{link file='backend/_resources/style/button.css'}">
 <link type='text/css' rel="stylesheet" href="{link file='backend/_resources/style/tblstyle.css'}" />
-<link type='text/css' rel="stylesheet" href="{link file='backend/_resources/style/tabs.css'}" />
 <link type='text/css' rel="stylesheet" href="{link file='backend/_resources/style/main.css'}" />
 {if !isset($smarty.get.noncss)}
 
@@ -21,8 +20,11 @@
 <script src="{link file='backend/_resources/js/jquery.mask.js'}"></script>
 <script src="{link file='backend/_resources/js/validation.js'}"></script>
 <script src="{link file='backend/_resources/tinymce/js/tinymce/tinymce.min.js'}"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body style="background-color:#FBFBFB">
 <div class="loader" style='display:block'></div>
  {if ($nomenu)}
     {$DebitConnectOutput}
@@ -91,7 +93,10 @@
                      <li class='fancyboxreload' href='#' data-fancybox-href='VOPDebitConnect?switchTo=sync&noncss=1&fancy=1'>Synchronisierung</li>
                 </ul>
             </div>
+
+
                      <div class='bodycontainer'>
+                         <div class="alert alert-info" style="padding:5;" >Gewählter Shop/Sub-Shop : {$SELECTED_SUBSHOP}</div>
                      <div class='msgoutput'><div>
                      {$DebitConnectOutput}                     
                      </div>

@@ -23,10 +23,10 @@ class DebitConnect_Cronjob{
 		DC()->db->dbQuery('delete from dc_cronlog where dAction < DATE_SUB(NOW(),INTERVAL 1 WEEK) ');
 
 		 try
-	 {
+    {
 			if(DC()->getUpdate()){
-			$this->logEntry = "Update Required";
-			return;
+                $this->logEntry = "Update Required";
+                return;
 			}
 			ini_set("display_error",false);
 			if($jsonOutput){
@@ -35,8 +35,7 @@ class DebitConnect_Cronjob{
 			}
 			$status = array();
 			$syncLast = true;
-			// SYNC//
-
+			$entry = new stdClass();
 
 
 			foreach(DC()->db->getSQLResults("SELECT shopID from dc_firma where activated = 1") as $shop)
@@ -44,15 +43,14 @@ class DebitConnect_Cronjob{
 			
 				$firma = $shop["shopID"];
 				DC()->getSettings($shop["shopID"]);
-
                 DC()->getSyncList(true);
                 $copySynclist = DC()->syncList;
                 $status['syncdata']['count'] = count($copySynclist);
                 foreach($copySynclist as $syncitem)
                 {
-                    $syncResult = DC()->doSync();;
-                    $status['syncdata'][$syncitem['pkOrderAuftrag']] = $syncResult;
 
+                    $syncResult = DC()->doSync();
+                    $status['syncdata'][$syncitem['pkOrderAuftrag']] = $syncResult;
                     $this->Log("Sync", "Auftrag Synchronisiert",$syncResult,$syncResult["error"] ? 1 : 0,$syncitem['pkOrderAuftrag']);
 
                 }
@@ -98,14 +96,14 @@ class DebitConnect_Cronjob{
 								}
 							DC()->setConf("cronjobHBCI",date("Y-m-d H:i:s"),true);	
 						}
-										DC()->hbci->flushdata();
-										DC()->hbci->UmsaetzeFromDB(true);
-										
-										DC()->dataTypes->getZahlungsabgleichBestellungen();
-										DC()->hbci->getMatching(0,true);
-										
-										DC()->hbci->writeBackUmsatz();
-								
+                        DC()->hbci->flushdata();
+                        DC()->hbci->UmsaetzeFromDB(true);
+
+                        DC()->dataTypes->getZahlungsabgleichBestellungen();
+                        DC()->hbci->getMatching(0,true);
+
+                        DC()->hbci->writeBackUmsatz();
+
 						// GET COUNT ALL REMAINING		
 						DC()->hbci->UmsaetzeFromDB();
 						$status[$firma]['entrys'] = DC()->hbci->entrys;
