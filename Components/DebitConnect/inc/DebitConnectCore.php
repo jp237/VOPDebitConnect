@@ -65,7 +65,7 @@ class DebitConnectCore{
 		if($this->request == null){
 			return null;
 		}else 
-		return $this->request->getParam($value);
+		    return $this->request->getParam($value);
 	}
 	
 	function setVOPAuftragDetail($pkOrder)
@@ -222,10 +222,17 @@ class DebitConnectCore{
 			 $this->settings->flushsettings();
 		}
 
+
 		if($this->settings->selectedShop == 0)
 		{
 			$this->settings->selectedShop = $this->shopList[0]["id"];
 		}
+
+        foreach($this->shopList as $item){
+            if($item["id"] == $this->settings->selectedShop){
+                $this->smarty->assign('SELECTED_SUBSHOP',$item["name"]);
+            }
+        }
 		$this->dataTypes->getStandardValues();
 
 		$this->shopList= $this->dataTypes->getShoplist($this->settings->selectedShop);
@@ -948,7 +955,7 @@ class DebitConnectCore{
 			break;
 			case 4:
 			$headline = "Mahnung - in Bearbeitung";
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$vopStatus = "55";
 			$dc_auftrag = true;
 			$tpl = dirname(__FILE__)."/../tpl/auftrag.tpl";
@@ -956,7 +963,7 @@ class DebitConnectCore{
 			case 5:
 			$checkbox = true;
 			$vopStatus = "59";
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$headline = "Mahnung - Erledigt";
 			$dc_auftrag = true;
 			$tpl = dirname(__FILE__)."/../tpl/auftrag.tpl";
@@ -973,7 +980,7 @@ class DebitConnectCore{
 			break;
 			case 7:
 			$headline = "Inkasso - in Bearbeitung";
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$vopStatus = "95";
 			$dc_auftrag = true;
 			$progressBar = true;
@@ -984,7 +991,7 @@ class DebitConnectCore{
 			$headline = "Inkasso - Erledigt";
 			$vopStatus = "99";
 			$progressBar = true;
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$dc_auftrag = true;
 			$tpl = dirname(__FILE__)."/../tpl/auftrag.tpl";
 			$menubtn = dirname(__FILE__)."/../tpl/btn/erledigt.tpl";
@@ -2923,6 +2930,7 @@ class DebitConnectCore{
 		return $embed;
 	}
 	public  function fetchFancy($id){
+
 		switch($id)
 		{
 			case "getMuster":

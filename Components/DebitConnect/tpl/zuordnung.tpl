@@ -18,8 +18,8 @@
    </tr>
    <tr><td>Differenz</td><td><b {if $umsatz.zugeordnetvalue.class} class='{$umsatz.zugeordnetvalue.class}' {/if}>{$differenz}</b></td></tr>
 <tr><td colspan="6">{if $umsatz.zugeordnetvalue.action}
-    <input id="setVerbuchen" onchange='showLoader();this.form.submit()'type="checkbox" {if $verbuchen}  checked {/if} name='verbuchen' />
-    <label for="setVerbuchen"> Umsatz verbuchen</label>{/if}</tr>
+    <input  onchange='showLoader();this.form.submit()'type="checkbox" {if $verbuchen}  checked {/if} name='verbuchen' />
+    Umsatz verbuchen{/if}</tr>
 
 
 </table>
@@ -38,30 +38,10 @@
 {/foreach}
 </select></td><td colspan="3">{if $selectedBestellung > 0 and $buchungsPos[$selectedBestellung]->zugeordnet == false}
     <input class='btn btn-success' type="submit" value='Hinzufügen' name="add">{/if}
-        <a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=open&vwz={$umsatz.cVzweck}'>Suche (Offene Bestellungen )</a>
-        <a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=all&vwz={$umsatz.cVzweck}'>Suche (Alle Bestellungen )</a>
+        <a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=open&vwz={$umsatz.cVzweck}'>Suche (Offene Bestellungen )</a>        <a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=all&vwz={$umsatz.cVzweck}'>Suche (Alle Bestellungen )</a>
 {if $dtaList}
 <a class='btn btn-info fancyboxfullscreen' data-fancybox-href='VOPDebitConnect?switchTo=zasuche&fancy=1&transaction={$smarty.get.transaction}&limit=open&dta=1&vwz={$umsatz.cVzweck}'>Suche (Lastschriften)</a>
-{/if}
-        {$buchungsPos[$selectedBestellung]->bestellung.VOPStatus}
-    </td></tr>
-    {if $buchungsPos[$selectedBestellung]->bestellung.nVOPStatus > 39}
-        <tr> <td colspan="4">
-                <div class="alert alert-danger"><b>Achtung </b>
-                    {if $buchungsPos[$selectedBestellung]->bestellung.nVOPStatus == 39}
-                        Zahlungserinnerung versendet.
-                    {elseif $buchungsPos[$selectedBestellung]->bestellung.nVOPStatus == 55}
-                        Mahnung in Bearbeitung
-                    {elseif $buchungsPos[$selectedBestellung]->bestellung.nVOPStatus == 59}
-                        Mahnung abgeschlossen
-                    {elseif $buchungsPos[$selectedBestellung]->bestellung.nVOPStatus == 95}
-                        Inkasso in Bearbeitung
-                    {elseif $buchungsPos[$selectedBestellung]->bestellung.nVOPStatus == 99}
-                        Inkasso abgeschlossen
-                    {/if}
-                </div>
-            </td></tr>
-    {/if}
+{/if}</td></tr>
   <tr>
    <td>Vorname</td><td width="663"><input  class='form-control {if $buchungsPos[$selectedBestellung]->matchedfirstname} success{/if}' type='text' value='{$buchungsPos[$selectedBestellung]->bestellung.firstname}' name='name3'></td>
    <td width="67">Name</td><td width="827"><input class='form-control  {if $buchungsPos[$selectedBestellung]->matchedlastname} success{/if}'  type='text' name='name' value='{$buchungsPos[$selectedBestellung]->bestellung.lastname}'></td></tr>
@@ -155,7 +135,3 @@ $wrapper.find('.sort').sort(function(a, b) {
  $('.getSort').val({$selectedBestellung});
  {/if}
 </script>
-{if isset($smarty.get.debug)}
-<pre>{$buchungsPos[$selectedBestellung]|print_r}</pre>
-{/if}
-

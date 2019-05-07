@@ -5,7 +5,7 @@
         <li class="active"><a data-toggle="tab" href="#status">Status</a></li>
         <li ><a data-toggle="tab" href="#config">Grundeinstellungen</a></li>
         <li><a data-toggle="tab" href="#boni">Bonitätsprüfung</a></li>
-        <li><a data-toggle="tab" href="#ident">Alters/Identitätsprüfung</a></li>
+        <li><a data-toggle="tab" href="#ident">Alters/Identitätsprüfung / Adressvalidierung</a></li>
         <li><a data-toggle="tab" href="#lang">Sprachvariabeln</a></li>
     </ul>
 
@@ -32,24 +32,22 @@
                 <div class="row">
                     <div class="col-sm-6">
                         {foreach from=$eap_projekte item=projekte}
-                            {if $projekte->projectvalue>0}
-                                <div class="col-sm-12">{$projekte->bezeichnung} ({$projekte->projectvalue})</div>
-                            {/if}
+                            <div class="col-sm-12">{$projekte->bezeichnung}</div>
                         {/foreach}
                     </div>
                     <div class="col-sm-6">
                         {foreach from=$eap_projekteb2b item=projekteb2b}
-                            {if $projekteb2b->projectvalue>0}
-                                <div class="col-sm-12">{$projekteb2b->bezeichnung} ({$projekteb2b->projectvalue})</div>
-                                {/if}
+                        <div class="col-sm-12">{$projekteb2b->bezeichnung}</div>
                         {/foreach}
                     </div>
                 </div>
             </div>
         </div>
         <div class="tab-pane fade in " id="config">
-            <div class="box-group">
+
+            <div class='box-group' style="border:none;">
                 <h5>Grundeinstellungen</h5>
+
                 <form method="post">
                     <input type="hidden" name="tab" value="config" />
                     <table class='full'>
@@ -57,7 +55,6 @@
                         <tr><td colspan="2"> </td></tr>
                         <tr><td align="left" width='35%'>Benutzername</td><td><input type="text" class='form-control' required name="gateway[username]" value='{$gateway.username}' /></td></tr>
                         <tr><td>Passwort</td><td><input type="password"  class='form-control'  required name="gateway[passwd]"  value='{$gateway.passwd}' /></td></tr>
-                        <tr><td></td><td><i>Ihre Zugangsdaten zum EAP-Bonigateway erhalten Sie von V.O.P telefonisch.</i></td></tr>
                         <tr><td>Protokollierung</td><td><select required  class='form-control' name="gateway[log]"><option {if $gateway.log == '1'} selected {/if} value='1'>Ja</option><option  {if $gateway.log == '0'} selected {/if}  value='0'>Nein</option></select></td></tr>
                         <tr><td>Fehlerbenachrichtung per Mail</td><td><input  class='form-control' type="text"   value='{$gateway.logmail}' name="gateway[logmail]" /></td></tr>
 
@@ -67,7 +64,6 @@
                 </form>
             </div>
         </div>
-        
         <div class="tab-pane fade"  id="boni">
             <div class='box-group'>
                 <form method="post">
@@ -193,6 +189,19 @@
                                     {foreach from=$customergroups.ident item=customergroup}
                                         <option  {if $gateway.ident_moveto == $customergroup.groupkey} selected {/if} value='{$customergroup.groupkey}'>{$customergroup.description}</option>
                                     {/foreach}
+                                </select></td></tr>
+                        <tr><td><b>Adressvalidierung ( Postdirekt )</b></td>
+                            <td><select  required class='form-control'  name='gateway[postdirekt]'><option {if $gateway.postdirekt == '0'} selected {/if} value='0'>nicht verwenden</option><option {if $gateway.postdirekt == '1'} selected {/if} value='1'>Postdirekt verwenden</option></select></td>
+                        </tr>
+                        <tr><td>Adressvalidierung (Neukunde)</td><td>
+                                <select  required  class='form-control' name='gateway[adressvalidierung_enabled]'>
+                                    <option {if $gateway.adressvalidierung_enabled == '0'} selected {/if} value="0">Nicht verwenden</option>
+                                    <option {if $gateway.adressvalidierung_enabled == '1'} selected {/if} value="1">Postdirekt verwenden</option>
+                                </select></td></tr>
+                        <tr><td>Personendaten korrigieren</td><td>
+                                <select  required  class='form-control' name='gateway[adressvalidierung_personendaten]'>
+                                    <option {if $gateway.adressvalidierung_personendaten == '0'} selected {/if} value="0">Nicht korrigieren</option>
+                                    <option {if $gateway.adressvalidierung_personendaten == '1'} selected {/if} value="1">Korrigieren</option>
                                 </select></td></tr>
                         </tbody>
                     </table>

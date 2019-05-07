@@ -24,13 +24,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
-<body style="background-color:#EFEFEF">
+<body style="background-color:#FBFBFB">
 <div class="loader" style='display:block'></div>
  {if ($nomenu)}
     {$DebitConnectOutput}
     {else}
             <img style='position:fixed;z-index:99999999;padding-left:5px' height='60px' src="{link file='backend/_resources/img/VOP_Trans_klein.png'}">
-<div class='container header' id='dropdown'>
+            <div class='container header' id='dropdown'>
                 <ul>
                 	 <li id='click'  href='VOPDebitConnect?switchTo=start&changeShop={$shopList[0].id}'>{$shopList[0].name}
                         {if $shopList|count > 1}
@@ -96,7 +96,7 @@
 
 
                      <div class='bodycontainer'>
-                         <div class="alert alert-info" style="padding: 5px" >Gewählter Shop/Sub-Shop : {$SELECTED_SUBSHOP}</div>
+                         <div class="alert alert-info" style="padding:5;" >Gewählter Shop/Sub-Shop : {$SELECTED_SUBSHOP}</div>
                      <div class='msgoutput'><div>
                      {$DebitConnectOutput}                     
                      </div>
