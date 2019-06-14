@@ -15,7 +15,7 @@ class dbConn{
 	{
 	    $connection = Shopware()->Container()->get('dbal_connection');
         $this->dbsettings = ['db' => Shopware()->Container()->getParameter('shopware.db')];
-        $this->dbsettings['db']['port'] = $this->dbsettings['db']['port'] ?? 3306;
+        $this->dbsettings['db']['port'] = $this->dbsettings['db']['port'] === null ?  3306 : $this->dbsettings['db']['port'];
 
 	}
 	

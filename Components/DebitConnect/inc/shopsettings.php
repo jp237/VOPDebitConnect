@@ -23,6 +23,7 @@ class shopsettings {
 	var $hbciMailCustomerGroupDisable = null;
 	function flushsettings()
 	{
+
 		$this->mahnstopCustomerGroup= null;
 		$this->currentSetting = null;
 		$this->currentStates = null;

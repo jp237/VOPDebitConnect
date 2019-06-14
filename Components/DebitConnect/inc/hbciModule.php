@@ -183,8 +183,7 @@ class HBCI_MODULE{
 			{
 				if($match["verbuchen"] && !$match["verbucht"])
 				{
-					
-					$umsatz = null;
+
 					$umsatz = $this->umsaetze[$kUmsatz];
 					$dbBuchung = array();
 					$verbucht = false;
@@ -383,6 +382,7 @@ class HBCI_MODULE{
 					}else{
 					    $errormsg = DC()->db->lastError;
 						DC()->Log("InsertBuchungList","SQL_ERROR :".$errormsg,10);
+                        DC()->hbci->matches[$kUmsatz] = null;
 						return "finish";
 					}// IF VERBUCHT
 					//
