@@ -1,3 +1,9 @@
+{if $differenz != 0}
+    <div class="alert alert-warning">Sie haben {$differenz} nicht zugeordnet. Sie müssen den Umsatz komplett zuordnen um ihn Verbuchen zu können.</div>
+{/if}
+{if $SUM_MISSMATCH}
+    <div class="alert alert-danger">Diese Steuerdatei passt nicht zu dem Umsatz {$SUM_MISSMATCH} EUR</div>
+{/if}
 <form method="post">
   <input type="hidden" name="submitaction" value='setVerbuchen'>
   <div class='box-group'>
@@ -27,10 +33,8 @@
 <div class='box-group'>
 <table class='full'>
 <tr><td colspan="8"><h5>Upload Steuerdatei</h5></td></tr>
-<tr><td>Hier können Sie Ihre Steuerdatei, die Sie von V.O.P erhalten haben Hochladen</td><td><input type="file" name='steuerdatei' required  /></td><td><input type="submit" name="upload" value="Steuerdatei Hochladen" /></td></tr>
-{if $SUM_MISSMATCH}
-<tr><td colspan="8" class='errorfont'>Diese Steuerdatei passt nicht zu dem Umsatz {$SUM_MISSMATCH} EUR</td></tr>
-{/if}
+<tr><td>Hier können Sie Ihre Steuerdatei, die Sie von V.O.P erhalten haben Hochladen</td><td><input type="file" name='steuerdatei' required  /></td><td><input type="submit" name="upload" class="btn btn-success" value="Steuerdatei Hochladen" /></td></tr>
+
 </table>
 </div>
 </form>
@@ -48,12 +52,12 @@
 {foreach from=$buchungsPos item=position}
 {if $position->zugeordnet == true}
   <tr>
-    <td><input type="text" name="Rechnr"  readonly="readonly" value="{$position->bestellung.RechnungsNr}"></td>
-    <td><input type="text" name="auftragnr" readonly="readonly" value="{$position->bestellung.ordernumber}"></td>
-    <td><input type="text" name="offen"  readonly="readonly"  value="{$position->bestellung.offen}"></td>
-    <td><input type="text" name="zahlbetrag"  readonly="readonly" class='autosubmitnumber' required value="{$position->Zahlbetrag}"></td>
-    <td><input type="text" name="mahnkosten" readonly="readonly" class='autosubmitnumber' required value="{$position->mahnkosten}"></td>
-    <td><input type="text" name="steuererstattung" readonly="readonly" class='autosubmitnumber' required value="{$position->steuererstattung}"></td>
+    <td><input type="text" name="Rechnr"  readonly="readonly" class="form-control" value="{$position->bestellung.RechnungsNr}"></td>
+    <td><input type="text" name="auftragnr" readonly="readonly" class="form-control"  value="{$position->bestellung.ordernumber}"></td>
+    <td><input type="text" name="offen"  readonly="readonly" class="form-control"   value="{$position->bestellung.offen}"></td>
+    <td><input type="text" name="zahlbetrag"  readonly="readonly" class='autosubmitnumber form-control' required value="{$position->Zahlbetrag}"></td>
+    <td><input type="text" name="mahnkosten" readonly="readonly" class='autosubmitnumber  form-control' required value="{$position->mahnkosten}"></td>
+    <td><input type="text" name="steuererstattung" readonly="readonly" class='autosubmitnumber form-control' required value="{$position->steuererstattung}"></td>
   </tr>
   {/if}
   {/foreach}

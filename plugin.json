@@ -8,7 +8,7 @@
     "link": "https://www.eaponline.de/debitconnectweb",
     "support": "https://www.eaponline.de/support",
     "description": "Ganzheitliches Debitorenmanagement in Ihrem Shopware Backend. Mahnwesen, Inkasso und Bonitätsprüfung",    
-    "currentVersion": "0.3.17",
+    "currentVersion": "0.3.19",
 
     "changelog": {
         "de": {
