@@ -19,6 +19,7 @@ class eap_postdirekt
     var $invoice_adress_overridden = false;
     function __construct($functions) {
         $this->functions = $functions;
+        //
     }
 
     function checkEnabled(){
