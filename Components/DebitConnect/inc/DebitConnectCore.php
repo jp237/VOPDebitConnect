@@ -13,7 +13,7 @@ require dirname(__FILE__).'/BoniGateway.php';
 
 class DebitConnectCore{
 	
-	public static $DC_VERSION = "0.3.17";
+	public static $DC_VERSION = "0.3.19";
 	public static $SOAP ="https://api.eaponline.de/debitconnect.php?wsdl";
 	
 	var $request = null;
@@ -65,7 +65,7 @@ class DebitConnectCore{
 		if($this->request == null){
 			return null;
 		}else 
-		return $this->request->getParam($value);
+		    return $this->request->getParam($value);
 	}
 	
 	function setVOPAuftragDetail($pkOrder)
@@ -138,6 +138,7 @@ class DebitConnectCore{
 			return $exists["checkval"]==0 ? DC()->db->dbInsert("dc_auftrag",$insert,false): DC()->db->dbUpdate("dc_auftrag",$insert,"pkOrder = ".$pkOrder,false);
 		}
 		return false;
+		//test
 		
 	}
 	
@@ -217,14 +218,22 @@ class DebitConnectCore{
 			 if($changeShop>0){
 			     $this->setConf('selectedShop',$changeShop,true);
 			     $this->settings->selectedShop = $changeShop;
+			     $this->hbci->matches = null;
              }
 			 $this->settings->flushsettings();
 		}
+
 
 		if($this->settings->selectedShop == 0)
 		{
 			$this->settings->selectedShop = $this->shopList[0]["id"];
 		}
+
+        foreach($this->shopList as $item){
+            if($item["id"] == $this->settings->selectedShop){
+                $this->smarty->assign('SELECTED_SUBSHOP',$item["name"]);
+            }
+        }
 		$this->dataTypes->getStandardValues();
 
 		$this->shopList= $this->dataTypes->getShoplist($this->settings->selectedShop);
@@ -308,12 +317,12 @@ class DebitConnectCore{
 					$user = $this->settings->registration["vopUser"];
 					$token = md5($this->settings->registration["vopToken"]);
 					$response = $soap->setBlackList($user,$token,$vars["firstname"],$vars["lastname"],$vars["zipcode"],$vars["city"],$vars["street"],$vars["DateOfBirth"],(int) $pkOrder);
-					if($response=="ok"){
-						$update = new stdClass();
-						$update->nBlacklist = 1;
-						$this->db->dbUpdate("dc_auftrag", $update,"pkOrder = ".(int) $pkOrder);
-						$this->Log("Blackliste","Blackliste eingetragen",0,(int)$pkOrder);
-					}
+                        if($response=="ok"){
+                            $update = new stdClass();
+                            $update->nBlacklist = 1;
+                            $this->db->dbUpdate("dc_auftrag", $update,"pkOrder = ".(int) $pkOrder);
+                            $this->Log("Blackliste","Blackliste eingetragen",0,(int)$pkOrder);
+                        }
 					}
 				}
 			}else{
@@ -355,7 +364,9 @@ class DebitConnectCore{
 					}
 			}else
 			{
-				$this->Log("Upload","Error : ".$res->status,10);
+
+				$this->Log("Upload","Error : ".$res->ErrorMsg,10);
+                $this->View("ERROR_MSG","Fehler bei der Datenübertragung");
 			}
 		} else $this->Log("Upload","Missing Data",10);
 	}
@@ -443,10 +454,14 @@ class DebitConnectCore{
 	public function getSyncList($cronJob = false,$cronjobLimit = 50)
 	{
 
-		$syncQuery = "SELECT dc_auftrag.pkOrder as pkOrderAuftrag ,dc_firma.vopUser,dc_firma.vopToken,IFNULL(statustab.id,0) as statuscount ,statustab.*,dc_auftrag.* 
-		from dc_auftrag inner join dc_firma on dc_auftrag.subshopID = dc_firma.shopID and dc_firma.activated = 1 left outer join dc_status statustab on statustab.pkOrder = dc_auftrag.pkOrder where ( VOPStatus = 55 OR  VOPStatus = 59 OR  VOPStatus = 95 OR  VOPStatus = 99 )";
-		if($cronJob) $syncQuery.=" and lastSync < ".date("Ymd"). " LIMIT ".(int)$cronjobLimit;
+		$syncQuery = "SELECT dc_auftrag.pkOrder as pkOrderAuftrag ,dc_firma.vopUser,dc_firma.vopToken,IFNULL(statustab.id,0) as statuscount ,statustab.*,dc_auftrag.* ,s_order.cleared as paymentState
+		from dc_auftrag inner join dc_firma on dc_auftrag.subshopID = dc_firma.shopID and dc_firma.activated = 1 
+		    LEFT JOIN s_order on s_order.id = dc_auftrag.pkOrder left outer join dc_status statustab on statustab.pkOrder = dc_auftrag.pkOrder where ( VOPStatus = 55 OR  VOPStatus = 59 OR  VOPStatus = 95 OR  VOPStatus = 99 ) ";
+		if($cronJob) $syncQuery.=" and lastSync < ".date("Ymd");
+		$syncQuery .="  order by dc_auftrag.pkOrder DESC ";
+        if($cronJob) $syncQuery.= " LIMIT ".(int)$cronjobLimit;
 		$this->syncList = $this->db->getSQLResults($syncQuery);
+
 		if(count($this->syncList)>0){
 			$this->Log("Synchronisierung","Starte Synchronisierung ".count($this->syncList)." Vorgänge",0);
 		}
@@ -568,16 +583,46 @@ class DebitConnectCore{
 	}
 	public function getAuftragSynch($syncObject)
 	{
-			
-		    
-				
-			
+
+
+        $ret = array();
+        $ret["error"] = false;
+        $soap = $this->API->mahnwesen();
+        $auftrag = $syncObject;
+
+
+                try{
+                    // SYNC ZU VOP IMMER ZUERST
+                    $syncVOP = $this->getSyncAuftragDetail($auftrag["pkOrderAuftrag"]);
+                    $ret["push"] = array();
+
+                    if(count($syncVOP->_new)>0)
+                    {
+                        foreach($syncVOP->_new as $newEntry)
+                        {
+                            $ret["push"]["new"][] = 	$this->updateVOPAuftragDetail("new",$newEntry,$auftrag);
+                        }
+                    }
+                    if(count($syncVOP->_change)>0)
+                    {
+                        foreach($syncVOP->_change as $changedEntry)
+                        {
+                            $ret["push"]["change"][] = 	$this->updateVOPAuftragDetail("change",$changedEntry,$auftrag);
+                        }
+                    }
+                    if(count($syncVOP->_deleted)>0)
+                    {
+                        foreach($syncVOP->_deleted as $deletedEntry)
+                        {
+                            $ret["push"]["delete"][] = $this->updateVOPAuftragDetail("delete",$deletedEntry,$auftrag);
+                        }
+                    }
+                }catch(Exception $exception){
+                    $this->Log("Synchronisierung",$exception->getMessage(),10);
+                }
 				try
 				{
-					$ret = array();
-					$ret["error"] = false;
-					$soap = $this->API->mahnwesen();
-					$auftrag = $syncObject;
+
 					$syncText = "Akte in Kürze verfügbar";
 					$token = md5($auftrag["vopToken"]);
 					$syncXML = $this->getRechnungSyncXML($auftrag["pkOrderAuftrag"]);
@@ -702,11 +747,13 @@ class DebitConnectCore{
 							if($status->art == 0 && $status->erledigt == 1) $newvopstatus = 59;
 							if($status->art == 1 && $status->erledigt == 0) $newvopstatus = 95;
 							if($status->art == 1 && $status->erledigt == 1) $newvopstatus = 99;
-							// SETZE SHOPWARE STATUS ZUM INKASSO
+							// SETZE SHOPWARE STATUS ZUM INKASSO WENN STATUS != Komplett bezahlt
 							if($auftrag["nMandart"] == 0 && $newvopstatus == 95){
-								$this->dataTypes->changeOrder((int)$auftrag["pkOrderAuftrag"],null,$this->settings->currentSetting->statusIN,0);
-								$this->BoniGatewayBlackListe($pkOrder,2,true);
-								$this->Log("Inkasso","aus Mahnservice in Inkasso übernommen",0,(int)$pkOrder);
+							    if($auftrag["paymentState"] != $this->settings->currentHBCI["statusbezahlt"]){
+                                    $this->dataTypes->changeOrder((int)$auftrag["pkOrderAuftrag"], null, $this->settings->currentSetting->statusIN, 0);
+                                    $this->BoniGatewayBlackListe((int)$auftrag["pkOrderAuftrag"], 2, true);
+                                    $this->Log("Inkasso", "aus Mahnservice in Inkasso übernommen", 0, (int)$auftrag["pkOrderAuftrag"]);
+                                }
 							}
 							
 						if($status->art == 0){
@@ -725,32 +772,10 @@ class DebitConnectCore{
 							}
 					}else{
 					    $ret["soapError"] = $res;
+                        $this->Log("Synchronisierung",print_r($ret,true),10);
                     }
 					
-					$syncVOP = $this->getSyncAuftragDetail($auftrag["pkOrderAuftrag"]);
-					$ret["push"] = array();
-					
-					if(count($syncVOP->_new)>0)
-					{
-						foreach($syncVOP->_new as $newEntry)
-						{
-						 $ret["push"]["new"][] = 	$this->updateVOPAuftragDetail("new",$newEntry,$auftrag);
-						}
-					}
-					if(count($syncVOP->_change)>0)
-					{
-						foreach($syncVOP->_change as $changedEntry)
-						{
-                            $ret["push"]["change"][] = 	$this->updateVOPAuftragDetail("change",$changedEntry,$auftrag);
-						}
-					}
-					if(count($syncVOP->_deleted)>0)
-					{
-						foreach($syncVOP->_deleted as $deletedEntry)
-						{
-                            $ret["push"]["delete"][] = $this->updateVOPAuftragDetail("delete",$deletedEntry,$auftrag);
-						}
-					}
+
 				 // SYNC KUNDE -> VOP
 				 
 				 
@@ -866,7 +891,7 @@ class DebitConnectCore{
 		$status = $this->settings->currentStates;
 		$frist = DC()->settings->currentSetting->fristZE;
 		$tpl = dirname(__FILE__)."/../tpl/vorschlagliste.tpl";
-		$aktionsbtn = array("cssclass" => "buttonlist fancyboxfullscreen","text" => "Übersicht","data-fancy-href" => DC_SCRIPT."?switchTo=overView&noncss=1&fancy=1&pkOrder=");
+		$aktionsbtn = array("cssclass" => "btn btn-info btn-sm fancyboxfullscreen","text" => "Übersicht","data-fancy-href" => DC_SCRIPT."?switchTo=overView&noncss=1&fancy=1&pkOrder=");
 		$menubtn = "";
 	
 
@@ -916,7 +941,7 @@ class DebitConnectCore{
 			$status = $this->settings->currentStates;
 			$frist = DC()->settings->currentSetting->fristZE;
 			$tpl = dirname(__FILE__)."/../tpl/vorschlagliste.tpl";
-			$aktionsbtn = array("cssclass" => "buttonlist  fancyboxfullscreen","text" => "Vorschau","data-fancy-href" => DC_SCRIPT."?switchTo=vorschau&noncss=1&fancy=1&order=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm  fancyboxfullscreen","text" => "Vorschau","data-fancy-href" => DC_SCRIPT."?switchTo=vorschau&noncss=1&fancy=1&order=");
 			$menubtn = dirname(__FILE__)."/../tpl/btn/zahlungserinnerung.tpl";
 			break;
 			case 2:
@@ -936,7 +961,7 @@ class DebitConnectCore{
 			break;
 			case 4:
 			$headline = "Mahnung - in Bearbeitung";
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$vopStatus = "55";
 			$dc_auftrag = true;
 			$tpl = dirname(__FILE__)."/../tpl/auftrag.tpl";
@@ -944,7 +969,7 @@ class DebitConnectCore{
 			case 5:
 			$checkbox = true;
 			$vopStatus = "59";
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$headline = "Mahnung - Erledigt";
 			$dc_auftrag = true;
 			$tpl = dirname(__FILE__)."/../tpl/auftrag.tpl";
@@ -961,7 +986,7 @@ class DebitConnectCore{
 			break;
 			case 7:
 			$headline = "Inkasso - in Bearbeitung";
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$vopStatus = "95";
 			$dc_auftrag = true;
 			$progressBar = true;
@@ -972,7 +997,7 @@ class DebitConnectCore{
 			$headline = "Inkasso - Erledigt";
 			$vopStatus = "99";
 			$progressBar = true;
-			$aktionsbtn = array("cssclass" => "buttonlist","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
+			$aktionsbtn = array("cssclass" => "btn btn-info btn-sm","text" => "Akteneinsicht","href" => DC_SCRIPT."?switchTo=detailansicht&back=".$this->current_page."&id=");
 			$dc_auftrag = true;
 			$tpl = dirname(__FILE__)."/../tpl/auftrag.tpl";
 			$menubtn = dirname(__FILE__)."/../tpl/btn/erledigt.tpl";
@@ -1430,6 +1455,9 @@ class DebitConnectCore{
 	{
 	
 		$hbciProfiles = $this->settings->hbciProfiles;
+		if($this->hasvalue('resetMatches')){
+		    $this->hbci->matches = null;
+        }
 		
 		$csvFiles = DC()->hbci->getCSVList();
 		if(count($csvFiles)>0)
@@ -1555,7 +1583,8 @@ class DebitConnectCore{
 								$this->View("ERROR_MSG","Konnte keine TransktionsId erzeugen");
 								return;
 							}
-							
+
+
 							
 							$transactionName = md5($ident_number.$newId); 
 							$payment_name = "Payment-Id-".$newId."-";
@@ -1564,6 +1593,7 @@ class DebitConnectCore{
 
 							$amountTransfer = "0.00";
 							foreach(DC()->get('cbx') as $pkOrder){
+
 
 								$dtaRow =  $this->dataTypes->createDTA((int)$pkOrder);
 								// $profile = PROFIL , $konto = KONTO	
@@ -1587,10 +1617,14 @@ class DebitConnectCore{
 								// Retrieve the resulting XML
 								$addedTransfers[] = array("id" => $pkOrder,"amount" => $dtaRow["amount"]);;
 								$amountTransfer = $amountTransfer+ $dtaRow["amount"];
-								}
+								}else{
+								   print_r($dtaRow);
+                                    $this->View("ERROR_MSG","Fehler in Daten ".print_r($dtaRow,true));
+                                }
 
 							}
 							if(count($addedTransfers)<1){
+                                $this->View("ERROR_MSG","Keine Zahlungen hinzugefügt");
 								return ;
 							}
 
@@ -1879,6 +1913,7 @@ class DebitConnectCore{
 									$encProjects[$b2ccount] = new stdClass();
 									$encProjects[$b2ccount]->bezeichnung = ($projekte[$i]->bezeichnung);
 									$encProjects[$b2ccount]->row = $b2ccount;
+									$encProjects[$b2ccount]->projectvalue = ($projekte[$i]->projectvalue);
 									$b2ccount++;
 									 }
 									 else
@@ -1886,6 +1921,7 @@ class DebitConnectCore{
 										 $b2bProjects[$b2bcount] = new stdClass();
 										 $b2bProjects[$b2bcount]->bezeichnung = ($projekte[$i]->bezeichnung);
 										 $b2bProjects[$b2bcount]->row = $b2bcount;
+                                         $b2bProjects[$b2bcount]->projectvalue = ($projekte[$i]->projectvalue);
 										 $b2bcount++;
 									 }
 								 }
@@ -1971,7 +2007,7 @@ class DebitConnectCore{
 	
 	public function getVOPBelege(){
 		
-		$aktionsbtn = array("cssclass" => "buttonlist fancyboxfullscreen","text" => "Belege Öffnen","data-fancy-href" => DC_SCRIPT."?switchTo=getBeleg&fancy=1&doctype=pdf&doc=");
+		$aktionsbtn = array("cssclass" => "btn btn-info btn-sm fancyboxfullscreen","text" => "Belege Öffnen","data-fancy-href" => DC_SCRIPT."?switchTo=getBeleg&fancy=1&doctype=pdf&doc=");
 		
 		$this->listView = new listView($aktionsbtn,$menubtn,false);
 
@@ -2074,7 +2110,7 @@ class DebitConnectCore{
 	
 	public function getDashBoard(){
 
-	    $rs = $this->db->getSQLResults("SELECT dc_cronlog.*,DATE_FORMAT(dAction,'%d.%m.%Y') as dtDay,s_order.ordernumber  from dc_cronlog LEFT OUTER JOIN s_order on s_order.id = pkOrder order by id asc ");
+	    $rs = $this->db->getSQLResults("SELECT dc_cronlog.*,DATE_FORMAT(dAction,'%d.%m.%Y') as dtDay,s_order.ordernumber  from dc_cronlog LEFT OUTER JOIN s_order on s_order.id = pkOrder order by id DESC ");
 	    $logEntrys = array();
             foreach($rs as $row){
                 $logEntrys[$row["dtDay"]][] = $row;
@@ -2911,6 +2947,7 @@ class DebitConnectCore{
 		return $embed;
 	}
 	public  function fetchFancy($id){
+
 		switch($id)
 		{
 			case "getMuster":

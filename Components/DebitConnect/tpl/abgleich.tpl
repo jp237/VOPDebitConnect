@@ -4,7 +4,19 @@
 <input type="hidden" name="HBCIAction">
 <div class='box-group'>
 <table width="100%">
-<tr><td><h4>{$Umsatzcounter} Umsätze in der Datenbank vorhanden</h4></td><td align="right" colspan="6"><div style='float:right;'>{if $hbci_csv_list}<a class='fancybox button' href='#' data-fancybox-href='VOPDebitConnect?switchTo=CSVData&fancy=1'>CSV</a>{/if}{if $zaActive}<a class='fancybox button' href='#' data-fancybox-href='VOPDebitConnect?switchTo=hbcirequest&fancy=1'>HBCI-Abruf</a>{/if}<a class='button fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIMatching&fancy=1" >Abgleichen</a><a class='button fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIPayments&fancy=1" >Zahlungen Buchen</a><input  class='button' type="submit" value='Nicht Verbuchen' name="HBCIDelete"></div>
+<tr><td><h4>{$Umsatzcounter} Umsätze in der Datenbank vorhanden</h4></td><td align="right" colspan="6">
+        <div style='float:right;'>{if $hbci_csv_list}
+                <a class='fancybox button' href='#' data-fancybox-href='VOPDebitConnect?switchTo=CSVData&fancy=1'>CSV</a>{/if}
+            {if $zaActive}
+                <a class='fancybox btn btn-info' href='#' data-fancybox-href='VOPDebitConnect?switchTo=hbcirequest&fancy=1'>HBCI-Abruf</a>
+            {/if}
+            <a class='btn btn-info fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIMatching&fancy=1" >Abgleichen</a>
+            <a class='btn btn-success fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIPayments&fancy=1" >Zahlungen Buchen</a>
+            {if $matches|count>0}
+            <input  class='btn btn-danger' type="submit" value='Zurücksetzen' name="resetMatches">
+            {/if}
+            <input  class='btn btn-danger' type="submit" value='Nicht Verbuchen' name="HBCIDelete">
+        </div>
 </td></tr>
 <tr><td colspan="7"></td></tr>
 </table>
@@ -25,7 +37,8 @@
     <td>{$matches[$umsatz.kUmsatz].sum} 
     <td>{$umsatz.cName}</td>
     <td>{$umsatz.cVzweck}</td>
-    <td><a name='{$umsatz.kUmsatz}'></a><a class='buttonlist' onclick='showLoader();' href='VOPDebitConnect?switchTo=zakontrolle&transaction={$umsatz.kUmsatz}'>Kontrolle</a></td>
+    <td><a name='{$umsatz.kUmsatz}'></a>
+        <a class='btn btn-info btn-sm' onclick='showLoader();' href='VOPDebitConnect?switchTo=zakontrolle&transaction={$umsatz.kUmsatz}'>Kontrolle</a></td>
 </tr>
   {/foreach}
 </tbody>

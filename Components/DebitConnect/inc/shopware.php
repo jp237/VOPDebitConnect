@@ -34,10 +34,10 @@ var $joinPickwarePayment = " ";
 		// APPEND STORNORECHNUNG // NEGATIV VALUE
 		
 	}
-public function setStatus()
-{
-	return DC()->settings->currentSetting->shopwareapibenutzen > 0 ? true : false;
-}
+    public function setStatus()
+    {
+        return DC()->settings->currentSetting->shopwareapibenutzen > 0 ? true : false;
+    }
 
 
 
@@ -72,341 +72,341 @@ public function setStatus()
 		return DC()->db->getSQLResults($query);
 	}
 	
-public function getAuftragposQuery($pkOrder)
-{
+    public function getAuftragposQuery($pkOrder)
+    {
 
-	/*
-4;Auftrag;788;10.04.2012 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;139,859962;0;0;;
-4;Bankrücklastkosten;689;11.11.2016 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;23,000000;0;0;;
-4;Korrektur;689;23.05.2017 15:10:22;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;-31,080000;22;GS-50001;;
-4;Mahnkosten;689;23.05.2017 15:16:11;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;3,330000;0;0;;
-4;Rechnung;689;21.01.2015 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;139,859962;0;0;;
-4;Zahlung;689;23.05.2017 15:08:08;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;-13,000000;1750;0;;
-*/
-// AUFTRAGZEILE
-			$query = "SELECT _order.subshopID,'Auftrag',_order.ordernumber,DATE_FORMAT(ordertime,'%d.%m.%Y 00:00:00'),0 as blank1,
-			'0' as blank2,'N',kunde.customernumber, billing.company, case billing.salutation when 'ms' then 'Frau' else 'Herr' end,'' as blank4,billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, land.countryname ,billing.phone,'' as blank5,kunde.email ,'' as blank6
-			,'' as blank7,DATE_FORMAT(".$this->BIRTHDAY_TABLE.".birthday,'%d.%d.%Y'),0 as blank8,'' as blank9,'N' as blank10,_order.id,REPLACE(CAST(invoice_amount as DECIMAL(12,2)),'.',','),0 as blank11,0 as blank12
-			FROM `s_order` _order  
-			LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
-			LEFT JOIN s_user kunde on billing.userID = kunde.id 
-			LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
-			LEFT JOIN s_core_countries land on land.id = billing.countryID 
-			where _order.`id` = ".(int) $pkOrder;
+        /*
+    4;Auftrag;788;10.04.2012 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;139,859962;0;0;;
+    4;Bankrücklastkosten;689;11.11.2016 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;23,000000;0;0;;
+    4;Korrektur;689;23.05.2017 15:10:22;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;-31,080000;22;GS-50001;;
+    4;Mahnkosten;689;23.05.2017 15:16:11;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;3,330000;0;0;;
+    4;Rechnung;689;21.01.2015 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;139,859962;0;0;;
+    4;Zahlung;689;23.05.2017 15:08:08;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;-13,000000;1750;0;;
+    */
+    // AUFTRAGZEILE
+                $query = "SELECT _order.subshopID,'Auftrag',_order.ordernumber,DATE_FORMAT(ordertime,'%d.%m.%Y 00:00:00'),0 as blank1,
+                '0' as blank2,'N',kunde.customernumber, billing.company, case billing.salutation when 'ms' then 'Frau' else 'Herr' end,'' as blank4,billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, land.countryname ,billing.phone,'' as blank5,kunde.email ,'' as blank6
+                ,'' as blank7,DATE_FORMAT(".$this->BIRTHDAY_TABLE.".birthday,'%d.%d.%Y'),0 as blank8,'' as blank9,'N' as blank10,_order.id,REPLACE(CAST(invoice_amount as DECIMAL(12,2)),'.',','),0 as blank11,0 as blank12
+                FROM `s_order` _order  
+                LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
+                LEFT JOIN s_user kunde on billing.userID = kunde.id 
+                LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
+                LEFT JOIN s_core_countries land on land.id = billing.countryID 
+                where _order.`id` = ".(int) $pkOrder;
 
-// RECHNUNGSZEILE
-$query .= "  UNION ALL SELECT _order.subshopID,'Rechnung',rechnung.docID,DATE_FORMAT(rechnung.date,'%d.%m.%Y 00:00:00'),0 as blank1,
-			'0' as blank2,'N' as blank3,kunde.customernumber, billing.company, case billing.salutation when 'ms' then 'Frau' else 'Herr' end,'' as blank4,billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, land.countryname ,billing.phone,'' as blank5,kunde.email ,'' as blank6
-			,'' as blank7,DATE_FORMAT(".$this->BIRTHDAY_TABLE.".birthday,'%d.%d.%Y'),0 as blank8,'' as blank9,'N' as blank10,_order.id,REPLACE(CAST(rechnung.amount as DECIMAL(12,2)),'.',','),0 as blank11,0 as blank12
-			FROM `s_order` _order  
-			LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
-			LEFT JOIN s_user kunde on billing.userID = kunde.id 
-			LEFT JOIN s_core_countries land on land.id = billing.countryID 
-			LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
-			INNER JOIN s_order_documents rechnung on rechnung.orderID = _order.id and rechnung.type = 1 
-			where _order.`id` = ".(int) $pkOrder;
-//GUTSCHRIFT
-
-
-			$query .= "  UNION ALL SELECT _order.subshopID,'Korrektur',korrektur.docID,DATE_FORMAT(korrektur.date,'%d.%m.%Y 00:00:00'),0 as blank1,
-			'0' as blank2,'N' as blank3,kunde.customernumber, billing.company, case billing.salutation when 'ms' then 'Frau' else 'Herr' end,'' as blank4,billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, land.countryname ,billing.phone,'' as blank5,kunde.email ,'' as blank6
-			,'' as blank7,DATE_FORMAT(".$this->BIRTHDAY_TABLE.".birthday,'%d.%d.%Y'),0 as blank8,'' as blank9,'N' as blank10,_order.id,REPLACE(CAST(korrektur.amount as DECIMAL(12,2)),'.',','),0 as blank11,korrektur.docID as blank12
-			FROM `s_order` _order  
-			LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
-			LEFT JOIN s_user kunde on billing.userID = kunde.id 
-			LEFT JOIN s_core_countries land on land.id = billing.countryID 
-			LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
-			INNER JOIN s_order_documents korrektur on korrektur.orderID = _order.id and korrektur.type = 3 
-			where _order.`id` = ".(int) $pkOrder;
-//ZAHLUNG
-//ZAHLUNGSEINGANG 
-$query .= " UNION ALL SELECT _order.subshopID, 'Zahlung', zahlung.kUmsatz, DATE_FORMAT( umsatz.dBuchung, '%d.%m.%Y 00:00:00' ) , 0 as blank1, '0' as blank2, 'N' as blank3, kunde.customernumber, billing.company,
-			CASE billing.salutation			WHEN 'ms'			THEN 'Frau'			ELSE 'Herr'			END , '' as blank4, billing.firstname, billing.lastname, billing.street, billing.zipcode, 
-			billing.city, land.countryname, billing.phone, '' as blank5, kunde.email, '' as blank6, '' as blank7, DATE_FORMAT( ".$this->BIRTHDAY_TABLE.".birthday, '%d.%d.%Y' ) , 0 as blank8, '' as blank9, 'N' as blank10, zahlung.pkOrder, CONCAT('-',REPLACE( CAST( SUM( zahlung.fWert ) AS DECIMAL( 12, 2 ) ) , '.', ',' )) , 0 as blank11, 0 as blank12
-			FROM `dc_tzahlung` zahlung
-			LEFT JOIN `s_order` _order ON _order.id = zahlung.pkOrder 
-			LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
-			LEFT JOIN s_user kunde ON billing.userID = kunde.id 
-			LEFT JOIN s_core_countries land ON land.id = billing.countryID 
-			LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
-			INNER JOIN dc_umsatz umsatz ON zahlung.kUmsatz = umsatz.kUmsatz and umsatz.nType = 0  
-			WHERE _order.`id` =".(int) $pkOrder ." GROUP BY umsatz.kUmsatz,_order.subshopID,zahlung.kUmsatz,umsatz.dBuchung	,billing.customernumber, billing.company,billing.salutation	,billing.firstname, billing.lastname, billing.street, billing.zipcode,
-			billing.city, land.countryname, billing.phone,kunde.email,".$this->BIRTHDAY_TABLE.".birthday,zahlung.pkOrder
-			HAVING zahlung.pkOrder =".(int) $pkOrder;
-
-if($this->PickwarePaymentInformation){
-    $query .= " UNION ALL SELECT _order.subshopID, 'Zahlung', zahlung.id*-1, DATE_FORMAT( zahlung.creationDate, '%d.%m.%Y 00:00:00' ) , 0 as blank1, '0' as blank2, 'N' as blank3, kunde.customernumber, billing.company,
-			CASE billing.salutation			WHEN 'ms'			THEN 'Frau'			ELSE 'Herr'			END , '' as blank4, billing.firstname, billing.lastname, billing.street, billing.zipcode, 
-			billing.city, land.countryname, billing.phone, '' as blank5, kunde.email, '' as blank6, '' as blank7, DATE_FORMAT( ".$this->BIRTHDAY_TABLE.".birthday, '%d.%d.%Y' ) , 0 as blank8, '' as blank9, 'N' as blank10, zahlung.orderId, CONCAT('-',REPLACE( CAST(  ROUND(zahlung.amount,2)  AS DECIMAL( 12, 2 ) ) , '.', ',' )) , 0 as blank11, 0 as blank12
-			FROM `s_plugin_viison_bank_transfer_matching_booking` zahlung
-			LEFT JOIN `s_order` _order ON _order.id = zahlung.orderId 
-			LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
-			LEFT JOIN s_user kunde ON billing.userID = kunde.id 
-			LEFT JOIN s_core_countries land ON land.id = billing.countryID 
-			LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
-			
-			WHERE _order.`id` =".(int) $pkOrder ." GROUP BY _order.subshopID,zahlung.id,zahlung.creationDate	,billing.customernumber, billing.company,billing.salutation	,billing.firstname, billing.lastname, billing.street, billing.zipcode,
-			billing.city, land.countryname, billing.phone,kunde.email,".$this->BIRTHDAY_TABLE.".birthday,zahlung.orderId
-			HAVING zahlung.orderId =".(int) $pkOrder;
-
-}
-//ZAHLUNGSAUSGANG 
-$query .= " UNION ALL SELECT _order.subshopID, 'Zahlung', zahlung.kUmsatz, DATE_FORMAT( umsatz.dBuchung, '%d.%m.%Y 00:00:00' ) , 0 as blank1, '0' as blank2, 'N' as blank3, kunde.customernumber, billing.company,
-			CASE billing.salutation			WHEN 'ms'			THEN 'Frau'			ELSE 'Herr'			END , '' as blank4, billing.firstname, billing.lastname, billing.street, billing.zipcode, 
-			billing.city, land.countryname, billing.phone, '' as blank5, kunde.email, '' as blank6, '' as blank7, DATE_FORMAT( ".$this->BIRTHDAY_TABLE.".birthday, '%d.%d.%Y' ) , 0 as blank8, '' as blank9, 'N' as blank10, zahlung.pkOrder, REPLACE( CAST( SUM( zahlung.fWert*-1 ) AS DECIMAL( 12, 2 ) ) , '.', ',' ) , 0 as blank11, 0 as blank12
-			FROM `dc_tzahlung` zahlung
-			LEFT JOIN `s_order` _order ON _order.id = zahlung.pkOrder 
-			LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
-			LEFT JOIN s_user kunde ON billing.userID = kunde.id 
-			LEFT JOIN s_core_countries land ON land.id = billing.countryID 
-			LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
-			INNER JOIN dc_umsatz umsatz ON zahlung.kUmsatz = umsatz.kUmsatz and umsatz.nType = 1 
-			WHERE zahlung.nType != 8 and  zahlung.nType != 1 and  _order.`id` =".(int) $pkOrder ." 
-			GROUP BY umsatz.kUmsatz,_order.subshopID,zahlung.kUmsatz,umsatz.dBuchung	,billing.customernumber, billing.company,billing.salutation	,billing.firstname, billing.lastname, billing.street, billing.zipcode,
-			billing.city, land.countryname, billing.phone,kunde.email,".$this->BIRTHDAY_TABLE.".birthday,zahlung.pkOrder
-			HAVING  zahlung.pkOrder =".(int) $pkOrder;
-		
-
-	$retcsv = "";	
-	$checksum = 0;
-	$rows = DC()->db->getSQLResults($query);
-	$found_invoice = false;
-	$data = array();
-	if($rows[1]["Auftrag"]!="Rechnung"){
-	// BEI B2B VORKASSE KLONE AUFTRAGSZEILE MIT KOMMENTAR ALS RECHNUNGSZEILE
-	$data[0] = $rows[0];
-	$clonedOrderRow = $rows[0];
-	$clonedOrderRow["Auftrag"] = "Rechnung";
-	$clonedOrderRow["ordernumber"] .= "//Vorkasse";
-	$data[1] = $clonedOrderRow;
-		for($i=2;$i<=count($rows);$i++){
-			$data[$i] = $rows[$i-1];
-		}
-	}else $data = $rows;
-
-	foreach($data as $res)
-	{
-		if(count($res) > 2){
-		$checksum++;
-		$retcsv .= implode(";",str_replace(";","",$res))."\r\n";
-		}
-	}
-	$retval["csv"] = $retcsv;
-	
-	$retval["document"] = $this->submitDocumentsVOP($pkOrder,true)>0 ? "True" : "False";
-	$retval["checksum"] = $checksum;
-
-	return $retval;
-}
-/** @return string */
-function createNewOrderXML($pkOrder,$orderDataArray,$type = "Mahnservice"){
+    // RECHNUNGSZEILE
+    $query .= "  UNION ALL SELECT _order.subshopID,'Rechnung',rechnung.docID,DATE_FORMAT(rechnung.date,'%d.%m.%Y 00:00:00'),0 as blank1,
+                '0' as blank2,'N' as blank3,kunde.customernumber, billing.company, case billing.salutation when 'ms' then 'Frau' else 'Herr' end,'' as blank4,billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, land.countryname ,billing.phone,'' as blank5,kunde.email ,'' as blank6
+                ,'' as blank7,DATE_FORMAT(".$this->BIRTHDAY_TABLE.".birthday,'%d.%d.%Y'),0 as blank8,'' as blank9,'N' as blank10,_order.id,REPLACE(CAST(rechnung.amount as DECIMAL(12,2)),'.',','),0 as blank11,0 as blank12
+                FROM `s_order` _order  
+                LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
+                LEFT JOIN s_user kunde on billing.userID = kunde.id 
+                LEFT JOIN s_core_countries land on land.id = billing.countryID 
+                LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
+                INNER JOIN s_order_documents rechnung on rechnung.orderID = _order.id and rechnung.type = 1 
+                where _order.`id` = ".(int) $pkOrder;
+    //GUTSCHRIFT
 
 
+                $query .= "  UNION ALL SELECT _order.subshopID,'Korrektur',korrektur.docID,DATE_FORMAT(korrektur.date,'%d.%m.%Y 00:00:00'),0 as blank1,
+                '0' as blank2,'N' as blank3,kunde.customernumber, billing.company, case billing.salutation when 'ms' then 'Frau' else 'Herr' end,'' as blank4,billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, land.countryname ,billing.phone,'' as blank5,kunde.email ,'' as blank6
+                ,'' as blank7,DATE_FORMAT(".$this->BIRTHDAY_TABLE.".birthday,'%d.%d.%Y'),0 as blank8,'' as blank9,'N' as blank10,_order.id,REPLACE(CAST(korrektur.amount as DECIMAL(12,2)),'.',','),0 as blank11,korrektur.docID as blank12
+                FROM `s_order` _order  
+                LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
+                LEFT JOIN s_user kunde on billing.userID = kunde.id 
+                LEFT JOIN s_core_countries land on land.id = billing.countryID 
+                LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
+                INNER JOIN s_order_documents korrektur on korrektur.orderID = _order.id and korrektur.type = 3 
+                where _order.`id` = ".(int) $pkOrder;
+    //ZAHLUNG
+    //ZAHLUNGSEINGANG
+    $query .= " UNION ALL SELECT _order.subshopID, 'Zahlung', zahlung.kUmsatz, DATE_FORMAT( umsatz.dBuchung, '%d.%m.%Y 00:00:00' ) , 0 as blank1, '0' as blank2, 'N' as blank3, kunde.customernumber, billing.company,
+                CASE billing.salutation			WHEN 'ms'			THEN 'Frau'			ELSE 'Herr'			END , '' as blank4, billing.firstname, billing.lastname, billing.street, billing.zipcode, 
+                billing.city, land.countryname, billing.phone, '' as blank5, kunde.email, '' as blank6, '' as blank7, DATE_FORMAT( ".$this->BIRTHDAY_TABLE.".birthday, '%d.%d.%Y' ) , 0 as blank8, '' as blank9, 'N' as blank10, zahlung.pkOrder, CONCAT('-',REPLACE( CAST( SUM( zahlung.fWert ) AS DECIMAL( 12, 2 ) ) , '.', ',' )) , 0 as blank11, 0 as blank12
+                FROM `dc_tzahlung` zahlung
+                LEFT JOIN `s_order` _order ON _order.id = zahlung.pkOrder 
+                LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
+                LEFT JOIN s_user kunde ON billing.userID = kunde.id 
+                LEFT JOIN s_core_countries land ON land.id = billing.countryID 
+                LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
+                INNER JOIN dc_umsatz umsatz ON zahlung.kUmsatz = umsatz.kUmsatz and umsatz.nType = 0  
+                WHERE _order.`id` =".(int) $pkOrder ." GROUP BY umsatz.kUmsatz,_order.subshopID,zahlung.kUmsatz,umsatz.dBuchung	,billing.customernumber, billing.company,billing.salutation	,billing.firstname, billing.lastname, billing.street, billing.zipcode,
+                billing.city, land.countryname, billing.phone,kunde.email,".$this->BIRTHDAY_TABLE.".birthday,zahlung.pkOrder
+                HAVING zahlung.pkOrder =".(int) $pkOrder;
 
-    $dom = new DOMDocument("1.0", "UTF-8");
-    $dom->encoding = 'UTF-8';
-    $order = array_keys($orderDataArray[0]);
-    $orderDate = new DateTime( $orderDataArray[0][$order[4]]);
-    $invoice = array_keys($orderDataArray[1]);
-    $rootElement = $dom->createElement("vopAuftrag");
-    $rootElement->appendChild($dom->createElement('vopVersion','1.0'));
-    $rootElement->appendChild($dom->createElement('orderType',$type));
-    $rootElement->appendChild($dom->createElement('productType','Shopware'));
-    $rootElement->appendChild($dom->createElement('internalId',$pkOrder));
-    $rootElement->appendChild($dom->createElement('ordernumber',$orderDataArray[0][$order[2]]));
-    $rootElement->appendChild($dom->createElement('ordervalue', str_replace(",",".",$orderDataArray[0][$order[27]])));
-    $rootElement->appendChild($dom->createElement('orderdate',$orderDate->format("Y-m-d H:i:s")));
-    $rootElement->appendChild($dom->createElement('paymentType',null));
-    if($invoice[1] == "Rechnung"){
-        $invoiceDate =  new DateTime( $orderDataArray[1][$invoice[2]]);
-        $rootElement->appendChild($dom->createElement('invoicenumber',$orderDataArray[0]["ordernumber"]));
-        $rootElement->appendChild($dom->createElement('invoicedate',  $invoiceDate->format("Y-m-d H:i:s")));
-    }else{
-        $rootElement->appendChild($dom->createElement('invoicenumber', null));
-        $rootElement->appendChild($dom->createElement('invoicedate',null));
-    }
-    $rootElement->appendChild($dom->createElement('dateReminded',null));
-    // ADDING CLIENTINFORMATION.. MAIN CLIENT IS SET BY AUTH DATA ( V.O.P )
-
-    foreach($orderDataArray as $row){
-        $keys = array_keys($row);
-        if($row[$keys[2]]=="Auftrag" || $row[$keys[2]] == "Rechnung") continue;
-        //if($row[$keys[2]] == "Korrektur")
+    if($this->PickwarePaymentInformation){
+        $query .= " UNION ALL SELECT _order.subshopID, 'Zahlung', zahlung.id*-1, DATE_FORMAT( zahlung.creationDate, '%d.%m.%Y 00:00:00' ) , 0 as blank1, '0' as blank2, 'N' as blank3, kunde.customernumber, billing.company,
+                CASE billing.salutation			WHEN 'ms'			THEN 'Frau'			ELSE 'Herr'			END , '' as blank4, billing.firstname, billing.lastname, billing.street, billing.zipcode, 
+                billing.city, land.countryname, billing.phone, '' as blank5, kunde.email, '' as blank6, '' as blank7, DATE_FORMAT( ".$this->BIRTHDAY_TABLE.".birthday, '%d.%d.%Y' ) , 0 as blank8, '' as blank9, 'N' as blank10, zahlung.orderId, CONCAT('-',REPLACE( CAST(  ROUND(zahlung.amount,2)  AS DECIMAL( 12, 2 ) ) , '.', ',' )) , 0 as blank11, 0 as blank12
+                FROM `s_plugin_viison_bank_transfer_matching_booking` zahlung
+                LEFT JOIN `s_order` _order ON _order.id = zahlung.orderId 
+                LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
+                LEFT JOIN s_user kunde ON billing.userID = kunde.id 
+                LEFT JOIN s_core_countries land ON land.id = billing.countryID 
+                LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
+                
+                WHERE _order.`id` =".(int) $pkOrder ." GROUP BY _order.subshopID,zahlung.id,zahlung.creationDate	,billing.customernumber, billing.company,billing.salutation	,billing.firstname, billing.lastname, billing.street, billing.zipcode,
+                billing.city, land.countryname, billing.phone,kunde.email,".$this->BIRTHDAY_TABLE.".birthday,zahlung.orderId
+                HAVING zahlung.orderId =".(int) $pkOrder;
 
     }
-    $correction = $dom->createElement("correction");
-    $correction->appendChild($dom->createElement('number',null));
-    $correction->appendChild($dom->createElement('date',null));
-    $correction->appendChild($dom->createElement('value',null));
-    $rootElement->appendChild($correction);
-    $orderInformation = $dom->createElement('orderDetails');
-    $rootElement->appendChild($orderInformation);
-    $clientInformation = $dom->createElement('clientInformation');
-
-    $client = $dom->createElement('client');
-
-    $clientInformation->appendChild($client);
-
-    $rootElement->appendChild($clientInformation);
-
-    // ADDING DEBTORINFORMATIONS , LOOP
-    $debtorInformation = $dom->createElement('debtorInformation');
-
-    $airline = $details['airlineContactInformation']['mainAddress'];
-
-    $debtor = $dom->createElement('debtor');
-    $debtor->appendChild($dom->createElement('firstname', $orderDataArray[0][$order[11]]));
-    $debtor->appendChild($dom->createElement('lastname', $orderDataArray[0][$order[12]]));
-    $debtor->appendChild($dom->createElement('company', ($orderDataArray[0][$order[10]])));
-    $debtor->appendChild($dom->createElement('dateofbirth', $orderDataArray[0][$order[22]]));
-    $debtor->appendChild($dom->createElement('street', $orderDataArray[0][$order[13]]));
-    $debtor->appendChild($dom->createElement('zipcode', $orderDataArray[0][$order[14]]));
-    $debtor->appendChild($dom->createElement('city', $orderDataArray[0][$order[15]]));
-    $debtor->appendChild($dom->createElement('country',  $orderDataArray[0][$order[16]]));
-    $debtor->appendChild($dom->createElement('email',  $orderDataArray[0][$order[19]]));
-    $debtor->appendChild($dom->createElement('telphone', $orderDataArray[0][$order[17]]));
-    $debtor->appendChild($dom->createElement('fax', null));
-    $debtor->appendChild($dom->createElement('customernumber', $orderDataArray[0][$order[7]]));
-
-    $debtorInformation->appendChild($debtor);
-    // ADDING PROCESSAUTHORIZATION ADDRESS AS SECOND DEBTOR
-    $airline = $details['airlineContactInformation']['processAuthorized'];
-
-    $debtor = $dom->createElement('debtor');
-    $debtor->appendChild($dom->createElement('firstname', null));
-    $debtor->appendChild($dom->createElement('lastname', null));
-    $debtor->appendChild($dom->createElement('company', ($details['problem']['flight']['airline']['name'])));
-    $debtor->appendChild($dom->createElement('dateofbirth', null));
-    $debtor->appendChild($dom->createElement('street', $airline['street']));
-    $debtor->appendChild($dom->createElement('zipcode', $airline['zipcode']));
-    $debtor->appendChild($dom->createElement('city', $airline['city']));
-    $debtor->appendChild($dom->createElement('country',  $airline['countryiso']));
-    $debtor->appendChild($dom->createElement('telphone', null));
-    $debtor->appendChild($dom->createElement('fax', $airline['fax']));
-
-    $debtorInformation->appendChild($debtor);
-
-    $rootElement->appendChild($debtorInformation);
+    //ZAHLUNGSAUSGANG
+    $query .= " UNION ALL SELECT _order.subshopID, 'Zahlung', zahlung.kUmsatz, DATE_FORMAT( umsatz.dBuchung, '%d.%m.%Y 00:00:00' ) , 0 as blank1, '0' as blank2, 'N' as blank3, kunde.customernumber, billing.company,
+                CASE billing.salutation			WHEN 'ms'			THEN 'Frau'			ELSE 'Herr'			END , '' as blank4, billing.firstname, billing.lastname, billing.street, billing.zipcode, 
+                billing.city, land.countryname, billing.phone, '' as blank5, kunde.email, '' as blank6, '' as blank7, DATE_FORMAT( ".$this->BIRTHDAY_TABLE.".birthday, '%d.%d.%Y' ) , 0 as blank8, '' as blank9, 'N' as blank10, zahlung.pkOrder, REPLACE( CAST( SUM( zahlung.fWert*-1 ) AS DECIMAL( 12, 2 ) ) , '.', ',' ) , 0 as blank11, 0 as blank12
+                FROM `dc_tzahlung` zahlung
+                LEFT JOIN `s_order` _order ON _order.id = zahlung.pkOrder 
+                LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
+                LEFT JOIN s_user kunde ON billing.userID = kunde.id 
+                LEFT JOIN s_core_countries land ON land.id = billing.countryID 
+                LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
+                INNER JOIN dc_umsatz umsatz ON zahlung.kUmsatz = umsatz.kUmsatz and umsatz.nType = 1 
+                WHERE zahlung.nType != 8 and  zahlung.nType != 1 and  _order.`id` =".(int) $pkOrder ." 
+                GROUP BY umsatz.kUmsatz,_order.subshopID,zahlung.kUmsatz,umsatz.dBuchung	,billing.customernumber, billing.company,billing.salutation	,billing.firstname, billing.lastname, billing.street, billing.zipcode,
+                billing.city, land.countryname, billing.phone,kunde.email,".$this->BIRTHDAY_TABLE.".birthday,zahlung.pkOrder
+                HAVING  zahlung.pkOrder =".(int) $pkOrder;
 
 
-    // ADDING ADDITIONALCOSTS...
-    $additionalCosts = $dom->createElement('additionalCosts');
-    $costs = null;
+        $retcsv = "";
+        $checksum = 0;
+        $rows = DC()->db->getSQLResults($query);
+        $found_invoice = false;
+        $data = array();
+        if($rows[1]["Auftrag"]!="Rechnung"){
+        // BEI B2B VORKASSE KLONE AUFTRAGSZEILE MIT KOMMENTAR ALS RECHNUNGSZEILE
+        $data[0] = $rows[0];
+        $clonedOrderRow = $rows[0];
+        $clonedOrderRow["Auftrag"] = "Rechnung";
+        $clonedOrderRow["ordernumber"] .= "//Vorkasse";
+        $data[1] = $clonedOrderRow;
+            for($i=2;$i<=count($rows);$i++){
+                $data[$i] = $rows[$i-1];
+            }
+        }else $data = $rows;
 
+        foreach($data as $res)
+        {
+            if(count($res) > 2){
+            $checksum++;
+            $retcsv .= implode(";",str_replace(";","",$res))."\r\n";
+            }
+        }
+        $retval["csv"] = $retcsv;
 
-    foreach($costs as $cost){
-        $additionalCost = $dom->createElement('additionalCost');
-        $additionalCost->appendChild($dom->createElement('date', date("Y-m-d")));
-        $additionalCost->appendChild($dom->createElement('type', 'Mahnkosten'));
-        $additionalCost->appendChild($dom->createElement('value',  $cost['fValue']));
+        $retval["document"] = $this->submitDocumentsVOP($pkOrder,true)>0 ? "True" : "False";
+        $retval["checksum"] = $checksum;
 
-        $additionalCosts->appendChild($additionalCost);
+        return $retval;
     }
+    /** @return string */
+    function createNewOrderXML($pkOrder,$orderDataArray,$type = "Mahnservice"){
 
 
-    $rootElement->appendChild($additionalCosts);
-    // ADDING PAYMENTINFORMATIONS
-    $paymentInformation = $dom->createElement('paymentInformation');
-    //$payments = $this->getFullPaymentDetails($problemId);
-    if($details['user_complaint']['alreadyReceivedCompensation']>0){
-        $payments[] = array(
-            "dateBooked" => date("Y-m-d"),
-            "idPayment" => 0,
-            "value" => number_format($details['user_complaint']['compensationAmountReceivedAlready'],2,".","")
+
+        $dom = new DOMDocument("1.0", "UTF-8");
+        $dom->encoding = 'UTF-8';
+        $order = array_keys($orderDataArray[0]);
+        $orderDate = new DateTime( $orderDataArray[0][$order[4]]);
+        $invoice = array_keys($orderDataArray[1]);
+        $rootElement = $dom->createElement("vopAuftrag");
+        $rootElement->appendChild($dom->createElement('vopVersion','1.0'));
+        $rootElement->appendChild($dom->createElement('orderType',$type));
+        $rootElement->appendChild($dom->createElement('productType','Shopware'));
+        $rootElement->appendChild($dom->createElement('internalId',$pkOrder));
+        $rootElement->appendChild($dom->createElement('ordernumber',$orderDataArray[0][$order[2]]));
+        $rootElement->appendChild($dom->createElement('ordervalue', str_replace(",",".",$orderDataArray[0][$order[27]])));
+        $rootElement->appendChild($dom->createElement('orderdate',$orderDate->format("Y-m-d H:i:s")));
+        $rootElement->appendChild($dom->createElement('paymentType',null));
+        if($invoice[1] == "Rechnung"){
+            $invoiceDate =  new DateTime( $orderDataArray[1][$invoice[2]]);
+            $rootElement->appendChild($dom->createElement('invoicenumber',$orderDataArray[0]["ordernumber"]));
+            $rootElement->appendChild($dom->createElement('invoicedate',  $invoiceDate->format("Y-m-d H:i:s")));
+        }else{
+            $rootElement->appendChild($dom->createElement('invoicenumber', null));
+            $rootElement->appendChild($dom->createElement('invoicedate',null));
+        }
+        $rootElement->appendChild($dom->createElement('dateReminded',null));
+        // ADDING CLIENTINFORMATION.. MAIN CLIENT IS SET BY AUTH DATA ( V.O.P )
+
+        foreach($orderDataArray as $row){
+            $keys = array_keys($row);
+            if($row[$keys[2]]=="Auftrag" || $row[$keys[2]] == "Rechnung") continue;
+            //if($row[$keys[2]] == "Korrektur")
+
+        }
+        $correction = $dom->createElement("correction");
+        $correction->appendChild($dom->createElement('number',null));
+        $correction->appendChild($dom->createElement('date',null));
+        $correction->appendChild($dom->createElement('value',null));
+        $rootElement->appendChild($correction);
+        $orderInformation = $dom->createElement('orderDetails');
+        $rootElement->appendChild($orderInformation);
+        $clientInformation = $dom->createElement('clientInformation');
+
+        $client = $dom->createElement('client');
+
+        $clientInformation->appendChild($client);
+
+        $rootElement->appendChild($clientInformation);
+
+        // ADDING DEBTORINFORMATIONS , LOOP
+        $debtorInformation = $dom->createElement('debtorInformation');
+
+        $airline = $details['airlineContactInformation']['mainAddress'];
+
+        $debtor = $dom->createElement('debtor');
+        $debtor->appendChild($dom->createElement('firstname', $orderDataArray[0][$order[11]]));
+        $debtor->appendChild($dom->createElement('lastname', $orderDataArray[0][$order[12]]));
+        $debtor->appendChild($dom->createElement('company', ($orderDataArray[0][$order[10]])));
+        $debtor->appendChild($dom->createElement('dateofbirth', $orderDataArray[0][$order[22]]));
+        $debtor->appendChild($dom->createElement('street', $orderDataArray[0][$order[13]]));
+        $debtor->appendChild($dom->createElement('zipcode', $orderDataArray[0][$order[14]]));
+        $debtor->appendChild($dom->createElement('city', $orderDataArray[0][$order[15]]));
+        $debtor->appendChild($dom->createElement('country',  $orderDataArray[0][$order[16]]));
+        $debtor->appendChild($dom->createElement('email',  $orderDataArray[0][$order[19]]));
+        $debtor->appendChild($dom->createElement('telphone', $orderDataArray[0][$order[17]]));
+        $debtor->appendChild($dom->createElement('fax', null));
+        $debtor->appendChild($dom->createElement('customernumber', $orderDataArray[0][$order[7]]));
+
+        $debtorInformation->appendChild($debtor);
+        // ADDING PROCESSAUTHORIZATION ADDRESS AS SECOND DEBTOR
+        $airline = $details['airlineContactInformation']['processAuthorized'];
+
+        $debtor = $dom->createElement('debtor');
+        $debtor->appendChild($dom->createElement('firstname', null));
+        $debtor->appendChild($dom->createElement('lastname', null));
+        $debtor->appendChild($dom->createElement('company', ($details['problem']['flight']['airline']['name'])));
+        $debtor->appendChild($dom->createElement('dateofbirth', null));
+        $debtor->appendChild($dom->createElement('street', $airline['street']));
+        $debtor->appendChild($dom->createElement('zipcode', $airline['zipcode']));
+        $debtor->appendChild($dom->createElement('city', $airline['city']));
+        $debtor->appendChild($dom->createElement('country',  $airline['countryiso']));
+        $debtor->appendChild($dom->createElement('telphone', null));
+        $debtor->appendChild($dom->createElement('fax', $airline['fax']));
+
+        $debtorInformation->appendChild($debtor);
+
+        $rootElement->appendChild($debtorInformation);
+
+
+        // ADDING ADDITIONALCOSTS...
+        $additionalCosts = $dom->createElement('additionalCosts');
+        $costs = null;
+
+
+        foreach($costs as $cost){
+            $additionalCost = $dom->createElement('additionalCost');
+            $additionalCost->appendChild($dom->createElement('date', date("Y-m-d")));
+            $additionalCost->appendChild($dom->createElement('type', 'Mahnkosten'));
+            $additionalCost->appendChild($dom->createElement('value',  $cost['fValue']));
+
+            $additionalCosts->appendChild($additionalCost);
+        }
+
+
+        $rootElement->appendChild($additionalCosts);
+        // ADDING PAYMENTINFORMATIONS
+        $paymentInformation = $dom->createElement('paymentInformation');
+        //$payments = $this->getFullPaymentDetails($problemId);
+        if($details['user_complaint']['alreadyReceivedCompensation']>0){
+            $payments[] = array(
+                "dateBooked" => date("Y-m-d"),
+                "idPayment" => 0,
+                "value" => number_format($details['user_complaint']['compensationAmountReceivedAlready'],2,".","")
+            );
+        }
+        foreach($payments as $dbPayment){
+            $payment = $dom->createElement('payment');
+            $payment->appendChild($dom->createElement('date', $dbPayment['dateBooked']));
+            $payment->appendChild($dom->createElement('type', 'Zahlung'));
+            $payment->appendChild($dom->createElement('value',  $dbPayment['fValue']));
+            $payment->appendChild($dom->createElement('id',  $dbPayment['idPayment']));
+            $paymentInformation->appendChild($payment);
+        }
+        $rootElement->appendChild($paymentInformation);
+        $TextInformation = array();
+        $TextInformation[] = Array( "date" => "",
+            "type" => "Text",
+            "value" => $details['case']['countPassenger']. " Fluggäste ",
         );
-    }
-    foreach($payments as $dbPayment){
-        $payment = $dom->createElement('payment');
-        $payment->appendChild($dom->createElement('date', $dbPayment['dateBooked']));
-        $payment->appendChild($dom->createElement('type', 'Zahlung'));
-        $payment->appendChild($dom->createElement('value',  $dbPayment['fValue']));
-        $payment->appendChild($dom->createElement('id',  $dbPayment['idPayment']));
-        $paymentInformation->appendChild($payment);
-    }
-    $rootElement->appendChild($paymentInformation);
-    $TextInformation = array();
-    $TextInformation[] = Array( "date" => "",
-        "type" => "Text",
-        "value" => $details['case']['countPassenger']. " Fluggäste ",
-    );
-    $TextInformation[] = array(
-        "date" => $details['problem']['flight']['departureDate'],
-        "type" => "Text",
-        "value" => "Von ".$details['problem']['flight']['origin']['cityNameDe']." nach ".$details['problem']['flight']['destination']['cityNameDe']
-    );
-    $TextInformation[] = array(
-        "date" => $details['problem']['flight']['departureDate'],
-        "type" => "Text",
-        "value" =>$details['problem']['problemDescription']."@ ".$details['problem']['flight']['number']
-    );
-
-
-    // ADDING ADDITIONAL TEXT INFORMATIONS
-    $additionalInformations = $dom->createElement('additionalInformations');
-    foreach($TextInformation as $infoText){
-        $additionalInformation = $dom->createElement('additionalInformation');
-        $additionalInformation->appendChild($dom->createElement('date', $infoText['date']));
-        $additionalInformation->appendChild($dom->createElement('type', $infoText['type']));
-        $additionalInformation->appendChild($dom->createElement('value', $infoText['value']));
-        $additionalInformations->appendChild($additionalInformation);
-    }
-    $rootElement->appendChild($additionalInformations);
-
-    $dom->appendChild($rootElement);
-    $xml = $dom->saveXML();
-    return $xml;
-}
-function array_insert(&$array, $position, $insert)
-{
-    if (is_int($position)) {
-        array_splice($array, $position, 0, $insert);
-    } else {
-        $pos   = array_search($position, array_keys($array));
-        $array = array_merge(
-            array_slice($array, 0, $pos),
-            $insert,
-            array_slice($array, $pos)
+        $TextInformation[] = array(
+            "date" => $details['problem']['flight']['departureDate'],
+            "type" => "Text",
+            "value" => "Von ".$details['problem']['flight']['origin']['cityNameDe']." nach ".$details['problem']['flight']['destination']['cityNameDe']
         );
+        $TextInformation[] = array(
+            "date" => $details['problem']['flight']['departureDate'],
+            "type" => "Text",
+            "value" =>$details['problem']['problemDescription']."@ ".$details['problem']['flight']['number']
+        );
+
+
+        // ADDING ADDITIONAL TEXT INFORMATIONS
+        $additionalInformations = $dom->createElement('additionalInformations');
+        foreach($TextInformation as $infoText){
+            $additionalInformation = $dom->createElement('additionalInformation');
+            $additionalInformation->appendChild($dom->createElement('date', $infoText['date']));
+            $additionalInformation->appendChild($dom->createElement('type', $infoText['type']));
+            $additionalInformation->appendChild($dom->createElement('value', $infoText['value']));
+            $additionalInformations->appendChild($additionalInformation);
+        }
+        $rootElement->appendChild($additionalInformations);
+
+        $dom->appendChild($rootElement);
+        $xml = $dom->saveXML();
+        return $xml;
     }
-}
+    function array_insert(&$array, $position, $insert)
+    {
+        if (is_int($position)) {
+            array_splice($array, $position, 0, $insert);
+        } else {
+            $pos   = array_search($position, array_keys($array));
+            $array = array_merge(
+                array_slice($array, 0, $pos),
+                $insert,
+                array_slice($array, $pos)
+            );
+        }
+    }
 
-public function getVOPAuftrag($pkOrder)
-{
-	$query = "SELECT kunde.email as cMail,billing.phone as cTel,land.iso3 as cLand,billing.salutation as cAnrede,billing.company as cFirma, billing.firstname as cVorname,billing.lastname as cNachname,billing.street as cStrasse,billing.zipcode as cPLZ,billing.city as cOrt,rechnung.docID as cRechnungsNr,CAST(_order.invoice_amount AS DECIMAL(12,2)) as fWert,gutschrift.docID as cGutschriftNr,CAST(IFNULL(zahlung.fWert,0) AS DECIMAL(12,2)) as fZahlung,_order.ordernumber as cAuftragsNr from s_order _order left join s_order_billingaddress billing on billing.orderID = _order.id LEFT JOIN s_order_documents rechnung on rechnung.orderID = _order.id and rechnung.type = 1
- 			  LEFT JOIN s_order_documents gutschrift on gutschrift.orderID = _order.id and gutschrift.type = 3 
-			  LEFT JOIN s_core_countries land on land.id = billing.countryID 
-			  LEFT JOIN s_user kunde on billing.userID = kunde.id 
-			  LEFT OUTER JOIN ( SELECT SUM(fWert) as fWert,pkOrder  FROM `dc_tzahlung` where nType != 8 and  dc_tzahlung.nType != 1  group by pkOrder ) zahlung on zahlung.pkOrder = _order.id where _order.id = ".(int) $pkOrder;
-		return DC()->db->getSQLResults($query);
-}
-
-
-public function assignTemplateVars($pkOrder = 0)
-{
-	
-	if($pkOrder== 0 ) {
-	$select = DC()->db->singleResult("SELECT id from s_order order by id desc LIMIT 1");
-	
-	$pkOrder = $select["id"];
-	}
-
-	if($pkOrder == 0 ) return;
-	DC()->smarty->assign("Zahlungen",DC()->hbci->getZahlungenTemplate($pkOrder));
-	DC()->smarty->assign("Bestellung",$this->getZEVars($pkOrder));
-	DC()->smarty->assign('Artikel',$this->getArtikelPos($pkOrder));
-	DC()->smarty->assign('Rechnungsadresse',
-	DC()->db->singleResult("SELECT `company` as Firma,`salutation` as Anrede ,`firstname` as Vorname,`lastname` as Nachname,`street` as Strasse,`zipcode`as PLZ,`city`as Ort,`phone`as Telefon FROM `s_order_billingaddress` WHERE orderID = ".(int) $pkOrder));
-    DC()->smarty->assign('Lieferadresse',
-        DC()->db->singleResult("SELECT `company` as Firma,`salutation` as Anrede ,`firstname` as Vorname,`lastname` as Nachname,`street` as Strasse,`zipcode`as PLZ,`city`as Ort,`phone`as Telefon FROM `s_order_shippingaddress` WHERE orderID = ".(int) $pkOrder));
-
-}
+    public function getVOPAuftrag($pkOrder)
+    {
+        $query = "SELECT kunde.email as cMail,billing.phone as cTel,land.iso3 as cLand,billing.salutation as cAnrede,billing.company as cFirma, billing.firstname as cVorname,billing.lastname as cNachname,billing.street as cStrasse,billing.zipcode as cPLZ,billing.city as cOrt,rechnung.docID as cRechnungsNr,CAST(_order.invoice_amount AS DECIMAL(12,2)) as fWert,gutschrift.docID as cGutschriftNr,CAST(IFNULL(zahlung.fWert,0) AS DECIMAL(12,2)) as fZahlung,_order.ordernumber as cAuftragsNr from s_order _order left join s_order_billingaddress billing on billing.orderID = _order.id LEFT JOIN s_order_documents rechnung on rechnung.orderID = _order.id and rechnung.type = 1
+                  LEFT JOIN s_order_documents gutschrift on gutschrift.orderID = _order.id and gutschrift.type = 3 
+                  LEFT JOIN s_core_countries land on land.id = billing.countryID 
+                  LEFT JOIN s_user kunde on billing.userID = kunde.id 
+                  LEFT OUTER JOIN ( SELECT SUM(fWert) as fWert,pkOrder  FROM `dc_tzahlung` where nType != 8 and  dc_tzahlung.nType != 1  group by pkOrder ) zahlung on zahlung.pkOrder = _order.id where _order.id = ".(int) $pkOrder;
+            return DC()->db->getSQLResults($query);
+    }
 
 
-public function getOrderEmail($pkOrder)
-{
-	$query = DC()->db->singleResult("select s_user.email from s_order left join s_user on s_order.userID = s_user.id where s_order.id = ".(int) $pkOrder);
-	return $query["email"];
-}
+    public function assignTemplateVars($pkOrder = 0)
+    {
+
+        if($pkOrder== 0 ) {
+        $select = DC()->db->singleResult("SELECT id from s_order order by id desc LIMIT 1");
+
+        $pkOrder = $select["id"];
+        }
+
+        if($pkOrder == 0 ) return;
+        DC()->smarty->assign("Zahlungen",DC()->hbci->getZahlungenTemplate($pkOrder));
+        DC()->smarty->assign("Bestellung",$this->getZEVars($pkOrder));
+        DC()->smarty->assign('Artikel',$this->getArtikelPos($pkOrder));
+        DC()->smarty->assign('Rechnungsadresse',
+        DC()->db->singleResult("SELECT `company` as Firma,`salutation` as Anrede ,`firstname` as Vorname,`lastname` as Nachname,`street` as Strasse,`zipcode`as PLZ,`city`as Ort,`phone`as Telefon FROM `s_order_billingaddress` WHERE orderID = ".(int) $pkOrder));
+        DC()->smarty->assign('Lieferadresse',
+            DC()->db->singleResult("SELECT `company` as Firma,`salutation` as Anrede ,`firstname` as Vorname,`lastname` as Nachname,`street` as Strasse,`zipcode`as PLZ,`city`as Ort,`phone`as Telefon FROM `s_order_shippingaddress` WHERE orderID = ".(int) $pkOrder));
+
+    }
+
+
+    public function getOrderEmail($pkOrder)
+    {
+        $query = DC()->db->singleResult("select s_user.email from s_order left join s_user on s_order.userID = s_user.id where s_order.id = ".(int) $pkOrder);
+        return $query["email"];
+    }
 
 public function getBelege($limitStart,$limitEnd,$order,$filter,$fieldModes){
 	
@@ -592,7 +592,7 @@ public function submitDocumentsVOP($pkOrder,$dbUpload = false)
 			if(strlen($request["pdfDocument"])>10) { 
 			$res = $soap->newAllDoc($user,$pass,"1",$docId."-shopware","0","0","0",$request['pdfDocument'],$pkOrder,"0");
 				if($res->status == "OK"){
-					DC()->Log("Dokument","Dokument ".$docId ." übermittelt",1);
+					DC()->Log("Dokument","Dokument ".$docId ." übermittelt",0);
 					$ret++;
 				}
 			
@@ -709,7 +709,7 @@ public function getZahlungsabgleichBestellungen($limitSubshop = false)
 	$minDate = new DateTime(date("d.m.Y"));
 	//$minDate->modify("- 6month");
 	$minDate->modify("- 36months");
-	$payedStatus = " AND s_order.cleared != ".DC()->settings->currentHBCI["statusbezahlt"]." ";
+	$payedStatus = " AND (s_order.cleared != ".DC()->settings->currentHBCI["statusbezahlt"]." OR dc_status.pkOrder > 0 )";
 	$matching_ignore_paymentstate = DC()->getConf("matching_ignore_paymentstate","0",true);
 	$joinPickware = strlen($this->joinPickwarePayment)>5 ? $this->joinPickwarePayment ." s_order.id " : "";
 	if($matching_ignore_paymentstate>0) $payedStatus = " AND 1=1 ";
@@ -717,7 +717,7 @@ public function getZahlungsabgleichBestellungen($limitSubshop = false)
 	
 					$query = "SELECT s_order.id,ordernumber,CAST(ROUND(invoice_amount,2) as DECIMAL(12,2)) as betrag,s_order_billingaddress.customernumber as KundenNr,s_order_billingaddress.lastname,s_order_billingaddress.firstname , rechnung.docID as RechnungsNr,rechnung.amount as Rechnungsbetrag,gutschrift.amount as Gutschriftbetrag,gutschrift.docID as GutschriftNr
 								,".$this->SELECT_OFFEN." as offen
-								,s_order.ordertime ,s_order.paymentID,s_order.status as orderstatus,s_order.cleared as paymentstatus,count(dc_status.id) as vopstatus FROM s_order 
+								,s_order.ordertime ,s_order.paymentID,s_order.status as orderstatus,s_order.cleared as paymentstatus,count(dc_status.id) as vopstatus,dc_auftrag.VOPStatus as nVOPStatus FROM s_order 
 								left outer join s_order_documents rechnung on rechnung.orderID = s_order.id and rechnung.type = 1
 								left outer join s_order_documents gutschrift on gutschrift.orderID = s_order.id and gutschrift.type = 3
 								left outer join s_order_documents storno on storno.orderID = s_order.id and storno.type = 4 
@@ -725,12 +725,13 @@ public function getZahlungsabgleichBestellungen($limitSubshop = false)
 								left join s_order_billingaddress on s_order.userID = s_order_billingaddress.userID and s_order_billingaddress.orderID = s_order.id 
 								LEFT OUTER JOIN ( SELECT SUM(fWert) as fWert,pkOrder  FROM `dc_tzahlung` where  nType != 8 and nType != 1   group by pkOrder ) zahlung on zahlung.pkOrder = s_order.id 
 								LEFT OUTER JOIN dc_status on dc_status.pkOrder = s_order.id 
+								LEFT OUTER JOIN dc_auftrag on dc_auftrag.pkOrder = s_order.id 
 								where s_order.ordernumber > 0 AND s_order.ordertime >= '".$minDate->format("Y-m-d H:i:s")."' ".$payedStatus. "";
 								
-					if($limitSubshop){
-					$query.=" and s_order.subshopID = ".DC()->settings->selectedShop;
-					}
-					
+                    if($limitSubshop){
+                    $query.=" and s_order.subshopID = ".DC()->settings->selectedShop;
+                    }
+
 					$query.="  group by s_order.id ,s_order.ordernumber , s_order.invoice_amount,s_order_billingaddress.customernumber,s_order_billingaddress.lastname,s_order_billingaddress.firstname,rechnung.docID,rechnung.amount,gutschrift.amount,gutschrift.docID,zahlung.fWert";
 					$query.=" ,storno.amount,s_order.ordertime,s_order.paymentID,s_order.status,s_order.cleared";
 					
@@ -1049,6 +1050,7 @@ public function getAuftragDetail($pkOrder)
 			  LEFT JOIN dc_umsatz on dc_umsatz.kUmsatz = dc_tzahlung.kUmsatz WHERE dc_umsatz.nType = 1 AND  dc_tzahlung.nType != 8  and  dc_tzahlung.nType != 1 and `pkOrder` = ".(int) $pkOrder."  
 			  group by dc_tzahlung.kUmsatz,dc_umsatz.dBuchung ";
 
+	//echo $query;
 	
 	return DC()->db->getSQLResults($query);
 }
@@ -1061,7 +1063,7 @@ public function getDTAList($limitStart,$limitEnd,$order,$filter,$fieldModes){
 		$sepa = count(DC()->settings->currentSEPA)>0 ? DC()->settings->currentSEPA: array(-1) ;
 		$query = "SELECT _order.`id` , `ordernumber` , CAST(ROUND(`invoice_amount`,2) AS DECIMAL(12,2)) as invoice_amount,".$this->SELECT_OFFEN." as fWert, `ordertime` , billing.salutation, billing.company, billing.customernumber, billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, billing.phone, land.iso3
 					,rechnung.docID  , DATE_FORMAT(_order.ordertime,'%d.%m.%Y') as datum ,zahlart.description as zahlartname,states.description as zahlstatus,kundengruppe.description as kundengruppename
-					," .$zahlungseingang." as zahlungseingang 
+					," .$zahlungseingang." as zahlungseingang ,
 					FROM `s_order` _order
 					LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
 					LEFT OUTER JOIN ( SELECT SUM(fWert) as fWert,pkOrder  FROM `dc_tzahlung` where  nType != 8 and  nType != 1   group by pkOrder ) zahlung on zahlung.pkOrder = _order.id 
@@ -1183,7 +1185,7 @@ public function getOPOSList($sort,$filter,$status,$order,$nVOPStatus,$frist,$lim
 					
 					if(count($kundengruppe)>0)
 					{
-					$query.= 	" AND kundengruppe.id NOT IN (".implode(",",$kundengruppe)." ) ";
+					    $query.= 	" AND kundengruppe.id NOT IN (".implode(",",$kundengruppe)." ) ";
 					}
 
 					$query.= " AND ".$this->SELECT_OFFEN." > 0 ";
@@ -1283,7 +1285,6 @@ public function getOPOSList($sort,$filter,$status,$order,$nVOPStatus,$frist,$lim
                                          "versanddate" => array(true, "versanddatum","Versanddatum",false),
 									)
 								 , "query" => $query,"count" => $countquery);
-				
 					return $output;
 }
 

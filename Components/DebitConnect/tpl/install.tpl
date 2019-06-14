@@ -19,12 +19,12 @@
     <td><div align='center'><img src='/engine/Shopware/Plugins/Community/Backend/VOPDebitConnect/Views/backend/_resources/img/debitconnect.png' /></div></td></tr>
     <td><div style='margin:2px 15px 2px 15px;width:auto;border-bottom:1px solid grey' align="center">Version {$version}  {if $handshake=='OK'}<b style='color:green'>Service verfügbar</b>{else}<b style='color:red'>Service nicht verfügbar</b>{/if}</div></td></tr>
     <tr><td colspan="2"><div align="center"><b><a target='_new' href='/engine/Shopware/Plugins/Community/Backend/VOPDebitConnect/Components/DebitConnect/Softwarelizenzvertragsbedingungen.txt'>Softwarelizenzbedingungen</a></b></div></td></tr>
-    <tr><td colspan="2"><div align="center"><input type="checkbox" required name='softwarelizenzcheckbox' /> Hiermit akzeptiere ich die Softwarelizenzbedingungen</div> </td></tr>
+      <tr><td colspan="2"><div align="center"><input type="checkbox" required id='lizenz' name='softwarelizenzcheckbox' /> <label for="lizenz">Hiermit akzeptiere ich die Softwarelizenzbedingungen</label></div> </td></tr>
      <tr>
       <td><div align="center"><strong>DebitConnect Installation</strong></div></td>
     </tr>
     <tr>
-      <td><div align="center">{if $installmode=='install'}<input type="submit" class="button" name="install" value='Installieren'/>{else} <input type="submit" class="button" name="update" value='Update durchführen'/>{/if}</div></td>
+      <td><div align="center">{if $installmode=='install'}<input type="submit" class="btn btn-success" name="install" value='Installieren'/>{else} <input type="submit" class="btn btn-success" name="update" value='Update durchführen'/>{/if}</div></td>
     </tr>
      <tr>
        <td align="center">
