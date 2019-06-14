@@ -10,9 +10,13 @@
             {if $zaActive}
                 <a class='fancybox btn btn-info' href='#' data-fancybox-href='VOPDebitConnect?switchTo=hbcirequest&fancy=1'>HBCI-Abruf</a>
             {/if}
-            <a class='btn btn-info' data-fancybox-href="VOPDebitConnect?switchTo=HBCIMatching&fancy=1" >Abgleichen</a>
+            <a class='btn btn-info fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIMatching&fancy=1" >Abgleichen</a>
             <a class='btn btn-success fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIPayments&fancy=1" >Zahlungen Buchen</a>
-            <input  class='btn btn-danger' type="submit" value='Nicht Verbuchen' name="HBCIDelete"></div>
+            {if $matches|count>0}
+            <input  class='btn btn-danger' type="submit" value='Zurücksetzen' name="resetMatches">
+            {/if}
+            <input  class='btn btn-danger' type="submit" value='Nicht Verbuchen' name="HBCIDelete">
+        </div>
 </td></tr>
 <tr><td colspan="7"></td></tr>
 </table>

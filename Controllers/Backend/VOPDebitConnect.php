@@ -23,9 +23,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
     public function indexAction()
     {
 		
-		
 
-			
 		
 		$csrfToken = $this->container->get('BackendSession')->offsetGet('X-CSRF-Token');
         $this->View()->assign([ 'csrfToken' => $csrfToken ]);
@@ -44,8 +42,10 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
 			
 			require_once(dirname(__FILE__)."/../../Components/DebitConnect/inc/DebitConnectCore.php");
 			$cfg =  new \DebitConnectCore($this->View());
-			//print_r(Shopware()->Session()->DebitConnect);
-			if(is_object(unserialize(Shopware()->BackendSession()->{$cfg->sessName}))) $cfg = unserialize(Shopware()->BackendSession()->{$cfg->sessName});
+
+			if(is_object(unserialize(Shopware()->BackendSession()->{$cfg->sessName}))) {
+                $cfg = unserialize(Shopware()->BackendSession()->{$cfg->sessName});
+            }
 			
 			$cfg->request = $this->Request();
 			$cfg->init($smarty);

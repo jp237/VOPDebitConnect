@@ -1,8 +1,7 @@
 <?php
-	include "class.JTL-Shop.EAP.php";
-	include "class.EAP-Bonitaetspruefung.php";
-	include "class.EAP-IdentCheck.php";
-	include "eap_postdirekt.php";
+	include_once "class.JTL-Shop.EAP.php";
+    include_once "class.EAP-Bonitaetspruefung.php";
+    include_once "class.EAP-IdentCheck.php";
 class EAPBoniGateway{
 	
 	
@@ -344,11 +343,11 @@ class EAPBoniGateway{
 		$sess =  Shopware()->Session();
 		if($sess['sOrderVariables']!=null){
 		$sOrderVariables = $sess['sOrderVariables']->getArrayCopy();
-
 			if($sOrderVariables['sPayment']['id']>0){
 				$this->requestParams["Zahlungsart"]->cName = $sOrderVariables['sPayment']['description'];
 				$this->requestParams["Zahlungsart"]->kZahlungsart =  $sOrderVariables['sPayment']['id'];
 			}
+
 
 			if($sOrderVariables['sDispatch']['id']>0){
 				$this->versandArt = $sOrderVariables['sDispatch']['id'];
@@ -392,7 +391,10 @@ class EAPBoniGateway{
 	
 	public function identCheckAlwaysOrAttribute()
 	{
-			if($this->settingsArray['jtl_eap_identcheck_use_art']==0) return true;
+			if($this->settingsArray['jtl_eap_identcheck_use_art']==0) {
+                $this->setNoticeAgeCheck(false);
+			    return true;
+            }
 		else 
 		{
 			$basket = Shopware()->Modules()->Basket()->sGetBasket();
@@ -402,6 +404,7 @@ class EAPBoniGateway{
 				
 				for($i=1;$i<=20;$i++){
 					if(strtoupper($warenkorbpos['attr'.$i]) == strtoupper($this->settingsArray['jtl_eap_attributname'])){
+                        $this->setNoticeAgeCheck(false);
 						return true;
 					}
 				}
@@ -480,8 +483,8 @@ class EAPBoniGateway{
 	
 	public function setNoticeAgeCheck($warenkorb)
 	{
-		
-		if($this->settingsArray['jtl_eap_identcheck_use']>0 && count($this->settingsArray['identShipping'])>0){
+
+		if($this->settingsArray['jtl_eap_identcheck_use']>0){
 			$this->smarty->assign('agecheck_warenkorb_msg',$this->sprachArr['agecheck_warenkorb_msg']);
 		}
 		//$this->smarty->assign('alertmsg_shipping',$this->sprachArr['alertmsg_shipping']);
