@@ -1063,7 +1063,7 @@ public function getDTAList($limitStart,$limitEnd,$order,$filter,$fieldModes){
 		$sepa = count(DC()->settings->currentSEPA)>0 ? DC()->settings->currentSEPA: array(-1) ;
 		$query = "SELECT _order.`id` , `ordernumber` , CAST(ROUND(`invoice_amount`,2) AS DECIMAL(12,2)) as invoice_amount,".$this->SELECT_OFFEN." as fWert, `ordertime` , billing.salutation, billing.company, billing.customernumber, billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, billing.phone, land.iso3
 					,rechnung.docID  , DATE_FORMAT(_order.ordertime,'%d.%m.%Y') as datum ,zahlart.description as zahlartname,states.description as zahlstatus,kundengruppe.description as kundengruppename
-					," .$zahlungseingang." as zahlungseingang ,
+					," .$zahlungseingang." as zahlungseingang 
 					FROM `s_order` _order
 					LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
 					LEFT OUTER JOIN ( SELECT SUM(fWert) as fWert,pkOrder  FROM `dc_tzahlung` where  nType != 8 and  nType != 1   group by pkOrder ) zahlung on zahlung.pkOrder = _order.id 
@@ -1114,7 +1114,7 @@ public function getDTAList($limitStart,$limitEnd,$order,$filter,$fieldModes){
 					$query.= " LIMIT $limitStart , $limitEnd ";;
 					
 					
-					
+					echo $query;
 					$output = array("order" => array(
 										"PK" => array(false,"_order.id","Key",false),
 										"AuftragsNr" => array(true,"_order.ordernumber","Auftragsnr",true),

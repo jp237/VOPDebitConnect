@@ -71,7 +71,7 @@ class EAP_Bonitaetspruefung{
 				 $this->responseData->secure_payment = true; 
 				  
 			}
-			else  if($settings==2){ 
+			else if($settings==2){
 		   		 $this->requested = true; 
 				 $this->responseData->secure_payment = false;
 				 
