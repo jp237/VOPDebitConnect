@@ -1112,9 +1112,7 @@ public function getDTAList($limitStart,$limitEnd,$order,$filter,$fieldModes){
 					$countquery = count(DC()->db->getSQLResults($query));
 				
 					$query.= " LIMIT $limitStart , $limitEnd ";;
-					
-					
-					echo $query;
+
 					$output = array("order" => array(
 										"PK" => array(false,"_order.id","Key",false),
 										"AuftragsNr" => array(true,"_order.ordernumber","Auftragsnr",true),
