@@ -23,6 +23,12 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        #dropdown-nav {
+            max-height:500px;
+            overflow-x:scroll;
+        }
+    </style>
 </head>
 <body style="background-color:#EFEFEF">
 <div class="loader" style='display:block'></div>
@@ -34,7 +40,7 @@
                 <ul>
                 	 <li id='click'  href='VOPDebitConnect?switchTo=start&changeShop={$shopList[0].id}'>{$shopList[0].name}
                         {if $shopList|count > 1}
-                        <ul>
+                        <ul id="dropdown-nav">
                          {for $shopcounter=1 to $shopList|count-1}
                          <li id='click'  href='VOPDebitConnect?switchTo=start&changeShop={$shopList[{$shopcounter}].id}'>{$shopList[{$shopcounter}].name}</li>
                          {/for}
