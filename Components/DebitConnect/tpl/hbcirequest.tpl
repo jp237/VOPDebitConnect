@@ -1,5 +1,5 @@
 <div class='box-group first' style='height:400px'>
-<form action="VOPDebitConnect?switchTo=zahlungsabgleich" target="_parent" method="post">
+<form action="VOPDebitConnect?switchTo=zahlungsabgleich" autocomplete="off" target="_parent" method="post">
 <table width="100%"><tr><td colspan="2"><h5>Umsatzabruf HBCI</h5></td></tr><tr><td>Konto</td><td><select class=' form-control'  name="selectedKonten">
   {foreach from=$profiles item=profile}
     	{foreach from=$profile->profileData->konto item=konto}
@@ -11,11 +11,11 @@
 </td></tr>
   <tr>
     <td>Von</td>
-    <td><input type="text"  name="von" value='{$smarty.post.von}' required="required" class='datepickerzahlung form-control' /></td>
+    <td><input type="text"  autocomplete="off" name="von" value='{$smarty.post.von}' required="required" class='datepickerzahlung form-control' /></td>
   </tr>
   <tr>
     <td>Bis</td>
-    <td><input type="text"  name="bis" value='{$smarty.post.bis}' required="required" class='datepickerzahlung  form-control' /></td>
+    <td><input type="text"  autocomplete="off" name="bis" value='{$smarty.post.bis}' required="required" class='datepickerzahlung  form-control' /></td>
   </tr>
   <tr>
     <td></td>
