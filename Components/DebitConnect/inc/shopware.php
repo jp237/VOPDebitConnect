@@ -1075,6 +1075,7 @@ public function getDTAList($limitStart,$limitEnd,$order,$filter,$fieldModes){
 			$query.= $joinPickware;
 			$query.=" LEFT  JOIN s_core_states states on _order.cleared = states.id ";
 			$query.=" LEFT JOIN s_user  _user on _user.id = _order.userID ";
+			/**  */
 			$query.=" LEFT OUTER JOIN s_core_customergroups  kundengruppe on kundengruppe.groupkey = _user.customergroup ";
 			$query.=" LEFT OUTER JOIN dc_dtacreatelog on dc_dtacreatelog.nType = 1 and dc_dtacreatelog.pkOrder = _order.id ";
 			$query.=" where ".$zahlungseingang." = '0.00' AND zahlart.id IN (".implode(",",$sepa).") AND  _order.ordernumber > 0 and IFNULL(dc_dtacreatelog.pkOrder,0) = 0 ";

@@ -29,7 +29,7 @@ class API_VOP{
 	function sendVersionInformation(){
 	    $api = $this->mahnwesen();
         $handle = md5("D3B!7C0NN3CT_".date("Ymd")."AUTH_TOKEN");
-	    $api->version_statistic($handle,DC()->getDBVersion(),Shopware::VERSION,$_SERVER['HTTP_HOST'],'Shopware');
+	    $api->version_statistic($handle,DC()->getDBVersion(),Shopware()->Config()->get( 'Version' ),$_SERVER['HTTP_HOST'],'Shopware');
     }
 }
 

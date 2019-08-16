@@ -1199,6 +1199,7 @@ class DebitConnectCore{
 							$insert->vopUser = $res->internID1.":".$res->internID2;
 							$insert->vopToken = ($res->auth);
 							$insert->shopID = $this->settings->selectedShop;
+							$insert->activated = 0;
 							$insert->registerJson = json_encode($regVar);
 							$this->db->dbInsert("dc_firma",$insert,false);
 						}

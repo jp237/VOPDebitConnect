@@ -26,19 +26,24 @@ class dbConn{
 	$this->openConnection = mysqli_connect($this->dbsettings["db"]['host'],$this->dbsettings["db"]['username'],$this->dbsettings["db"]['password'],$this->dbsettings["db"]['dbname'],$this->dbsettings['db']['port']);
 	mysqli_set_charset($this->openConnection,"utf8");
         // REMOVING ONLY_FULL_GROUP_BY FOR $this->openConnection
+        $this->rmSqlMode("ONLY_FULL_GROUP_BY");
+        $this->rmSqlMode("STRICT_TRANS_TABLES");
+	}
+
+	function rmSqlMode($mode){
+	    /** @todo fix this ASAP !!!! */
         $sqlMode = $this->singleResult("SELECT @@sql_mode as mode ");
-        if(strpos($sqlMode['mode'],"ONLY_FULL_GROUP_BY,") !==false){
-            $newMode = str_replace("ONLY_FULL_GROUP_BY,","",$sqlMode['mode']);
+        if(strpos($sqlMode['mode'],"$mode,") !==false){
+            $newMode = str_replace("$mode,","",$sqlMode['mode']);
             $this->dbQuery("SET SESSION sql_mode = '".$newMode."'");
-        }else if(strpos($sqlMode['mode'],",ONLY_FULL_GROUP_BY") !==false){
-            $newMode = str_replace(",ONLY_FULL_GROUP_BY","",$sqlMode['mode']);
+        }else if(strpos($sqlMode['mode'],",$mode") !==false){
+            $newMode = str_replace(",$mode","",$sqlMode['mode']);
             $this->dbQuery("SET SESSION sql_mode = '".$newMode."'");
-        }else if(strpos($sqlMode['mode'],"ONLY_FULL_GROUP_BY") !==false){
-            $newMode = str_replace("ONLY_FULL_GROUP_BY","",$sqlMode['mode']);
+        }else if(strpos($sqlMode['mode'],"$mode") !==false){
+            $newMode = str_replace("$mode","",$sqlMode['mode']);
             $this->dbQuery("SET SESSION sql_mode = '".$newMode."'");
         }
-
-	}
+    }
 	function dbClose(){
 		
 		mysqli_close($this->openConnection);
