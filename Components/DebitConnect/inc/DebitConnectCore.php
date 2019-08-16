@@ -13,7 +13,7 @@ require dirname(__FILE__).'/BoniGateway.php';
 
 class DebitConnectCore{
 	
-	public static $DC_VERSION = "0.3.19";
+	public static $DC_VERSION = "0.3.20";
 	public static $SOAP ="https://api.eaponline.de/debitconnect.php?wsdl";
 	
 	var $request = null;
