@@ -195,7 +195,7 @@ class DC_DataTypes
             $clonedOrderRow['Auftrag'] = 'Rechnung';
             $clonedOrderRow['ordernumber'] .= '//Vorkasse';
             $data[1] = $clonedOrderRow;
-            for ($i = 2, $iMax = count($rows); $i <= $iMax; ++$i) {
+            for ($i = 2; $i <= count($rows); ++$i) {
                 $data[$i] = $rows[$i - 1];
             }
         } else {
@@ -269,7 +269,7 @@ class DC_DataTypes
         // ADDING DEBTORINFORMATIONS , LOOP
         $debtorInformation = $dom->createElement('debtorInformation');
 
-        $airline = $details['airlineContactInformation']['mainAddress']; // @todo fix undefined variable $details
+        $airline = $details['airlineContactInformation']['mainAddress'];
 
         $debtor = $dom->createElement('debtor');
         $debtor->appendChild($dom->createElement('firstname', $orderDataArray[0][$order[11]]));
@@ -594,7 +594,7 @@ class DC_DataTypes
                 $docId = $key['ID'];
                 $user = DC()->settings->registration['vopUser'];
                 $pass = md5(DC()->settings->registration['vopToken']);
-                $path = __DIR__ . '/../../../../../../../../../files/documents/';
+                $path = dirname(__FILE__) . '/../../../../../../../../../files/documents/';
 
                 if (file_exists($path . $key['hash'] . '.pdf')) {
                     $request['pdfDocument'] = base64_encode(file_get_contents($path . $key['hash'] . '.pdf'));
@@ -629,7 +629,7 @@ class DC_DataTypes
         try {
             $rs = DC()->db->singleResult('SELECT ID,hash from s_order_documents where ID = ' . (int) $docId);
 
-            $path = __DIR__ . '/../../../../../../../../../files/documents/';
+            $path = dirname(__FILE__) . '/../../../../../../../../../files/documents/';
             $folderFile = $path . $rs['hash'] . '.pdf';
 
             if (file_exists($folderFile)) {
@@ -953,7 +953,7 @@ class DC_DataTypes
             $params = [];
             if (isset($payment_date) && $paymentstatus > 0 && DC()->settings->currentHBCI['setpaymentdate'] > 0) {
                 $date = new DateTime($payment_date);
-                $date = $date->format(DateTime::ATOM);
+                $date = $date->format(DateTime::ISO8601);
                 $params['clearedDate'] = $date;
             } elseif ($remove && DC()->settings->currentHBCI['setpaymentdate'] > 0) {
                 $params['clearedDate'] = null;

@@ -127,7 +127,7 @@ class DebitConnect_Cronjob
 
                 $oposData = DC()->db->getSQLResults($oposList['query']);
                 $status[$firma]['zahlungserinnerung']['list'] = count($oposData);
-                if (!(DC()->settings->cronjob->ze->active > 0)) {
+                if (!DC()->settings->cronjob->ze->active > 0) {
                     $status[$firma]['zahlungserinnerung']['notactive'] = true;
                 } else {
                     if (count($oposData) > 0) {
@@ -146,7 +146,7 @@ class DebitConnect_Cronjob
                 $oposList = DC()->dataTypes->getOPOSList(false, null, DC()->settings->currentSetting->statusZE, null, 39, DC()->settings->currentSetting->fristMA, null, DC()->settings->cronjob->ma->kundengruppe, DC()->settings->cronjob->ma->minvalue, [], true, null);
                 $oposData = DC()->db->getSQLResults($oposList['query']);
                 $status[$firma]['mahnung']['list'] = count($oposData);
-                if (!(DC()->settings->cronjob->ma->active > 0)) {
+                if (!DC()->settings->cronjob->ma->active > 0) {
                     $status[$firma]['mahnung']['notactive'] = true;
                 } else {
                     if (count($oposData) > 0) {

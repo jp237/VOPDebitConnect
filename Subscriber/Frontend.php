@@ -30,6 +30,65 @@ class Frontend implements SubscriberInterface
         ];
     }
 
+    public function getBoniGatewaySettings(\Enlight_Controller_ActionEventArgs $arguments)
+    {
+        try {
+            $settings = [];
+            $shop = Shopware()->Shop()->getMain() !== null ? Shopware()->Shop()->getMain() : Shopware()->Shop();
+            $selectedShop = $shop->getId();
+
+            $entrys = Shopware()->Db()->fetchall('SELECT art,datavalue from dc_gatewaymeta where nType = 0 and shopID = ' . $selectedShop);
+            foreach ($entrys as $entry) {
+                $settings[$entry['art']] = is_object(json_decode($entry['datavalue'])) ? json_decode($entry['datavalue'], true) : $entry['datavalue'];
+            }
+
+            return $settings;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // REDIRECT TO PAYMENT WALL
+    public function redirectToPayentWall(\Enlight_Controller_ActionEventArgs $arguments, $EAPBoniGateway = null)
+    {
+        if ($EAPBoniGateway != null) {
+            $this->writeBoniGatewaySession($EAPBoniGateway);
+        }
+
+        $request = $arguments->getSubject()->Request();
+        $response = $arguments->getSubject()->Response();
+        $controller = $request->getControllerName();
+        $action = $arguments->getRequest()->getActionName();
+        $target = $request->getParam('sTarget');
+        $targetAction = $request->getParam('sTargetAction');
+        $view = $arguments->getSubject()->View();
+        $userId = Shopware()->Session()->sUserId;
+        $arguments->getSubject()->redirect(
+            [
+                'controller' => 'checkout',
+                'action' => 'shippingPayment',
+            ]);
+    }
+
+    public function redirectToConfirmPage(\Enlight_Controller_ActionEventArgs $arguments, $EAPBoniGateway = null)
+    {
+        if ($EAPBoniGateway != null) {
+            $this->writeBoniGatewaySession($EAPBoniGateway);
+        }
+        $request = $arguments->getSubject()->Request();
+        $response = $arguments->getSubject()->Response();
+        $controller = $request->getControllerName();
+        $action = $arguments->getRequest()->getActionName();
+        $target = $request->getParam('sTarget');
+        $targetAction = $request->getParam('sTargetAction');
+        $view = $arguments->getSubject()->View();
+        $userId = Shopware()->Session()->sUserId;
+        $arguments->getSubject()->redirect([
+            'controller' => 'checkout',
+            'action' => 'confirm',
+        ]);
+    }
+
     /**
      * Handles payment logos and payment title in Frontend
      *
@@ -182,47 +241,7 @@ class Frontend implements SubscriberInterface
         $this->addTemplateDir($view);
     }
 
-    // REDIRECT TO PAYMENT WALL
-
-    public function getBoniGatewaySettings(\Enlight_Controller_ActionEventArgs $arguments)
-    {
-        try {
-            $settings = [];
-            $shop = Shopware()->Shop()->getMain() !== null ? Shopware()->Shop()->getMain() : Shopware()->Shop();
-            $selectedShop = $shop->getId();
-
-            $entrys = Shopware()->Db()->fetchall('SELECT art,datavalue from dc_gatewaymeta where nType = 0 and shopID = ' . $selectedShop);
-            foreach ($entrys as $entry) {
-                $settings[$entry['art']] = is_object(json_decode($entry['datavalue'])) ? json_decode($entry['datavalue'], true) : $entry['datavalue'];
-            }
-
-            return $settings;
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
-    public function redirectToPayentWall(\Enlight_Controller_ActionEventArgs $arguments, $EAPBoniGateway = null)
-    {
-        if ($EAPBoniGateway != null) {
-            $this->writeBoniGatewaySession($EAPBoniGateway);
-        }
-
-        $request = $arguments->getSubject()->Request();
-        $response = $arguments->getSubject()->Response();
-        $controller = $request->getControllerName();
-        $action = $arguments->getRequest()->getActionName();
-        $target = $request->getParam('sTarget');
-        $targetAction = $request->getParam('sTargetAction');
-        $view = $arguments->getSubject()->View();
-        $userId = Shopware()->Session()->sUserId;
-        $arguments->getSubject()->redirect(
-            [
-                'controller' => 'checkout',
-                'action' => 'shippingPayment',
-            ]);
-    }
-
+    // WRITEBACK SERIALIZED CLASS TO SHOPWARE SESSION AND REMOVE PDO INSTANCES
     public function writeBoniGatewaySession($EAPBoniGateway)
     {
         $EAPBoniGateway->shopware = null;
@@ -230,27 +249,6 @@ class Frontend implements SubscriberInterface
         $EAPBoniGateway->schufaBoni->smarty = null;
         $EAPBoniGateway->schufaIdent->smarty = null;
         Shopware()->Session()->boniGateway = serialize($EAPBoniGateway);
-    }
-
-    // WRITEBACK SERIALIZED CLASS TO SHOPWARE SESSION AND REMOVE PDO INSTANCES
-
-    public function redirectToConfirmPage(\Enlight_Controller_ActionEventArgs $arguments, $EAPBoniGateway = null)
-    {
-        if ($EAPBoniGateway != null) {
-            $this->writeBoniGatewaySession($EAPBoniGateway);
-        }
-        $request = $arguments->getSubject()->Request();
-        $response = $arguments->getSubject()->Response();
-        $controller = $request->getControllerName();
-        $action = $arguments->getRequest()->getActionName();
-        $target = $request->getParam('sTarget');
-        $targetAction = $request->getParam('sTargetAction');
-        $view = $arguments->getSubject()->View();
-        $userId = Shopware()->Session()->sUserId;
-        $arguments->getSubject()->redirect([
-            'controller' => 'checkout',
-            'action' => 'confirm',
-        ]);
     }
 
     /**

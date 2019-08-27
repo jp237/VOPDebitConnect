@@ -27,8 +27,8 @@ class Shopware_Controllers_Backend_VOPCronjob extends Enlight_Controller_Action 
 {
     public function indexAction()
     {
-        $this->get('plugin_manager')->Controller()->ViewRenderer()->setNoRender();
-        $cronTask = $this->get('vopdebitconnect.runcronjob');
+        Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
+        $cronTask = Shopware()->Container()->get('vopdebitconnect.runcronjob');
         echo $cronTask->getCronjobTask($this->View());
     }
 

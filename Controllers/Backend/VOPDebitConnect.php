@@ -27,24 +27,24 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
 {
     public function indexAction()
     {
-        $csrfToken = $this->get('BackendSession')->offsetGet('X-CSRF-Token');
+        $csrfToken = $this->container->get('BackendSession')->offsetGet('X-CSRF-Token');
         $this->View()->assign(['csrfToken' => $csrfToken]);
         $smarty = $this->View();
         try {
             // TRY AUTOLOGIN
 
-            $auth = $this->get('Auth');
+            $auth = (Shopware()->Container()->get('Auth'));
             $identity = $auth->getIdentity();
 
             if ($identity->id) {
                 $this->View()->assign('_session', $identity->sessionID);
                 $this->View()->assign('_user', $identity->id);
 
-                require_once __DIR__ . '/../../Components/DebitConnect/inc/DebitConnectCore.php';
+                require_once dirname(__FILE__) . '/../../Components/DebitConnect/inc/DebitConnectCore.php';
                 $cfg = new \DebitConnectCore($this->View());
 
-                if (is_object(unserialize($this->get('backendsession')->{$cfg->sessName}))) {
-                    $cfg = unserialize($this->get('backendsession')->{$cfg->sessName});
+                if (is_object(unserialize(Shopware()->BackendSession()->{$cfg->sessName}))) {
+                    $cfg = unserialize(Shopware()->BackendSession()->{$cfg->sessName});
                 }
 
                 $cfg->request = $this->Request();
@@ -156,10 +156,10 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     }
                     $smarty->assign('handshake', $handshake);
                     $this->View()->assign(['nomenu' => true]);
-                    $smarty->assign('DebitConnectOutput', $smarty->fetch(__DIR__ . '/../../Components/DebitConnect/tpl/login.tpl'));
+                    $smarty->assign('DebitConnectOutput', $smarty->fetch(dirname(__FILE__) . '/../../Components/DebitConnect/tpl/login.tpl'));
                 }
 
-                echo $cfg->smarty->fetch(__DIR__ . '/../../Components/DebitConnect/tpl/error.tpl');
+                echo $cfg->smarty->fetch(dirname(__FILE__) . '/../../Components/DebitConnect/tpl/error.tpl');
 
                 DC()->setSession();
                 $this->View()->addTemplateDir(__DIR__ . '/../../Views/v_o_p_debit_connect/');
