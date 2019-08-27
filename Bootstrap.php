@@ -238,7 +238,7 @@ public function installRemoveCronJobs($cronjob,$install = true){
 
 	 public function DebitConnectZahlungsabgleich(\Shopware_Components_Cron_CronJob $job)
     {	
-		return dirname(__FILE__).'/Controller/VOPCronjob.php';
+		return __DIR__.'/Controller/VOPCronjob.php';
     }
 	
 	
