@@ -594,7 +594,7 @@ class DC_DataTypes
                 $docId = $key['ID'];
                 $user = DC()->settings->registration['vopUser'];
                 $pass = md5(DC()->settings->registration['vopToken']);
-                $path = dirname(__FILE__) . '/../../../../../../../../../files/documents/';
+                $path = __DIR__ . '/../../../../../../../../../files/documents/';
 
                 if (file_exists($path . $key['hash'] . '.pdf')) {
                     $request['pdfDocument'] = base64_encode(file_get_contents($path . $key['hash'] . '.pdf'));
@@ -629,7 +629,7 @@ class DC_DataTypes
         try {
             $rs = DC()->db->singleResult('SELECT ID,hash from s_order_documents where ID = ' . (int) $docId);
 
-            $path = dirname(__FILE__) . '/../../../../../../../../../files/documents/';
+            $path = __DIR__ . '/../../../../../../../../../files/documents/';
             $folderFile = $path . $rs['hash'] . '.pdf';
 
             if (file_exists($folderFile)) {
