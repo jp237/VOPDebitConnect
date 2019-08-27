@@ -4,14 +4,9 @@
     "cs-fix": "php-cs-fixer fix -v",
     "phpstan": "phpstan analyse -l 1 -c phpstan.neon.dist --memory-limit=512M",
     "test": "phpunit -c tests/ --colors=always"
-<<<<<<< HEAD
   },
   "require": {
     "digitick/sepa-xml": "1.6.*",
     "mschindler83/fints-hbci-php": "^1.0"
   }
 }
-=======
-  }
-}
->>>>>>> added cs-fix file
