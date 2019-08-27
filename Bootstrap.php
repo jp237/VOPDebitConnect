@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__. '/vendor/autoload.php';
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 require_once __DIR__ . '/Components/Services/Cronjob.php';
 require_once __DIR__.'/Subscriber/Backend.php';

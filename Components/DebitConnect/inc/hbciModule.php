@@ -1,6 +1,4 @@
 <?php
-require "hbci/vendor/autoload.php";
-	 
 use Fhp\FinTs;
 use Fhp\Model\StatementOfAccount\Statement;
 use Fhp\Model\StatementOfAccount\Transaction;
