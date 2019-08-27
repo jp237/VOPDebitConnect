@@ -551,6 +551,7 @@ class EAPBoniGateway
             return;
         }
 
+        // @todo fix $type->warenkorb != $this->requestParams['Warenkorb'] && $type->RetryIfHandleChanged -> $type->warenkorb != ($this->requestParams['Warenkorb'] && $type->RetryIfHandleChanged)
         if ($type->responseData == null || ($currentHandle != $type->handle && $type->RetryIfHandleChanged) || $type->warenkorb != $this->requestParams['Warenkorb'] && $type->RetryIfHandleChanged) { // NOCH KEIN ERGEBNIS , ODER  UNGLEICHER HANDLE --> Template bei aktivierten Zahlarten laden
             $type->requested = null;
             $type->responseData = null;

@@ -525,7 +525,7 @@ class HBCI_MODULE
 
     public function regExPerson($ref, $compare, $punkte, $debug = false, $doublePointsMinStringLength = 0)
     {
-        $debug = false;
+        $debug = false; // @todo remove?
         $copy_ref_orgi = $ref;
         if (strlen($ref) < 3) {
             return 0;
@@ -755,7 +755,7 @@ class HBCI_MODULE
                 $personExtrapunkte = 0;
                 $matching = 0;
                 // PERSONDATEN
-                $nachname = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['lastname'], 10, $debugRegex);
+                $nachname = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['lastname'], 10, $debugRegex); // @todo fix undefined $debugRegex
                 $vorname = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['firstname'], 10, $debugRegex);
                 $firma = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['firma'], 10, $debugRegex);
                 $kundennr = $this->regExPerson($umsatz['cVzweck'], $bestellung['KundenNr'], 5, $debugRegex, 6);
@@ -808,7 +808,7 @@ class HBCI_MODULE
     {
         $sum = $this->returnBuchungsBetrag($umsatz);
         $this->matches[$umsatz['kUmsatz']]['sum'] = $sum;
-        $this->matches[$umsatz['kUmsatz']]['tomuch'] = $sum - $umsatz['fWert'] > 0 ? true : true;
+        $this->matches[$umsatz['kUmsatz']]['tomuch'] = $sum - $umsatz['fWert'] > 0 ? true : true; // @todo always true??
     }
 
     public function returnBuchungsBetrag($umsatz)
