@@ -1,0 +1,41 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+//    ->in(__DIR__ . '/tests')
+;
+
+$header = <<<EOF
+EAP-DebitConnect (shopware Edition)
+
+V.O.P GmbH & Co. KG
+Hauptstraße 62
+56745 Bell
+Telefon: +49 (2652) 529-0
+Telefax: +49 (2652) 529-129
+E-Mail: info@eaponline.de
+USt-IdNr.: DE 261 538 563
+Pers. Haft. Gesellschafter:
+V.O.P Verwaltungs GmbH, HRB 21231, Koblenz
+Geschäftsführer: Thomas Pütz
+Handelsregister HRA20499, Koblenz
+EOF;
+
+return PhpCsFixer\Config::create()
+    ->setUsingCache(false)
+    ->setRules([
+        '@PSR2' => true,
+        '@Symfony' => true,
+        'header_comment' => ['header' => $header, 'separate' => 'bottom', 'commentType' => 'PHPDoc'],
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'ordered_class_elements' => true,
+        'ordered_imports' => true,
+        'phpdoc_order' => true,
+        'phpdoc_summary' => false,
+        'blank_line_after_opening_tag' => false,
+        'concat_space' => ['spacing' => 'one'],
+        'array_syntax' => ['syntax' => 'short'],
+        'yoda_style' => ['equal' => false, 'identical' => false, 'less_and_greater' => false],
+    ])
+    ->setFinder($finder)
+;
