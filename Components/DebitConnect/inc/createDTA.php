@@ -1,5 +1,4 @@
 <?php
-require dirname(__FILE__)."/php-sepa-xml/autoload.php";
 
 use Digitick\Sepa\TransferFile\Factory\TransferFileFacadeFactory;
 use Digitick\Sepa\PaymentInformation;
