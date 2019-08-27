@@ -24,10 +24,10 @@ class Cronjob implements SubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-        'Shopware_CronJob_VOPCronjob' => 'CronJobAction',
-         'Enlight_Bootstrap_InitResource_vopdebitconnect.runcronjob' => 'runCronjobService',
-        'Enlight_Controller_Dispatcher_ControllerPath_Backend_VOPCronjob' => 'onGetControllerPathBackend',
-    ];
+            'Shopware_CronJob_VOPCronjob' => 'CronJobAction',
+            'Enlight_Bootstrap_InitResource_vopdebitconnect.runcronjob' => 'runCronjobService',
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_VOPCronjob' => 'onGetControllerPathBackend',
+        ];
     }
 
     public function runCronjobService(\Enlight_Event_EventArgs $args)
