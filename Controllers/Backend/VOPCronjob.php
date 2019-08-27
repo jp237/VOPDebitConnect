@@ -1,12 +1,21 @@
 <?php
+/**
+ * EAP-DebitConnect (shopware Edition)
+ *
+ * V.O.P GmbH & Co. KG
+ * Hauptstraße 62
+ * 56745 Bell
+ * Telefon: +49 (2652) 529-0
+ * Telefax: +49 (2652) 529-129
+ * E-Mail: info@eaponline.de
+ * USt-IdNr.: DE 261 538 563
+ * Pers. Haft. Gesellschafter:
+ * V.O.P Verwaltungs GmbH, HRB 21231, Koblenz
+ * Geschäftsführer: Thomas Pütz
+ * Handelsregister HRA20499, Koblenz
+ */
 
-use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Query\Expr\Join;
 use Shopware\Components\CSRFWhitelistAware;
-use Shopware\Models\Article\Repository as ArticleRepo;
-use Shopware\Models\Article\SupplierRepository;
-use Shopware\Models\Emotion\Repository as EmotionRepo;
-use Shopware\Models\Form\Repository as FormRepo;
 
 /*
  * (c) shopware AG <info@shopware.com>
@@ -16,15 +25,12 @@ use Shopware\Models\Form\Repository as FormRepo;
  */
 class Shopware_Controllers_Backend_VOPCronjob extends Enlight_Controller_Action implements CSRFWhitelistAware
 {
-
-
     public function indexAction()
     {
-		Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
-		$cronTask = Shopware()->Container()->get("vopdebitconnect.runcronjob");
-		echo $cronTask->getCronjobTask($this->View());
+        Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
+        $cronTask = Shopware()->Container()->get('vopdebitconnect.runcronjob');
+        echo $cronTask->getCronjobTask($this->View());
     }
-	
 
     public function getWhitelistedCSRFActions()
     {
