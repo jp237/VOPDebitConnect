@@ -15,16 +15,16 @@
  * Handelsregister HRA20499, Koblenz
  */
 
-include dirname(__FILE__) . '/listView.php';
-include dirname(__FILE__) . '/cronjob.php';
-require dirname(__FILE__) . '/shopware.php';
-include dirname(__FILE__) . '/db.php';
-include dirname(__FILE__) . '/shopsettings.php';
-require dirname(__FILE__) . '/hbciModule.php';
-require dirname(__FILE__) . '/defines.php';
-require dirname(__FILE__) . '/api.php';
-require dirname(__FILE__) . '/createDTA.php';
-require dirname(__FILE__) . '/BoniGateway.php';
+include __DIR__ . '/listView.php';
+include __DIR__ . '/cronjob.php';
+require __DIR__ . '/shopware.php';
+include __DIR__ . '/db.php';
+include __DIR__ . '/shopsettings.php';
+require __DIR__ . '/hbciModule.php';
+require __DIR__ . '/defines.php';
+require __DIR__ . '/api.php';
+require __DIR__ . '/createDTA.php';
+require __DIR__ . '/BoniGateway.php';
 
 class DebitConnectCore
 {
@@ -858,11 +858,11 @@ class DebitConnectCore
         $aktionsbtn = null;
         $menubtn = false;
         $checkbox = false;
-        $menubtn = dirname(__FILE__) . '/../tpl/btn/zahlungserinnerung.tpl';
+        $menubtn = __DIR__ . '/../tpl/btn/zahlungserinnerung.tpl';
         $headline = 'OP-Liste';
         $status = $this->settings->currentStates;
         $frist = DC()->settings->currentSetting->fristZE;
-        $tpl = dirname(__FILE__) . '/../tpl/vorschlagliste.tpl';
+        $tpl = __DIR__ . '/../tpl/vorschlagliste.tpl';
         $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm fancyboxfullscreen', 'text' => 'Übersicht', 'data-fancy-href' => DC_SCRIPT . '?switchTo=overView&noncss=1&fancy=1&pkOrder='];
         $menubtn = '';
 
@@ -909,15 +909,15 @@ class DebitConnectCore
             $headline = 'Zahlungserinnerung - Vorschlagsliste';
             $status = $this->settings->currentStates;
             $frist = DC()->settings->currentSetting->fristZE;
-            $tpl = dirname(__FILE__) . '/../tpl/vorschlagliste.tpl';
+            $tpl = __DIR__ . '/../tpl/vorschlagliste.tpl';
             $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm  fancyboxfullscreen', 'text' => 'Vorschau', 'data-fancy-href' => DC_SCRIPT . '?switchTo=vorschau&noncss=1&fancy=1&order='];
-            $menubtn = dirname(__FILE__) . '/../tpl/btn/zahlungserinnerung.tpl';
+            $menubtn = __DIR__ . '/../tpl/btn/zahlungserinnerung.tpl';
             break;
             case 2:
             $vopStatus = '39';
             $headline = 'Zahlungserinnerung - Versendet';
             $dc_auftrag = true;
-            $tpl = dirname(__FILE__) . '/../tpl/auftrag.tpl';
+            $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             break;
             case 3:
             $checkbox = true;
@@ -925,15 +925,15 @@ class DebitConnectCore
             $vopStatus = '39';
             $status = (DC()->settings->currentSetting->statusZE);
             $frist = DC()->settings->currentSetting->fristMA;
-            $tpl = dirname(__FILE__) . '/../tpl/vorschlagliste.tpl';
-            $menubtn = dirname(__FILE__) . '/../tpl/btn/mahnung.tpl';
+            $tpl = __DIR__ . '/../tpl/vorschlagliste.tpl';
+            $menubtn = __DIR__ . '/../tpl/btn/mahnung.tpl';
             break;
             case 4:
             $headline = 'Mahnung - in Bearbeitung';
             $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm', 'text' => 'Akteneinsicht', 'href' => DC_SCRIPT . '?switchTo=detailansicht&back=' . $this->current_page . '&id='];
             $vopStatus = '55';
             $dc_auftrag = true;
-            $tpl = dirname(__FILE__) . '/../tpl/auftrag.tpl';
+            $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             break;
             case 5:
             $checkbox = true;
@@ -941,8 +941,8 @@ class DebitConnectCore
             $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm', 'text' => 'Akteneinsicht', 'href' => DC_SCRIPT . '?switchTo=detailansicht&back=' . $this->current_page . '&id='];
             $headline = 'Mahnung - Erledigt';
             $dc_auftrag = true;
-            $tpl = dirname(__FILE__) . '/../tpl/auftrag.tpl';
-            $menubtn = dirname(__FILE__) . '/../tpl/btn/erledigt.tpl';
+            $tpl = __DIR__ . '/../tpl/auftrag.tpl';
+            $menubtn = __DIR__ . '/../tpl/btn/erledigt.tpl';
             break;
             case 6:
             $headline = 'Inkasso - Vorschlagsliste';
@@ -950,8 +950,8 @@ class DebitConnectCore
             $vopStatus = '90';
             $status = (DC()->settings->currentSetting->statusMA);
             $frist = DC()->settings->currentSetting->fristIN;
-            $tpl = dirname(__FILE__) . '/../tpl/vorschlagliste.tpl';
-            $menubtn = dirname(__FILE__) . '/../tpl/btn/inkasso.tpl';
+            $tpl = __DIR__ . '/../tpl/vorschlagliste.tpl';
+            $menubtn = __DIR__ . '/../tpl/btn/inkasso.tpl';
             break;
             case 7:
             $headline = 'Inkasso - in Bearbeitung';
@@ -959,7 +959,7 @@ class DebitConnectCore
             $vopStatus = '95';
             $dc_auftrag = true;
             $progressBar = true;
-            $tpl = dirname(__FILE__) . '/../tpl/auftrag.tpl';
+            $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             break;
             case 8:
             $checkbox = true;
@@ -968,16 +968,16 @@ class DebitConnectCore
             $progressBar = true;
             $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm', 'text' => 'Akteneinsicht', 'href' => DC_SCRIPT . '?switchTo=detailansicht&back=' . $this->current_page . '&id='];
             $dc_auftrag = true;
-            $tpl = dirname(__FILE__) . '/../tpl/auftrag.tpl';
-            $menubtn = dirname(__FILE__) . '/../tpl/btn/erledigt.tpl';
+            $tpl = __DIR__ . '/../tpl/auftrag.tpl';
+            $menubtn = __DIR__ . '/../tpl/btn/erledigt.tpl';
             break;
             case 'papierkorb':
             $checkbox = true;
             $headline = 'Papierkorb';
             $vopStatus = '100';
             $dc_auftrag = true;
-            $tpl = dirname(__FILE__) . '/../tpl/auftrag.tpl';
-            $menubtn = dirname(__FILE__) . '/../tpl/btn/papierkorb.tpl';
+            $tpl = __DIR__ . '/../tpl/auftrag.tpl';
+            $menubtn = __DIR__ . '/../tpl/btn/papierkorb.tpl';
             break;
         }
 
@@ -1312,10 +1312,10 @@ class DebitConnectCore
         }
 
         if (DC()->get('art') == 'zatpl') {
-            $this->View('tpl', base64_decode($this->getConf('tpl_zahlungseingang', base64_encode(file_get_contents(dirname(__FILE__) . '/../tpl/bestaetigung.tpl')))));
+            $this->View('tpl', base64_decode($this->getConf('tpl_zahlungseingang', base64_encode(file_get_contents(__DIR__ . '/../tpl/bestaetigung.tpl')))));
         }
         if (DC()->get('art') == 'zetpl') {
-            $this->View('tpl', base64_decode($this->getConf('tpl_zahlungserinnerung', base64_encode(file_get_contents(dirname(__FILE__) . '/../tpl/standardtemplate.tpl')))));
+            $this->View('tpl', base64_decode($this->getConf('tpl_zahlungserinnerung', base64_encode(file_get_contents(__DIR__ . '/../tpl/standardtemplate.tpl')))));
         }
         $this->View('states', $states);
         $this->View('orderstates', $orderstates);
@@ -1324,7 +1324,7 @@ class DebitConnectCore
             $this->dataTypes->testApi();
         }
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/usersettings.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/usersettings.tpl');
     }
 
     public function HBCIWriteBackPayments()
@@ -1333,7 +1333,7 @@ class DebitConnectCore
         $this->View('doPayments', true);
         $this->View('matching_threads', DC()->getConf('matching_threads', 3, true));
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/hbciprogress.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/hbciprogress.tpl');
     }
 
     public function HBCIMatching()
@@ -1345,7 +1345,7 @@ class DebitConnectCore
         $this->View('matching_threads', DC()->getConf('matching_threads', 3, true));
         $this->View('ordercounter', count(DC()->hbci->bestellungen));
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/hbciprogress.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/hbciprogress.tpl');
         //DC()->hbci->getMatching();
     }
 
@@ -1356,7 +1356,7 @@ class DebitConnectCore
             $this->View('hbci_csv_list', $csvFiles);
         }
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/hbcicsvdata.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/hbcicsvdata.tpl');
     }
 
     public function Zahlungsabgleich()
@@ -1432,7 +1432,7 @@ class DebitConnectCore
         $this->View('umsatzData', DC()->hbci->umsaetze);
         $this->View('zaActive', $active);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/abgleich.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/abgleich.tpl');
     }
 
     public function setIgnoreAbort()
@@ -1572,7 +1572,7 @@ class DebitConnectCore
         $checkbox = true;
         $headline = 'Lastschriften - SEPA-XML Erstellen';
         //	$aktionsbtn = array("cssclass" => "button success fancyboxfullscreen","text" => "Übersicht","data-fancy-href" => DC_SCRIPT."?switchTo=overView&noncss=1&fancy=1&pkOrder=");
-        $menubtn = dirname(__FILE__) . '/../tpl/btn/dta.tpl';
+        $menubtn = __DIR__ . '/../tpl/btn/dta.tpl';
 
         $this->listView = new listView($aktionsbtn, $menubtn, $checkbox, $progressBar);
         $this->listView->sessName = "lV$type";
@@ -1594,7 +1594,7 @@ class DebitConnectCore
         $this->View('listview', $listview);
         $this->View('dtaList', $dtaCreatedList);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/dtaList.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/dtaList.tpl');
     }
 
     public function FILE_LOG($message, $logfile = 'File_LOG.txt')
@@ -1672,7 +1672,7 @@ class DebitConnectCore
         $listview = ['header' => $this->listView->createListViewHeader(DC_SCRIPT, 'Bonitätsprüfung - Protokoll'), 'table' => $this->listView->createList()];
         $this->View('listview', $listview);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/gatewaylog.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/gatewaylog.tpl');
     }
 
     public function getBoniGatewayLanguage()
@@ -1810,7 +1810,7 @@ class DebitConnectCore
         $this->View('shipping', $_shipping);
         $this->View('gateway', $gatewaySettings);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/bonigateway.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/bonigateway.tpl');
     }
 
     public function getShopId()
@@ -1859,7 +1859,7 @@ class DebitConnectCore
             $this->View('selected', $selectedProfile);
         }
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/hbciprofiles.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/hbciprofiles.tpl');
     }
 
     public function getVOPBelege()
@@ -1886,7 +1886,7 @@ class DebitConnectCore
 
         $this->View('listview', $listview);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/belege.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/belege.tpl');
     }
 
     public function getDocumentation()
@@ -1901,7 +1901,7 @@ class DebitConnectCore
                 $this->View('musterArt', $musterArt);
             }
 
-            return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/documentation.tpl');
+            return $this->smarty->fetch(__DIR__ . '/../tpl/documentation.tpl');
         } catch (Exception $e) {
             return 'Temporäre Störung : ' . $e->getMessage();
         }
@@ -1985,7 +1985,7 @@ class DebitConnectCore
         }
         $this->smarty->assign('currentLog', $logEntrys[$currentLog]);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/dashboard.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/dashboard.tpl');
     }
 
     public function akteneinsicht()
@@ -2056,7 +2056,7 @@ class DebitConnectCore
             $this->LOG('Akteneinsicht', $e, 10);
         }
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/detailansicht.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/detailansicht.tpl');
     }
 
     public function zaLOG()
@@ -2079,7 +2079,7 @@ class DebitConnectCore
         $this->View('datefilter', $dt);
         //DC()->get('datefilter') = $dt;
         $aktionsbtn = false;
-        $this->listView = new listView($aktionsbtn, dirname(__FILE__) . '/../tpl/btn/zalog.tpl', true);
+        $this->listView = new listView($aktionsbtn, __DIR__ . '/../tpl/btn/zalog.tpl', true);
         $this->listView->sessName = 'zalog';
         $this->listView->getCurrentOrder();
         $dataType['order'] = ['PK' => [false, 'umsatz.kUmsatz', 'Key', false],
@@ -2113,7 +2113,7 @@ class DebitConnectCore
         $listview = ['header' => $this->listView->createListViewHeader(DC_SCRIPT, 'Zahlungsabgleich - Protokoll'), 'table' => $this->listView->createList()];
         $this->View('listview', $listview);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/zalog.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/zalog.tpl');
     }
 
     public function logbuch()
@@ -2136,7 +2136,7 @@ class DebitConnectCore
 
         $this->View('listview', $listview);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/logbuch.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/logbuch.tpl');
     }
 
     public function addSteuerDatei()
@@ -2308,10 +2308,10 @@ class DebitConnectCore
         }
 
         if ($vopUmsatz) {
-            return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/zuordnungVOP.tpl');
+            return $this->smarty->fetch(__DIR__ . '/../tpl/zuordnungVOP.tpl');
         }
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/zuordnung.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/zuordnung.tpl');
     }
 
     public function getVOPStatusText($pkOrder)
@@ -2367,7 +2367,7 @@ class DebitConnectCore
                     $this->View($key, $value);
                 }
                 DC()->dataTypes->assignTemplateVars($pkOrder);
-                $tpl = ($this->getConf('tpl_zahlungseingang', base64_encode(file_get_contents(dirname(__FILE__) . '/../tpl/bestaetigung.tpl'))));
+                $tpl = ($this->getConf('tpl_zahlungseingang', base64_encode(file_get_contents(__DIR__ . '/../tpl/bestaetigung.tpl'))));
                 $tpl = $this->parseHTMLTemplate(base64_decode($tpl));
 
                 $htmlEMAIL = $this->smarty->fetch('string:' . $tpl . '');
@@ -2417,7 +2417,7 @@ class DebitConnectCore
         DC()->dataTypes->assignTemplateVars($pkOrder);
         switch ($this->settings->currentSetting->zeArt) {
             case '1':
-            $tpl = ($this->getConf('tpl_zahlungserinnerung', base64_encode(file_get_contents(dirname(__FILE__) . '/../tpl/standardtemplate.tpl'))));
+            $tpl = ($this->getConf('tpl_zahlungserinnerung', base64_encode(file_get_contents(__DIR__ . '/../tpl/standardtemplate.tpl'))));
             break;
             default:
             $tpl = templates::vopTPL();
@@ -2511,7 +2511,7 @@ class DebitConnectCore
             $this->View('searchres', $searchres);
         }
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/suchebestellung.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/suchebestellung.tpl');
     }
 
     public function getBelegPDF($doc)
@@ -2550,7 +2550,7 @@ class DebitConnectCore
             $this->View('profiles', $profiles);
         }
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/hbcirequest.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/hbcirequest.tpl');
     }
 
     public function syncFancy()
@@ -2558,7 +2558,7 @@ class DebitConnectCore
         $this->getSyncList();
         $this->View('synccounter', count($this->syncList));
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/sync.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/sync.tpl');
     }
 
     public function setMahnstop()
@@ -2638,7 +2638,7 @@ class DebitConnectCore
 
         $this->View('gatewaylogin', $this->boniGateway->logged_in);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/gatewayCustomer.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/gatewayCustomer.tpl');
     }
 
     public function getOverView($pkOrder, $setmahnstop = true)
@@ -2715,7 +2715,7 @@ class DebitConnectCore
         $this->View('orderData', $zeVars);
         $this->View('payments', $payments);
 
-        return $this->smarty->fetch(dirname(__FILE__) . '/../tpl/overview.tpl');
+        return $this->smarty->fetch(__DIR__ . '/../tpl/overview.tpl');
     }
 
     public function getMuster($doc)
@@ -2929,7 +2929,7 @@ class DebitConnectCore
     {
         $_lastVersion = $lastVersion;
         $lastVersion = (int) str_replace('.', '', $lastVersion);
-        $installdir = dirname(__FILE__) . '/../_install/';
+        $installdir = __DIR__ . '/../_install/';
         $installed = true;
         $files = scandir($installdir);
         $sql = [];
@@ -3025,14 +3025,14 @@ class DebitConnectCore
 
                 if (!(DC()->hasvalue('install'))) {
                     $this->View('SOFTWARELIZENZ', utf8_encode(file_get_contents('Softwarelizenzvertragsbedingungen.txt')));
-                    echo  $this->smarty->fetch(dirname(__FILE__) . '/../tpl/install.tpl');
+                    echo  $this->smarty->fetch(__DIR__ . '/../tpl/install.tpl');
                 } else {
                     if ($this->doInstallOrUpdate($dbVersion)) {
                         $this->View('SUCCESS_MSG', 'Installation abgeschlossen.');
                         $installstate = true;
                     } else {
                         $this->View('INSTALL_ERROR', 'Installation fehlgeschlagen');
-                        echo  $this->smarty->fetch(dirname(__FILE__) . '/../tpl/install.tpl');
+                        echo  $this->smarty->fetch(__DIR__ . '/../tpl/install.tpl');
                     }
                 }
             }

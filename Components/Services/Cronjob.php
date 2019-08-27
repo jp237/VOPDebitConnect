@@ -32,7 +32,7 @@ class Cronjob
             if ($View == null) {
                 return 'Missing Smarty';
             }
-            require_once dirname(__FILE__) . '/../../Components/DebitConnect/inc/DebitConnectCore.php';
+            require_once __DIR__ . '/../../Components/DebitConnect/inc/DebitConnectCore.php';
             /** @var \DebitConnectCore $core */
             $core = new \DebitConnectCore(null);
             $core->init(null);
