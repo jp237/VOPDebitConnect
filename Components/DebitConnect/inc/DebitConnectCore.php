@@ -774,7 +774,7 @@ class DebitConnectCore
         }
 
         $ret['syncText'] = $syncText;
-        $ret['belege'] = $belege;
+        $ret['belege'] = $belege; // @todo undefined!
 
         return $ret;
     }
@@ -1048,7 +1048,7 @@ class DebitConnectCore
             $regex = [];
             $_regex = DC()->get('regex');
             if (count($_regex['replace']) > 0) {
-                for ($i = 0; $i < count($_regex['replace']); ++$i) {
+                for ($i = 0, $iMax = count($_regex['replace']); $i < $iMax; ++$i) {
                     $regex[] = [$_regex['replace'][$i], $_regex['with'][$i], $_regex['comment'][$i]];
                 }
             }
@@ -1233,7 +1233,7 @@ class DebitConnectCore
         }
 
         $kundengruppe_ze = $kundengruppe;
-        for ($i = 0; $i < count($kundengruppe_ze); ++$i) {
+        for ($i = 0, $iMax = count($kundengruppe_ze); $i < $iMax; ++$i) {
             if (@in_array($kundengruppe_ze[$i]['id'], $this->settings->cronjob->ze->kundengruppe)) {
                 $kundengruppe_ze[$i]['dc_config'] = 1;
             }
@@ -1242,7 +1242,7 @@ class DebitConnectCore
         $this->View('kundengruppe_ze', $kundengruppe_ze);
 
         $kundengruppe_ma = $kundengruppe;
-        for ($i = 0; $i < count($kundengruppe_ma); ++$i) {
+        for ($i = 0, $iMax = count($kundengruppe_ma); $i < $iMax; ++$i) {
             if (@in_array($kundengruppe_ma[$i]['id'], $this->settings->cronjob->ma->kundengruppe)) {
                 $kundengruppe_ma[$i]['dc_config'] = 1;
             }
@@ -1252,27 +1252,27 @@ class DebitConnectCore
         $this->View('cronjob', $this->settings->cronjob);
 
         $mahnstopCustomerGroup = $kundengruppe;
-        for ($i = 0; $i < count($kundengruppe_ma); ++$i) {
+        for ($i = 0, $iMax = count($kundengruppe_ma); $i < $iMax; ++$i) {
             if (@in_array($mahnstopCustomerGroup[$i]['id'], $this->settings->mahnstopCustomerGroup)) {
                 $mahnstopCustomerGroup[$i]['dc_config'] = 1;
             }
         }
         $this->View('mahnstopCustomerGroup', $mahnstopCustomerGroup);
-        for ($i = 0; $i < count($payments); ++$i) {
+        for ($i = 0, $iMax = count($payments); $i < $iMax; ++$i) {
             if (count($this->settings->currentPayments) > 0) {
                 if (@in_array($payments[$i]['id'], $this->settings->currentPayments)) {
                     $payments[$i]['dc_config'] = 1;
                 }
             }
         }
-        for ($i = 0; $i < count($sepapayment); ++$i) {
+        for ($i = 0, $iMax = count($sepapayment); $i < $iMax; ++$i) {
             if (count($this->settings->currentSEPA) > 0) {
                 if (@in_array($sepapayment[$i]['id'], $this->settings->currentSEPA)) {
                     $sepapayment[$i]['dc_config'] = 1;
                 }
             }
         }
-        for ($i = 0; $i < count($vorkasse); ++$i) {
+        for ($i = 0, $iMax = count($vorkasse); $i < $iMax; ++$i) {
             if (count($this->settings->currentVorkasse) > 0) {
                 if (@in_array($vorkasse[$i]['id'], @$this->settings->currentVorkasse)) {
                     $vorkasse[$i]['dc_config'] = 1;
@@ -1283,7 +1283,7 @@ class DebitConnectCore
         $this->View('payments', $payments);
         $this->View('sepapayments', $sepapayment);
 
-        for ($i = 0; $i < count($states); ++$i) {
+        for ($i = 0, $iMax = count($states); $i < $iMax; ++$i) {
             if (count($this->settings->currentStates) > 0) {
                 if (in_array($states[$i]['id'], $this->settings->currentStates)) {
                     $states[$i]['dc_config'] = 1;
@@ -1291,7 +1291,7 @@ class DebitConnectCore
             }
         }
 
-        for ($i = 0; $i < count($orderstates); ++$i) {
+        for ($i = 0, $iMax = count($orderstates); $i < $iMax; ++$i) {
             if (count($this->settings->shipping->states) > 0) {
                 if (in_array($orderstates[$i]['id'], $this->settings->shipping->states)) {
                     $orderstates[$i]['dc_config'] = 1;
@@ -1303,7 +1303,7 @@ class DebitConnectCore
             $this->View('blackliste', DC()->settings->hbciBlacklist);
 
             $hbcicustomergroup = $kundengruppe;
-            for ($i = 0; $i < count($kundengruppe_ma); ++$i) {
+            for ($i = 0, $iMax = count($kundengruppe_ma); $i < $iMax; ++$i) {
                 if (@in_array($hbcicustomergroup[$i]['id'], $this->settings->hbciMailCustomerGroupDisable)) {
                     $hbcicustomergroup[$i]['dc_config'] = 1;
                 }
@@ -1776,7 +1776,7 @@ class DebitConnectCore
                         $b2bProjects = [];
                         $b2bcount = 0;
                         $b2ccount = 0;
-                        for ($i = 0; $i < count($projekte); ++$i) {
+                        for ($i = 0, $iMax = count($projekte); $i < $iMax; ++$i) {
                             if ($projekte[$i]->projecttype == 'B2C') {
                                 $encProjects[$b2ccount] = new stdClass();
                                 $encProjects[$b2ccount]->bezeichnung = ($projekte[$i]->bezeichnung);
@@ -1866,7 +1866,7 @@ class DebitConnectCore
     {
         $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm fancyboxfullscreen', 'text' => 'Belege Öffnen', 'data-fancy-href' => DC_SCRIPT . '?switchTo=getBeleg&fancy=1&doctype=pdf&doc='];
 
-        $this->listView = new listView($aktionsbtn, $menubtn, false);
+        $this->listView = new listView($aktionsbtn, $menubtn, false); // @todo undefined $menubtn!
 
         $this->listView->sessName = 'belege';
         $this->listView->getCurrentOrder();
@@ -2118,7 +2118,7 @@ class DebitConnectCore
 
     public function logbuch()
     {
-        $this->listView = new listView($aktionsbtn, $menubtn);
+        $this->listView = new listView($aktionsbtn, $menubtn); // @todo fix undefined $aktionsbtn, $menubtn!
         $this->listView->sessName = 'logbuch';
         $this->listView->getCurrentOrder();
 
@@ -2214,18 +2214,18 @@ class DebitConnectCore
             }
         }
         // STEUERDATEI VOP
-        if (DC()->get('submitaction') != 'setVerbuchen' && strlen($SteuerDateifromSoap) > 10 || ((DC()->hasvalue('submitSteuerDatei')) && isset($_FILES['steuerdatei']))) {
+        if ((DC()->get('submitaction') != 'setVerbuchen' && strlen($SteuerDateifromSoap) > 10) || ((DC()->hasvalue('submitSteuerDatei')) && isset($_FILES['steuerdatei']))) {
             if (strlen($SteuerDateifromSoap) > 10) {
                 $xml = simplexml_load_string($SteuerDateifromSoap);
             } else {
                 $getFile = file_get_contents($_FILES['steuerdatei']['tmp_name']);
                 $xml = simplexml_load_string($getFile);
             }
-            (float) $countSumSteuerdatei = 0.00;
-            (float) $fVorsteuerGesamt = 0.00;
+            $countSumSteuerdatei = (float) 0.00;
+            $fVorsteuerGesamt = (float) 0.00;
             foreach ($xml->rechnung as $rechnung) {
-                $countSumSteuerdatei = (float) $countSumSteuerdatei + (float) $rechnung->fZahlbetrag;
-                (float) $fVorsteuerGesamt = (float) $fVorsteuerGesamt + (float) $rechnung->fVorsteuer;
+                $countSumSteuerdatei += (float) $rechnung->fZahlbetrag;
+                $fVorsteuerGesamt += (float) $rechnung->fVorsteuer;
             }
 
             DC()->hbci->matches[DC()->get('transaction')] = null;
@@ -2800,7 +2800,7 @@ class DebitConnectCore
     public function setUserLogin($userId)
     {
         $this->loginData['logged_in'] = true;
-        $this->user = $userlogin;
+        $this->user = $userlogin; // @todo fix undefined $userlogin
         //$this->setSession();
     }
 
@@ -2915,7 +2915,7 @@ class DebitConnectCore
         $result = '';
         $string = base64_decode($string);
 
-        for ($i = 0; $i < strlen($string); ++$i) {
+        for ($i = 0, $iMax = strlen($string); $i < $iMax; ++$i) {
             $char = substr($string, $i, 1);
             $keychar = substr($key, ($i % strlen($key)) - 1, 1);
             $char = chr(ord($char) - ord($keychar));
@@ -2987,9 +2987,7 @@ class DebitConnectCore
             $this->View('installmode', 'update');
         }
 
-        $installstate = $dbVersion == DebitConnectCore::$DC_VERSION ? false : true;
-
-        return $installstate;
+        return $dbVersion != DebitConnectCore::$DC_VERSION;
     }
 
     public function getDBVersion()

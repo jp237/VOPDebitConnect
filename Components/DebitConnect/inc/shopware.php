@@ -195,7 +195,7 @@ class DC_DataTypes
             $clonedOrderRow['Auftrag'] = 'Rechnung';
             $clonedOrderRow['ordernumber'] .= '//Vorkasse';
             $data[1] = $clonedOrderRow;
-            for ($i = 2; $i <= count($rows); ++$i) {
+            for ($i = 2, $iMax = count($rows); $i <= $iMax; ++$i) {
                 $data[$i] = $rows[$i - 1];
             }
         } else {
@@ -269,7 +269,7 @@ class DC_DataTypes
         // ADDING DEBTORINFORMATIONS , LOOP
         $debtorInformation = $dom->createElement('debtorInformation');
 
-        $airline = $details['airlineContactInformation']['mainAddress'];
+        $airline = $details['airlineContactInformation']['mainAddress']; // @todo fix undefined variable $details
 
         $debtor = $dom->createElement('debtor');
         $debtor->appendChild($dom->createElement('firstname', $orderDataArray[0][$order[11]]));
@@ -953,7 +953,7 @@ class DC_DataTypes
             $params = [];
             if (isset($payment_date) && $paymentstatus > 0 && DC()->settings->currentHBCI['setpaymentdate'] > 0) {
                 $date = new DateTime($payment_date);
-                $date = $date->format(DateTime::ISO8601);
+                $date = $date->format(DateTime::ATOM);
                 $params['clearedDate'] = $date;
             } elseif ($remove && DC()->settings->currentHBCI['setpaymentdate'] > 0) {
                 $params['clearedDate'] = null;
