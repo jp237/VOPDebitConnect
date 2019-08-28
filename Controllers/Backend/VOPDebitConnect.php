@@ -61,7 +61,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
 
                 $usr = [];
 
-                if (($cfg->hasvalue('ajaxwritepayments'))) {
+                if ($cfg->hasvalue('ajaxwritepayments')) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     header('Content-Type: application/json');
                     if ($usr['logged_in']) {
@@ -73,7 +73,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
 
                     DC()->setSession();
                     exit();
-                } elseif (($cfg->hasvalue('export'))) {
+                } elseif ($cfg->hasvalue('export')) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     $export = DC()->Export;
 
@@ -86,7 +86,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
 
                     echo $exportData;
                     exit();
-                } elseif (($cfg->hasvalue('downloadDTA'))) {
+                } elseif ($cfg->hasvalue('downloadDTA')) {
                     $usr['logged_in'] = $cfg->checkLogin();
 
                     $rs = DC()->db->singleResult('SELECT * from dc_dtacreatelog where id = ' . (int) $cfg->get('downloadDTA'));
@@ -99,7 +99,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     echo DebitConnectCore::decrypt($rs['dtaFile']);
                     DC()->setSession();
                     exit();
-                } elseif (($cfg->hasvalue('ajaxmatching'))) {
+                } elseif ($cfg->hasvalue('ajaxmatching')) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     header('Content-Type: application/json');
                     if ($usr['logged_in']) {
@@ -115,7 +115,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     echo json_encode($status);
                     DC()->setSession();
                     exit();
-                } elseif (($cfg->hasvalue('syncList'))) {
+                } elseif ($cfg->hasvalue('syncList')) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     header('Content-Type: application/json');
                     DC()->getSyncList();
@@ -123,7 +123,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     echo json_encode($outputData);
                     DC()->setSession();
                     exit();
-                } elseif (($cfg->hasvalue('ajaxsync'))) {
+                } elseif ($cfg->hasvalue('ajaxsync')) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     header('Content-Type: application/json');
                     $outputData['order'] = DC()->syncList[0]['cAuftragsNr'];

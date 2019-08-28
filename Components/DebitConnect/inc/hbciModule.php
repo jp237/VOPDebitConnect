@@ -19,13 +19,15 @@ use Fhp\FinTs;
 use Fhp\Model\StatementOfAccount\Statement;
 use Fhp\Model\StatementOfAccount\Transaction;
 
+require_once __DIR__ . '/BuchungsPos.php';
+
 class HBCI_MODULE
 {
     /** @var FinTs */
     public $hbci;
-    public $umsaetze;
-    public $matches;
-    public $bestellungen;
+    public $umsaetze = [];
+    public $matches = [];
+    public $bestellungen = [];
     public $imported = 0;
     public $payed = [];
     public $verbucht = 0;
@@ -292,9 +294,6 @@ class HBCI_MODULE
                                 $buchung = new stdClass();
                                 $buchung->kUmsatz = $kUmsatz;
                                 $buchung->pkOrder = $buchungsPos->pkOrder;
-                                try {
-                                } catch (Exception $e) {
-                                }
                                 $buchung->nType = 7;
                                 $buchung->fWert = '-' . $buchungsPos->bankruecklast;
                                 $dbBuchung[] = $buchung;
@@ -340,7 +339,7 @@ class HBCI_MODULE
                         }
 
                         ++$this->verbucht;
-                        $this->verbuchtsum = $this->verbuchtsum + $umsatz['fWert'];
+                        $this->verbuchtsum += $umsatz['fWert'];
                         $updateUmsatz = new stdClass();
                         $updateUmsatz->nVerbucht = 1;
                         $updateUmsatz->dAbgleich = date('Y-m-d H:i:s');
@@ -400,7 +399,7 @@ class HBCI_MODULE
             $pwd = DC()->db->singleResult("select `datavalue` from dc_gatewaymeta where art = 'passwd' and shopID = " . DC()->getShopId());
             $username = $usr['datavalue'];
             $passwd = md5($pwd['datavalue']);
-            if (strlen($username) > 0 && strlen($passwd) == 32 && $passwd != 'd41d8cd98f00b204e9800998ecf8427e') {
+            if ($username != '' && strlen($passwd) === 32 && $passwd !== 'd41d8cd98f00b204e9800998ecf8427e') {
                 $value = ceil($value);
                 $soap = new SoapClient('https://webservice.eaponline.de/webservice.php?wsdl', ['encoding' => 'UTF-8', 'cache_wsdl' => WSDL_CACHE_NONE, 'trace' => 1]);
                 $res = $soap->resetKreditLimit($username, $passwd, $ordernumber, $value);
@@ -415,60 +414,62 @@ class HBCI_MODULE
 
     public function checkKomplettBezahlt($umsatz)
     {
-        foreach (@$this->matches[$umsatz['kUmsatz']]['pos'] as $key => $match) {
-            $checkvalue = 0;
-            if ($match->zugeordnet) {
-                $checkvalue = $checkvalue + $match->Zahlbetrag + $match->mahnkosten + $match->Ueberzahlung + $match->skonto + $match->bankruecklast + $match->bankruecklastkosten + $match->erstattung + $match->gutschrift;
-                $payment_submitted = false;
-                $orderstatus = null;
-                $partialpaymentstatus = null;
-                $paymentstatus = null;
-                $commentary = '';
-                $orderStatusHistory = null;
-                $paymentStatusHistory = null;
-                $dBuchung = null;
+        if (isset($this->matches[$umsatz['kUmsatz']]) && is_array($this->matches[$umsatz['kUmsatz']]['pos'])) {
+            foreach ($this->matches[$umsatz['kUmsatz']]['pos'] as $key => $match) {
+                $checkvalue = 0;
+                if ($match->zugeordnet) {
+                    $checkvalue += $match->Zahlbetrag + $match->mahnkosten + $match->Ueberzahlung + $match->skonto + $match->bankruecklast + $match->bankruecklastkosten + $match->erstattung + $match->gutschrift;
+                    $payment_submitted = false;
+                    $orderstatus = null;
+                    $partialpaymentstatus = null;
+                    $paymentstatus = null;
+                    $commentary = '';
+                    $orderStatusHistory = null;
+                    $paymentStatusHistory = null;
+                    $dBuchung = null;
 
-                if ($checkvalue > 0 && $checkvalue < $match->bestellung['offen'] && $match->bestellung['offen'] > 0 && $umsatz['nType'] == 0) {
-                    $partialpaymentstatus = DC()->settings->currentHBCI['teilzahlung'];
-                    if (!DC()->dataTypes->changeOrder($match->pkOrder, $dBuchung, $paymentstatus, $orderstatus, $commentary, $partialpaymentstatus)) {
-                        return false;
+                    if ($checkvalue > 0 && $checkvalue < $match->bestellung['offen'] && $match->bestellung['offen'] > 0 && $umsatz['nType'] == 0) {
+                        $partialpaymentstatus = DC()->settings->currentHBCI['teilzahlung'];
+                        if (!DC()->dataTypes->changeOrder($match->pkOrder, $dBuchung, $paymentstatus, $orderstatus, $commentary, $partialpaymentstatus)) {
+                            return false;
+                        }
+
+                        $this->writeBackPaymentHistory($umsatz, $match);
+
+                        $this->resetKreditLimit($checkvalue, $match->bestellung['ordernumber'], $match->bestellung['id']);
+                        if (!in_array($match->pkOrder, $this->halfPayed)) {
+                            $this->halfPayed[] = $match->pkOrder;
+                            DC()->sendZahlungseingang($match->pkOrder, 1);
+                        }
+                    } else if ($checkvalue > 0 && $checkvalue >= $match->bestellung['offen'] && $match->bestellung['offen'] > 0 && $umsatz['nType'] == 0) {
+                        // ORDER BESTELLSTATUS BEI VORKASSE ÄNDERN
+                        $dBuchung = $umsatz['dBuchung'];
+                        $settingOrderStatus = DC()->settings->currentHBCI['orderstatus'];
+                        $paymentstatus = DC()->settings->currentHBCI['statusbezahlt'];
+                        if ($settingOrderStatus > 0 && in_array($match->bestellung['paymentID'], DC()->settings->currentVorkasse)) {
+                            $orderstatus = $settingOrderStatus;
+                        }
+
+                        if (!DC()->dataTypes->changeOrder($match->pkOrder, $umsatz['dBuchung'], $paymentstatus, $orderstatus, $commentary, $partialpaymentstatus)) {
+                            return false;
+                        }
+
+                        $this->writeBackPaymentHistory($umsatz, $match);
+
+                        $this->resetKreditLimit($checkvalue, $match->bestellung['ordernumber'], $match->bestellung['id']);
+
+                        if (!in_array($match->pkOrder, $this->payed)) {
+                            $this->payed[] = $match->pkOrder;
+                            DC()->sendZahlungseingang($match->pkOrder, 2);
+                        }
+                    } else if ($umsatz['nType'] == 1 && $match->bankruecklast > 0 && $match->bankruecklastkosten > 0) {
+                        $paymentstatus = DC()->settings->currentHBCI['bankruecklast'];
+                        if (!DC()->dataTypes->changeOrder($match->pkOrder, null, $paymentstatus, $orderstatus, $commentary, $partialpaymentstatus)) {
+                            return false;
+                        }
+
+                        $this->writeBackPaymentHistory($umsatz, $match, 5);
                     }
-
-                    $this->writeBackPaymentHistory($umsatz, $match);
-
-                    $this->resetKreditLimit($checkvalue, $match->bestellung['ordernumber'], $match->bestellung['id']);
-                    if (!in_array($match->pkOrder, $this->halfPayed)) {
-                        $this->halfPayed[] = $match->pkOrder;
-                        DC()->sendZahlungseingang($match->pkOrder, 1);
-                    }
-                } elseif ($checkvalue > 0 && $checkvalue >= $match->bestellung['offen'] && $match->bestellung['offen'] > 0 && $umsatz['nType'] == 0) {
-                    // ORDER BESTELLSTATUS BEI VORKASSE ÄNDERN
-                    $dBuchung = $umsatz['dBuchung'];
-                    $settingOrderStatus = DC()->settings->currentHBCI['orderstatus'];
-                    $paymentstatus = DC()->settings->currentHBCI['statusbezahlt'];
-                    if ($settingOrderStatus > 0 && in_array($match->bestellung['paymentID'], DC()->settings->currentVorkasse)) {
-                        $orderstatus = $settingOrderStatus;
-                    }
-
-                    if (!DC()->dataTypes->changeOrder($match->pkOrder, $umsatz['dBuchung'], $paymentstatus, $orderstatus, $commentary, $partialpaymentstatus)) {
-                        return false;
-                    }
-
-                    $this->writeBackPaymentHistory($umsatz, $match);
-
-                    $this->resetKreditLimit($checkvalue, $match->bestellung['ordernumber'], $match->bestellung['id']);
-
-                    if (!in_array($match->pkOrder, $this->payed)) {
-                        $this->payed[] = $match->pkOrder;
-                        DC()->sendZahlungseingang($match->pkOrder, 2);
-                    }
-                } elseif ($umsatz['nType'] == 1 && $match->bankruecklast > 0 && $match->bankruecklastkosten > 0) {
-                    $paymentstatus = DC()->settings->currentHBCI['bankruecklast'];
-                    if (!DC()->dataTypes->changeOrder($match->pkOrder, null, $paymentstatus, $orderstatus, $commentary, $partialpaymentstatus)) {
-                        return false;
-                    }
-
-                    $this->writeBackPaymentHistory($umsatz, $match, 5);
                 }
             }
         }
@@ -491,9 +492,9 @@ class HBCI_MODULE
 
     public function flushdata()
     {
-        $this->umsaetze = null;
-        $this->matches = null;
-        $this->bestellungen = null;
+        $this->umsaetze = [];
+        $this->matches = [];
+        $this->bestellungen = [];
         $this->payed = [];
         $this->verbucht = 0;
         $this->verbuchtsum = 0;
@@ -535,9 +536,16 @@ class HBCI_MODULE
         return DC()->db->getSQLResults("SELECT CAST(SUM(dc_tzahlung.fWert) as DECIMAL (12,2)) as fWert,DATE_FORMAT(dc_umsatz.dBuchung,'%d.%m.%Y') as datum FROM `dc_tzahlung` LEFT JOIN dc_umsatz on dc_umsatz.kUmsatz = dc_tzahlung.kUmsatz WHERE `pkOrder` = " . (int) $pkOrder . '  group by dc_tzahlung.kUmsatz,dc_umsatz.dBuchung ');
     }
 
+    /**
+     * @param $ref
+     * @param $compare
+     * @param $punkte
+     * @param bool $debug
+     * @param int $doublePointsMinStringLength
+     * @return float|int
+     */
     public function regExPerson($ref, $compare, $punkte, $debug = false, $doublePointsMinStringLength = 0)
     {
-        $debug = false; // @todo remove?
         $copy_ref_orgi = $ref;
         if (strlen($ref) < 3) {
             return 0;
@@ -549,28 +557,30 @@ class HBCI_MODULE
         $matched = 0;
         $ref = strtoupper($ref);
         $compare = strtoupper($compare);
-        if ($matched == 0 && $ref == $compare) {
+        if ($ref === $compare) {
             $matched = $punkte;
         }
-        if ($matched == 0 && preg_match("/$compare/", $ref)) {
+        if ($matched === 0 && preg_match("/$compare/", $ref)) {
             $matched = $punkte;
         }
         if ($debug) {
             echo $ref . " <> $compare = $matched<br>";
         }
+
         $ref = $this->clearchars($ref);
         $compare = $this->clearchars($compare);
-        if ($matched == 0 && $ref == $compare) {
+        if ($matched === 0 && $ref === $compare) {
             $matched = $punkte;
         }
-        if ($matched == 0 && preg_match("/$compare/", $ref)) {
+        if ($matched === 0 && preg_match("/$compare/", $ref)) {
             $matched = $punkte;
         }
         if ($debug) {
             echo $ref . " <> $compare = $matched<br>";
         }
         $regex = DC()->regExList;
-        if ($matched == 0 && count($regex) > 0) {
+
+        if ($matched === 0 && count($regex) > 0) {
             foreach ($regex as $reg) {
                 $copyref = $ref;
                 $copyref = preg_replace('/' . $reg[0] . '/i', $reg[1], $copyref);
@@ -584,8 +594,8 @@ class HBCI_MODULE
             }
         }
 
-        if ($matched > 0 & $doublePointsMinStringLength > 0 && strlen($compare) == $doublePointsMinStringLength) {
-            $matched = $matched * 2;
+        if ($matched > 0 & $doublePointsMinStringLength > 0 && strlen($compare) === $doublePointsMinStringLength) {
+            $matched *= 2;
         }
 
         return $matched;
@@ -593,16 +603,9 @@ class HBCI_MODULE
 
     public function clearchars($inputstring)
     {
-        $inputstring = str_replace(' ', '', $inputstring);
-        $inputstring = str_replace('-', '', $inputstring);
-        $inputstring = str_replace('.', '', $inputstring);
-        $inputstring = str_replace('_', '', $inputstring);
-        $inputstring = str_replace('Ö', 'OE', $inputstring);
-        $inputstring = str_replace('&', 'UND', $inputstring);
-        $inputstring = str_replace('Ä', 'AE', $inputstring);
-        $inputstring = str_replace('Ü', 'UE', $inputstring);
+        $replacement = array(' ' => '', '-' => '', '.' => '', '_' => '', 'Ö' => 'OE', '&' => 'UND', 'Ä' => 'AE', 'Ü' => 'UE');
 
-        return $inputstring;
+        return str_replace(array_keys($replacement), array_values($replacement), $inputstring);
     }
 
     public function regExAuftragData($ref, $compare, $debug = false)
@@ -681,7 +684,7 @@ class HBCI_MODULE
         $umsatz = $this->umsaetze[$kUmsatz];
         $bestellung = $this->bestellungen[$pkOrder];
         $betrag = $this->matchBetrag($umsatz, $bestellung);
-        $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']] = new buchungsPos($bestellung['id'], true, $umsatz, $bestellung, $betrag, 100);
+        $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']] = new BuchungsPos($bestellung['id'], true, $umsatz, $bestellung, $betrag, 100);
     }
 
     public function getMatching($ajaxSingleSync = 0, $cronJob = false)
@@ -701,7 +704,9 @@ class HBCI_MODULE
             if ($ajaxSingleSync > 0 && $count < $ajaxSingleSync) {
                 // SINGLE SYNC,
                 continue;
-            } elseif ($ajaxSingleSync > 0 && $count > $ajaxSingleSync) {
+            }
+
+            if ($ajaxSingleSync > 0 && $count > $ajaxSingleSync) {
                 break;
                 //BREAK
             }
@@ -710,9 +715,9 @@ class HBCI_MODULE
                 // CHECK BLACKLISTE
                 $foundBlacklist = false;
                 foreach (DC()->settings->hbciBlacklist as $blackListEntry) {
-                    if ($blackListEntry->art == 0 && strpos(strtoupper($umsatz['cName']), strtoupper($blackListEntry->cString)) !== false) {
+                    if ($blackListEntry->art == 0 && stripos($umsatz['cName'], $blackListEntry->cString) !== false) {
                         $foundBlacklist = true;
-                    } elseif ($blackListEntry->art == 1 && strpos(strtoupper($umsatz['cVzweck']), strtoupper($blackListEntry->cString)) !== false) {
+                    } elseif ($blackListEntry->art == 1 && stripos($umsatz['cVzweck'], $blackListEntry->cString) !== false) {
                         $foundBlacklist = true;
                     }
                 }
@@ -729,7 +734,7 @@ class HBCI_MODULE
                 continue;
             }
 
-            if (strlen($umsatz['cName']) > 0 && strpos(strtoupper($umsatz['cName']), strtoupper('V.O.P')) !== false) {
+            if ($umsatz['cName'] != '' && stripos($umsatz['cName'], 'V.O.P') !== false) {
                 // VOP UMSÄTZE NUR MANUELLE BUCHUNG..
                 continue;
             }
@@ -737,14 +742,14 @@ class HBCI_MODULE
             $dateUmsatz = new DateTime($umsatz['dBuchung']);
 
             $matching = 0;
-            if ($this->matches[$umsatz['kUmsatz']]['verbucht'] == true) {
+            if ($this->matches[$umsatz['kUmsatz']]['verbucht']) {
                 continue;
             }
 
             $selected = false;
             $this->matches[$umsatz['kUmsatz']]['selected'] = 0;
 
-            foreach (@$this->bestellungen as $bestellung) {
+            foreach ($this->bestellungen as $bestellung) {
                 $dateBestellung = new DateTime(substr($bestellung['ordertime'], 0, 10));
 
                 if ($dateUmsatz < $dateBestellung) {
@@ -763,11 +768,13 @@ class HBCI_MODULE
                 $betrag = 0;
                 $skonto = 0;
 
+                $debugRegex = false;
+
                 $extraTreffergesamt = 0;
                 $personExtrapunkte = 0;
                 $matching = 0;
                 // PERSONDATEN
-                $nachname = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['lastname'], 10, $debugRegex); // @todo fix undefined $debugRegex
+                $nachname = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['lastname'], 10, $debugRegex);
                 $vorname = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['firstname'], 10, $debugRegex);
                 $firma = $this->regExPerson($umsatz['cVzweck'] . $umsatz['cName'], $bestellung['firma'], 10, $debugRegex);
                 $kundennr = $this->regExPerson($umsatz['cVzweck'], $bestellung['KundenNr'], 5, $debugRegex, 6);
@@ -779,10 +786,11 @@ class HBCI_MODULE
                 $betrag = $this->matchBetrag($umsatz, $bestellung);
 
                 // ADD ALL MATCHES
-                $matching = $matching + $rechnungnr + $auftragnr + $vorname + $nachname + $firma + $kundennr + $betrag['punkte'];
+                $matching += $rechnungnr + $auftragnr + $vorname + $nachname + $firma + $kundennr + $betrag['punkte'];
 
+                $match = $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']];
                 if ($matching >= $eindeutig) {
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']] = new buchungsPos($bestellung['id'], true, $umsatz, $bestellung, $betrag, $matching);
+                    $match = new BuchungsPos($bestellung['id'], true, $umsatz, $bestellung, $betrag, $matching);
 
                     if (!$selected) {
                         $this->matches[$umsatz['kUmsatz']]['selected'] = $bestellung['id'];
@@ -792,18 +800,19 @@ class HBCI_MODULE
                     if (!$selected) {
                         $this->matches[$umsatz['kUmsatz']]['selected'] = $bestellung['id'];
                     }
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']] = new buchungsPos($bestellung['id'], false, $umsatz, $bestellung, $betrag, $matching);
+                    $match = new BuchungsPos($bestellung['id'], false, $umsatz, $bestellung, $betrag, $matching);
                 }
                 if ($matching >= $aehnlich) {
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedfirma = $firma > 0 ? true : null;
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedfirstname = $vorname > 0 ? true : null;
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedlastname = $nachname > 0 ? true : null;
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedrechnungsnr = $rechnungnr > 0 ? true : null;
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedauftragsnr = $auftragnr > 0 ? true : null;
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedbetrag = $betrag['punkte'] > 0 ? true : null;
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedskonto = $skonto > 0 ? true : null;
-                    $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']]->matchedkundennr = $kundennr > 0 ? true : null;
+                    $match->matchedfirma = $firma > 0 ? true : null;
+                    $match->matchedfirstname = $vorname > 0 ? true : null;
+                    $match->matchedlastname = $nachname > 0 ? true : null;
+                    $match->matchedrechnungsnr = $rechnungnr > 0 ? true : null;
+                    $match->matchedauftragsnr = $auftragnr > 0 ? true : null;
+                    $match->matchedbetrag = $betrag['punkte'] > 0 ? true : null;
+                    $match->matchedskonto = $skonto > 0 ? true : null;
+                    $match->matchedkundennr = $kundennr > 0 ? true : null;
                 }
+                $this->matches[$umsatz['kUmsatz']]['pos'][$bestellung['id']] = $match;
             }
             $sum = $this->returnBuchungsBetrag($umsatz);
 
@@ -829,7 +838,7 @@ class HBCI_MODULE
         if (isset($this->matches[$umsatz['kUmsatz']]['pos'])) {
             foreach (@$this->matches[$umsatz['kUmsatz']]['pos'] as $key => $match) {
                 if ($match->zugeordnet) {
-                    $val = $val + $match->Zahlbetrag + $match->mahnkosten + $match->Ueberzahlung + $match->bankruecklast + $match->bankruecklastkosten + $match->erstattung + $match->gutschrift;
+                    $val += $match->Zahlbetrag + $match->mahnkosten + $match->Ueberzahlung + $match->bankruecklast + $match->bankruecklastkosten + $match->erstattung + $match->gutschrift;
                 }
             }
         }
@@ -845,13 +854,13 @@ class HBCI_MODULE
         if (count($this->matches[$umsatz['kUmsatz']]['pos']) > 0) {
             foreach (@$this->matches[$umsatz['kUmsatz']]['pos'] as $key => $match) {
                 if ($match->zugeordnet) {
-                    $returnArray['value'] = $returnArray['value'] + $match->Zahlbetrag + $match->mahnkosten + $match->Ueberzahlung + $match->bankruecklast + $match->bankruecklastkosten + $match->erstattung + $match->gutschrift;
+                    $returnArray['value'] += $match->Zahlbetrag + $match->mahnkosten + $match->Ueberzahlung + $match->bankruecklast + $match->bankruecklastkosten + $match->erstattung + $match->gutschrift;
                 }
             }
         }
 
         $returnArray['value'] = number_format($returnArray['value'], 2, '.', '');
-        if (strlen($umsatz['cName']) > 0 && strpos(strtoupper($umsatz['cName']), strtoupper('V.O.P')) !== false) {
+        if ($umsatz['cName'] != '' && stripos($umsatz['cName'], 'V.O.P') !== false) {
             //DONOTHING..
         } elseif ($umsatz['fWert'] != $returnArray['value'] && $umsatz['nType'] == 0) {
             $this->matches[$umsatz['kUmsatz']]['verbuchen'] = false;
@@ -860,7 +869,7 @@ class HBCI_MODULE
             } else {
                 $returnArray['class'] = 'orange';
             }
-        } elseif (($returnArray['value'] != ($umsatz['fWert'] * -1) && $umsatz['nType'] == 1)) {
+        } elseif ($returnArray['value'] != ($umsatz['fWert'] * -1) && $umsatz['nType'] == 1) {
             $this->matches[$umsatz['kUmsatz']]['verbuchen'] = false;
             if (number_format(($umsatz['fWert'] * -1), 2, '.', '') < $returnArray['value']) {
                 $returnArray['class'] = 'error';
@@ -882,7 +891,7 @@ class HBCI_MODULE
 
         $file = [];
         foreach ($files as $filename) {
-            if (strtoupper(substr($filename, -3)) == 'CSV') {
+            if (strtoupper(substr($filename, -3)) === 'CSV') {
                 if (!file_exists($fileFolder . $filename) || !is_readable($fileFolder . $filename)) {
                     continue;
                 }
@@ -894,21 +903,21 @@ class HBCI_MODULE
         return $file;
     }
 
-    public function abrufUmsatzCSV($delimiter = ';', $enclosure = '', $escape = '', $filename)
+    public function abrufUmsatzCSV($filename, $delimiter = ';', $enclosure = '', $escape = '')
     {
         $fileFolder = './CSVImport/';
         $fileFolderLog = './CSVImport/Log/';
         //$files = scandir("./CSVImport/");
 
-        if (strlen($filename) > 0) {
-            if (strtoupper(substr($filename, -3)) == 'CSV') {
+        if ($filename != '') {
+            if (strtoupper(substr($filename, -3)) === 'CSV') {
                 if (!file_exists($fileFolder . $filename) || !is_readable($fileFolder . $filename)) {
                     return;
                 }
 
                 $header = null;
                 $data = [];
-                if (($handle = fopen($fileFolder . $filename, 'r')) !== false) {
+                if (($handle = fopen($fileFolder . $filename, 'rb')) !== false) {
                     while (($row = fgetcsv($handle, 1000, $delimiter)) !== false) {
                         if (!$header) {
                             $header = $row;
@@ -933,7 +942,7 @@ class HBCI_MODULE
                     $identity = md5($insert->cVzweck . $insert->cName . $insert->fWert . $insert->dBuchung . $insert->IdKonto);
                     $insert->IdUmsatz = ($identity);
 
-                    if (strlen($insert->dBuchung) > 0) {
+                    if ($insert->dBuchung != '') {
                         $checkValue = DC()->db->singleResult(" SELECT count(kUmsatz) as zaehler from dc_umsatz where IdUmsatz = '" . $insert->IdUmsatz . "' and IdKonto = '" . $insert->IdKonto . "'");
                         if ($checkValue['zaehler'] == '0') {
                             if (DC()->db->dbInsert('dc_umsatz', $insert, false)) {
@@ -963,7 +972,7 @@ class HBCI_MODULE
             $konten = $this->hbci->getSEPAAccounts();
 
             foreach ($konten as $konto) {
-                if ($konto->getIban() == $selectedKonto) {
+                if ($konto->getIban() === $selectedKonto) {
                     /** @var $umsaetze */
                     $umsaetze = $this->hbci->getStatementOfAccount($konto, $from, $to);
 
@@ -976,7 +985,7 @@ class HBCI_MODULE
                         try {
                             foreach ($statement->getTransactions() as $transaction) {
                                 $date = $transaction->getBookingDate()->format('Y-m-d');
-                                $fWert = ($transaction->getCreditDebit() == Transaction::CD_DEBIT ? '-' : '') . number_format(floatval($transaction->getAmount()), 2, '.', '');
+                                $fWert = ($transaction->getCreditDebit() === Transaction::CD_DEBIT ? '-' : '') . number_format((float)$transaction->getAmount(), 2, '.', '');
                                 $name = str_replace('@', '', $transaction->getName());
                                 $description = $transaction->getDescription1() . ' ' . $transaction->getDescription2();
                                 $vwz = explode('SVWZ+', $description);
@@ -987,7 +996,7 @@ class HBCI_MODULE
                                 $vwz = explode('SVWZ+', $transaction->getDescription1() . ' ' . $transaction->getDescription2());
                                 $vwz = explode('EREF+', $vwz[1]);
                                 $vwz = str_replace('@', '', $vwz[0]);
-                                if (strlen($vwz) == 0) {
+                                if ($vwz == '') {
                                     // PRINTING RAW DATA
                                     $vwz = $transaction->getDescription1() . ' ' . $transaction->getDescription2();
                                 }
@@ -1039,92 +1048,15 @@ class HBCI_MODULE
             $bic = $konto->getBic();
             $iban = $konto->getIban();
 
-            $ret[] = ['BIC' => $bic,
-                          'IBAN' => $iban,
-                          'enabled' => $this->IBANActive($konto->getIban()) ? 1 : 0,
-                          'VWZ' => $this->getVWZ($konto->getIban()),
-                          'OWNER' => $this->getOwner($konto->getIban()),
-                     ];
+            $ret[] = [
+                'BIC' => $bic,
+                'IBAN' => $iban,
+                'enabled' => $this->IBANActive($konto->getIban()) ? 1 : 0,
+                'VWZ' => $this->getVWZ($konto->getIban()),
+                'OWNER' => $this->getOwner($konto->getIban()),
+            ];
         }
 
         return $ret;
-    }
-}
-
-class buchungsPos
-{
-    public $zugeordnet;
-    public $pkOrder;
-    public $fWert;
-    public $fWertOrig;
-    public $RechnungsNr;
-    public $AuftragNr;
-    public $RechnungsBetrag;
-    public $Offen;
-    public $Zahlbetrag = '0.00';
-    public $Ueberzahlung = '0.00';
-    public $skonto = '0.00';
-    public $mahnkosten = '0.00';
-    public $richtung;
-    public $bankruecklastkosten = '0.00';
-    public $bankruecklast = '0.00';
-    public $erstattung = '0.00';
-    public $gutschrift = '0.00';
-    public $verbucht = false;
-    public $bestellung;
-    public $steuererstattung = '0.00';
-
-    public $matchedfirma = null;
-    public $matchedfirstname = null;
-    public $matchedlastname = null;
-    public $matchedrechnungsnr = null;
-    public $matchedauftragsnr = null;
-    public $matchedbetrag = null;
-    public $matchedskonto = null;
-    public $matchedkundennr = null;
-    public $matchedvalue = 0;
-    public $vopUmsatz = false;
-    public $vopBeleg = null;
-
-    public function __construct($pkOrder, $zugeordnet, $umsatz, $bestellung, $matchBetrag, $matchedvalue, $vopUmsatz = false, $beleg = null)
-    {
-        $zahlung = number_format(str_replace('-', '', $umsatz['fWert']), 2, '.', '');
-        $this->richtung = preg_match('/-/', $umsatz['fWert']) ? '-' : '+';
-        $this->fWert = number_format($zahlung, 2, '.', '');
-        $this->Offen = number_format($bestellung['offen'], 2, '.', '');
-        $this->Zahlbetrag = number_format($matchBetrag['fWert'], 2, '.', '');
-        if ($this->richtung == '+' && $this->Offen < 0 && !$vopUmsatz) {
-            $this->Zahlbetrag = '0.00';
-        }
-        if ($matchBetrag['mahngeb'] > 0 || $matchBetrag['mahngeb'] < 0) {
-            $this->mahnkosten = number_format($matchBetrag['mahngeb'], 2, '.', '');
-        }
-        if ($matchBetrag['skonto'] > 0) {
-            $this->skonto = number_format($matchBetrag['skonto'], 2, '.', '');
-        }
-        if ($matchBetrag['bankruecklast'] > 0) {
-            $this->bankruecklast = number_format($matchBetrag['bankruecklast'], 2, '.', '');
-        }
-        if ($matchBetrag['bankruecklastkosten'] > 0) {
-            $this->bankruecklastkosten = number_format($matchBetrag['bankruecklastkosten'], 2, '.', '');
-        }
-        if ($matchBetrag['gutschrift'] > 0) {
-            $this->gutschrift = number_format($matchBetrag['gutschrift'], 2, '.', '');
-        }
-        if ($matchBetrag['erstattung'] > 0) {
-            $this->erstattung = number_format($matchBetrag['erstattung'], 2, '.', '');
-        }
-        if ($matchBetrag['steuererstattung'] > 0) {
-            $this->steuererstattung = number_format($matchBetrag['steuererstattung'], 2, '.', '');
-        }
-        $this->fWertOrig = number_format($this->fWert, 2, '.', '');
-        $this->pkOrder = $pkOrder;
-        $this->zugeordnet = $zugeordnet;
-        $this->bestellung = $bestellung;
-        $this->matchedvalue = $matchedvalue;
-        if ($beleg != null) {
-            $this->beleg = $beleg;
-        }
-        $this->vopUmsatz = $vopUmsatz;
     }
 }
