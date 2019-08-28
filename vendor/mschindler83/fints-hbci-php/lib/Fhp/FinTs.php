@@ -31,7 +31,7 @@ class FinTs
     const DEFAULT_COUNTRY_CODE = 280;
 
     /** @var LoggerInterface */
-    protected $logger;
+    public $logger;
     /** @var  string */
     protected $server;
     /** @var int */

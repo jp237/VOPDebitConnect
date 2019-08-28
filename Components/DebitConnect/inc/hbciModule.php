@@ -36,10 +36,22 @@ class HBCI_MODULE
     public $selectedProfile;
     public $matchedDTA = null;
 
+    /** @var \Psr\Log\VOPLogger */
+    public $logger;
+
+    public function __construct()
+    {
+        $this->logger = new \Psr\Log\VOPLogger();
+    }
+
     public function setHBCIData($url, $blz, $alias, $pin)
     {
-        $this->hbci = new FinTs($url, 443, $blz, $alias, $pin);
+
+        $this->logger = new \Psr\Log\VOPLogger();
+
+        $this->hbci = new FinTs($url, 443, $blz, $alias, $pin,$this->logger);
     }
+
 
     public function initProfileById($id)
     {
@@ -53,7 +65,7 @@ class HBCI_MODULE
     public function setHBCIProfile($profileObject)
     {
         if (is_object($profileObject)) {
-            $this->hbci = new FinTS($profileObject->profileData->url, 443, $profileObject->profileData->blz, $profileObject->profileData->alias, $profileObject->profileData->pin);
+            $this->hbci = new FinTS($profileObject->profileData->url, 443, $profileObject->profileData->blz, $profileObject->profileData->alias, $profileObject->profileData->pin,$this->logger);
             $this->selectedProfile = $profileObject;
         } else {
             $this->hbci = null;
@@ -957,7 +969,7 @@ class HBCI_MODULE
 
                     /* @var Statement $statement */
                     if (DC()->hasvalue('debug')) {
-                        print_r($this->hbci->getLogger());
+                        print_r($this->logger);
                     }
 
                     foreach ($umsaetze->getStatements() as $statement) {
