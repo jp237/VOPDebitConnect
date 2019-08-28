@@ -689,12 +689,12 @@ class HBCI_MODULE
 
     public function getMatching($ajaxSingleSync = 0, $cronJob = false)
     {
+        DC()->hbci->UmsaetzeFromDB($cronJob);
         DC()->dataTypes->getZahlungsabgleichBestellungen();
         $dateNow = new DateTime(date('Y-m-d'));
         $dateSixmonth = $dateNow->modify('- 6month');
 
         DC()->setIgnoreAbort();
-        //DC()->hbci->matches = array();
         $eindeutig = DC()->getConf('matched', 30, true);
         $aehnlich = DC()->getConf('similar', 20, true);
         $count = 0;

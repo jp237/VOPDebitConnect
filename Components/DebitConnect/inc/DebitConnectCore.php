@@ -2147,6 +2147,7 @@ class DebitConnectCore
 
     public function zahlungsabgleichManuell()
     {
+        DC()->hbci->UmsaetzeFromDB(false);
         DC()->dataTypes->getZahlungsabgleichBestellungen();
         $SteuerDateifromSoap = '';
 
