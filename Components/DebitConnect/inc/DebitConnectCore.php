@@ -25,6 +25,7 @@ require __DIR__ . '/defines.php';
 require __DIR__ . '/api.php';
 require __DIR__ . '/createDTA.php';
 require __DIR__ . '/BoniGateway.php';
+require __DIR__ . '/VopLogger.php';
 
 class DebitConnectCore
 {
@@ -220,9 +221,9 @@ class DebitConnectCore
     public function getSettings($shop = 0)
     {
         if ($this->hbci instanceof HBCI_MODULE === false) {
-            $this->hbci = new HBCI_MODULE();
-        }
 
+        }
+        $this->hbci = new HBCI_MODULE();
         if ($this->settings == null) {
             $this->settings = new shopsettings($this->db);
         }
@@ -1385,7 +1386,8 @@ class DebitConnectCore
                 $to = new DateTime(DC()->get('bis'));
 
                 DC()->hbci->abrufUmsatz($ProfileItem[0], $ProfileItem[1], $from, $to);
-                $logger = (DC()->hbci->hbci->getLogger());
+
+                $logger = DC()->hbci->logger;
                 if (count($logger->msg_error) > 0) {
                     $errormsg = '';
                     foreach ($logger->msg_error as $message) {
@@ -1846,7 +1848,8 @@ class DebitConnectCore
                 }
             }
             if (DC()->hbci->hbci != null) {
-                $logger = (DC()->hbci->hbci->getLogger());
+
+                $logger = DC()->hbci->logger;
                 if (count($logger->msg_error) > 0) {
                     $errormsg = '';
                     foreach ($logger->msg_error as $message) {
