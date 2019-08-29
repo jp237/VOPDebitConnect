@@ -15,15 +15,15 @@
  * Handelsregister HRA20499, Koblenz
  */
 
-include __DIR__ . '/listView.php';
-include __DIR__ . '/cronjob.php';
+require __DIR__ . '/listView.php';
+require __DIR__ . '/cronjob.php';
 require __DIR__ . '/shopware.php';
-include __DIR__ . '/db.php';
-include __DIR__ . '/shopsettings.php';
+require __DIR__ . '/db.php';
+require __DIR__ . '/shopsettings.php';
 require __DIR__ . '/hbciModule.php';
 require __DIR__ . '/defines.php';
 require __DIR__ . '/api.php';
-require __DIR__ . '/createDTA.php';
+require __DIR__ . '/DTA.php';
 require __DIR__ . '/BoniGateway.php';
 require __DIR__ . '/VopLogger.php';
 
@@ -71,7 +71,7 @@ class DebitConnectCore
 
     public function hasvalue($value)
     {
-        if ($this->request == null) {
+        if ($this->request === null) {
             return false;
         }
 
@@ -80,7 +80,7 @@ class DebitConnectCore
 
     public function get($value)
     {
-        if ($this->request == null) {
+        if ($this->request === null) {
             return null;
         }
 
@@ -146,10 +146,8 @@ class DebitConnectCore
             if ($status < 100) {
                 $insert->dtSend = date('Y-m-d H:i:s');
             }
-            if ($status == 100) {
-                if ($exists['VOPStatus'] > 0) {
-                    $insert->oldVOPStatus = $exists['VOPStatus'];
-                }
+            if (($status == 100) && $exists['VOPStatus'] > 0) {
+                $insert->oldVOPStatus = $exists['VOPStatus'];
             }
 
             return $exists['checkval'] == 0 ? DC()->db->dbInsert('dc_auftrag', $insert, false) : DC()->db->dbUpdate('dc_auftrag', $insert, 'pkOrder = ' . $pkOrder, false);
@@ -237,7 +235,7 @@ class DebitConnectCore
             if ($changeShop > 0) {
                 $this->setConf('selectedShop', $changeShop, true);
                 $this->settings->selectedShop = $changeShop;
-                $this->hbci->matches = null;
+                $this->hbci->matches = [];
             }
             $this->settings->flushsettings();
         }
@@ -263,7 +261,7 @@ class DebitConnectCore
         }
 
         $this->checkRegistered();
-        $this->regExList = json_decode(DC()->getConf('regex', ''));
+        $this->regExList = json_decode(DC()->getConf('regex', ''), true);
         $this->checkLastSync();
     }
 
@@ -283,7 +281,7 @@ class DebitConnectCore
 
     public function zeAuftrag($worker = false)
     {
-        if ((DC()->hasvalue('sendZahlungserinnerung')) && (DC()->hasvalue('cbx'))) {
+        if (DC()->hasvalue('sendZahlungserinnerung') && DC()->hasvalue('cbx')) {
             foreach (DC()->get('cbx') as $rows) {
                 $this->sendZahlungserinnerung($rows, false);
             }
@@ -303,7 +301,7 @@ class DebitConnectCore
 
     public function maAuftrag()
     {
-        if ((DC()->hasvalue('sendMahnung')) && (DC()->hasvalue('cbx'))) {
+        if (DC()->hasvalue('sendMahnung') && DC()->hasvalue('cbx')) {
             if ($this->checkRegistered()) {
                 foreach (DC()->get('cbx') as $rows) {
                     $this->sendMahnung($rows);
@@ -360,7 +358,7 @@ class DebitConnectCore
             $user = $this->settings->registration['vopUser'];
             $token = md5($this->settings->registration['vopToken']);
             $res = $soap->newMahnung($user, $token, $auftragpos['csv'], $auftragpos['checksum'], $pkOrder, $document);
-            if ($res->status == 'ValidOrder' || $res->status == 'Duplicate') {
+            if ($res->status === 'ValidOrder' || $res->status === 'Duplicate') {
                 if ($this->setVOPAuftrag(55, $pkOrder)) {
                     $this->setVOPAuftragDetail($pkOrder);
                     $this->Log('Mahnung', 'Mahnung versendet', 0, (int) $pkOrder);
@@ -380,7 +378,6 @@ class DebitConnectCore
 
     public function getRechnungSyncXML($pkOrder)
     {
-        $count = 0;
         $rechnungen = DC()->db->getSQLResults(' SELECT kLaufnr,dGebucht from dc_rechnung where pkOrder = ' . (int) $pkOrder);
 
         $XML = "<xml version='1.0' encoding='utf-8'>
@@ -506,7 +503,7 @@ class DebitConnectCore
          'pass' => md5($syncObject['vopToken']),
          'art' => $data['cArt'],
          'cRechnungsNr' => $syncObject['cRechnungsNr'] ? $syncObject['cRechnungsNr'] : $syncObject['cAuftragsNr'],
-         'cKorrekturNr' => $data['cArt'] == 'Korrektur' ? $data['cNr'] : '',
+         'cKorrekturNr' => $data['cArt'] === 'Korrektur' ? $data['cNr'] : '',
          'dErstellt' => $dateVOP,
          'nZahlungsziel' => '',
          'nInkassoStatus' => '',
@@ -538,7 +535,7 @@ class DebitConnectCore
                     $vopParams['cBezahlt'],$vopParams['cKundenNr'],$vopParams['cFirma'],$vopParams['cAnrede'],$vopParams['cTitel'],$vopParams['cVorname'],$vopParams['cName'],$vopParams['cStrasse'],$vopParams['cPLZ'],$vopParams['cOrt'],
                         $vopParams['cLand'], $vopParams['cTel'], $vopParams['cFax'], $vopParams['cEMail'], $vopParams['cMobil'], $vopParams['cZHaenden'], $vopParams['cGeburtstag'], $vopParams['nDebitorennr'], $vopParams['cAdressZusatz'], $vopParams['cSperre'], $vopParams['kRechnung'], $vopParams['Betrag'], $vopParams['cmd']);
 
-        if ($res->status != 'ValidEntry') {
+        if ($res->status !== 'ValidEntry') {
             $logEntry = [
                     'request' => $vopParams,
                     'response' => $res,
@@ -554,20 +551,20 @@ class DebitConnectCore
             $this->cronJob->Log('AddChange', 'Meldung ' . $vopParams['cmd'] . ' ' . $vopParams['cRechnungsNr'] . ' ' . $vopParams['dErstellt'] . ' ' . $vopParams['Betrag'] . ' erfolgreich ', null, 0, $syncObject['pkOrderAuftrag']);
         }
 
-        if ($cmd == 'delete') {
+        if ($cmd === 'delete') {
             $query = " DELETE FROM dc_auftragdetail where cNr = '" . DC()->db->dbEscape($data['cNr']) . "' and pkOrder = " . (int) $data['pkOrder'] . " AND cArt = '" . DC()->db->dbEscape($data['cArt']) . "' AND kDetail = " . (int) $data['kDetail'];
 
             return  DC()->db->dbQuery($query);
-        } elseif ($cmd == 'update') {
+        } elseif ($cmd === 'update') {
             $update = new stdClass();
             $update->fWert = $data['fWert'];
             $update->tstamp = $data['datum'];
 
             return DC()->db->dbUpdate('dc_auftragdetail', $update, " cNr = '" . DC()->db->dbEscape($data['cNr']) . "' and pkOrder = " . (int) $data['pkOrder'] . " AND cArt = '" . DC()->db->dbEscape($data['cArt']) . "' AND kDetail = " . (int) $data['kDetail']);
-        } elseif ($cmd == 'new') {
+        } elseif ($cmd === 'new') {
             $newEntry = new stdClass();
             foreach ($data as $key => $value) {
-                if ($key == 'datum') {
+                if ($key === 'datum') {
                     $key = 'tstamp';
                 }
                 $newEntry->{$key} = $value;
@@ -616,7 +613,7 @@ class DebitConnectCore
             $update->lastSync = date('Ymd');
             $this->db->dbUpdate('dc_status', $update, 'pkOrder = ' . (int) $auftrag['pkOrderAuftrag'], false);
 
-            if ($res->Error == 'success') {
+            if ($res->Error === 'success') {
                 $syncData = simplexml_load_string(base64_decode($res->synch));
                 if ($syncData->count > 0) {
                     foreach ($syncData->rechnung as $rgRow) {
@@ -794,7 +791,7 @@ class DebitConnectCore
                 $user = $this->settings->registration['vopUser'];
                 $token = md5($this->settings->registration['vopToken']);
                 $res = $soap->newInkasso($user, $token, $auftragpos['csv'], $auftragpos['checksum'], $pkOrder, $document);
-                if ($res->status == 'ValidOrder' || $res->status == 'Duplicate') {
+                if ($res->status === 'ValidOrder' || $res->status === 'Duplicate') {
                     if ($this->setVOPAuftrag(95, $pkOrder)) {
                         $this->setVOPAuftragDetail($pkOrder);
                         $this->Log('Inkasso', 'Inkassoauftrag erteilt', 0, (int) $pkOrder);
@@ -814,21 +811,21 @@ class DebitConnectCore
 
     public function sendPapierkorb()
     {
-        if ((DC()->hasvalue('resetPapierkorb')) && (DC()->hasvalue('cbx'))) {
+        if (DC()->hasvalue('resetPapierkorb') && DC()->hasvalue('cbx')) {
             foreach (DC()->get('cbx') as $rows) {
                 if ($this->setVOPAuftrag(101, $rows)) {
                     $this->LOG('Papierkorb', count(DC()->get('cbx')) . 'Rechnungen wiederhergestellt');
                 }
             }
         }
-        if ((DC()->hasvalue('sendTrash')) && (DC()->hasvalue('cbx'))) {
+        if (DC()->hasvalue('sendTrash') && DC()->hasvalue('cbx')) {
             foreach (DC()->get('cbx') as $rows) {
                 if ($this->setVOPAuftrag(1000, $rows)) {
                     $this->LOG('Papierkorb', count(DC()->get('cbx')) . 'Rechnungen endgültig verschoben');
                 }
             }
         }
-        if ((DC()->hasvalue('sendPapierkorb')) && (DC()->hasvalue('cbx'))) {
+        if (DC()->hasvalue('sendPapierkorb') && DC()->hasvalue('cbx')) {
             foreach (DC()->get('cbx') as $rows) {
                 if ($this->setVOPAuftrag(100, $rows)) {
                     $this->LOG('Papierkorb', count(DC()->get('cbx')) . 'Rechnungen verschoben');
@@ -839,7 +836,7 @@ class DebitConnectCore
 
     public function inAuftrag()
     {
-        if ((DC()->hasvalue('sendInkasso')) && (DC()->hasvalue('cbx'))) {
+        if (DC()->hasvalue('sendInkasso') && DC()->hasvalue('cbx')) {
             if ($this->checkRegistered()) {
                 foreach (DC()->get('cbx') as $rows) {
                     $this->sendInkasso($rows);
@@ -891,11 +888,12 @@ class DebitConnectCore
 
     public function getListView($type)
     {
-        $headline = '';
         $this->sendPapierkorb();
         $this->zeAuftrag(false);
         $this->maAuftrag(false);
         $this->inAuftrag(false);
+
+        $headline = '';
         $progressBar = false;
         $dc_auftrag = false;
         $vopStatus = 0;
@@ -903,6 +901,7 @@ class DebitConnectCore
         $aktionsbtn = null;
         $menubtn = false;
         $checkbox = false;
+
         switch ($type) {
             case 1:
             $checkbox = true;
@@ -914,12 +913,14 @@ class DebitConnectCore
             $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm  fancyboxfullscreen', 'text' => 'Vorschau', 'data-fancy-href' => DC_SCRIPT . '?switchTo=vorschau&noncss=1&fancy=1&order='];
             $menubtn = __DIR__ . '/../tpl/btn/zahlungserinnerung.tpl';
             break;
+
             case 2:
             $vopStatus = '39';
             $headline = 'Zahlungserinnerung - Versendet';
             $dc_auftrag = true;
             $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             break;
+
             case 3:
             $checkbox = true;
             $headline = 'Mahnung - Vorschlagsliste';
@@ -929,6 +930,7 @@ class DebitConnectCore
             $tpl = __DIR__ . '/../tpl/vorschlagliste.tpl';
             $menubtn = __DIR__ . '/../tpl/btn/mahnung.tpl';
             break;
+
             case 4:
             $headline = 'Mahnung - in Bearbeitung';
             $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm', 'text' => 'Akteneinsicht', 'href' => DC_SCRIPT . '?switchTo=detailansicht&back=' . $this->current_page . '&id='];
@@ -936,6 +938,7 @@ class DebitConnectCore
             $dc_auftrag = true;
             $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             break;
+
             case 5:
             $checkbox = true;
             $vopStatus = '59';
@@ -945,6 +948,7 @@ class DebitConnectCore
             $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             $menubtn = __DIR__ . '/../tpl/btn/erledigt.tpl';
             break;
+
             case 6:
             $headline = 'Inkasso - Vorschlagsliste';
             $checkbox = true;
@@ -954,6 +958,7 @@ class DebitConnectCore
             $tpl = __DIR__ . '/../tpl/vorschlagliste.tpl';
             $menubtn = __DIR__ . '/../tpl/btn/inkasso.tpl';
             break;
+
             case 7:
             $headline = 'Inkasso - in Bearbeitung';
             $aktionsbtn = ['cssclass' => 'btn btn-info btn-sm', 'text' => 'Akteneinsicht', 'href' => DC_SCRIPT . '?switchTo=detailansicht&back=' . $this->current_page . '&id='];
@@ -962,6 +967,7 @@ class DebitConnectCore
             $progressBar = true;
             $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             break;
+
             case 8:
             $checkbox = true;
             $headline = 'Inkasso - Erledigt';
@@ -972,6 +978,7 @@ class DebitConnectCore
             $tpl = __DIR__ . '/../tpl/auftrag.tpl';
             $menubtn = __DIR__ . '/../tpl/btn/erledigt.tpl';
             break;
+
             case 'papierkorb':
             $checkbox = true;
             $headline = 'Papierkorb';
@@ -989,17 +996,15 @@ class DebitConnectCore
         $this->listView->sessName = $type;
 
         if ($dc_auftrag) {
-            $dataType = $this->dataTypes->getAuftragList(
-                            $this->listView->filter,
-                                [
-                                'column' => $this->listView->order,
-                                'direction' => $this->listView->orderDir, ],
-                                $vopStatus, $limitfilter, $this->listView->fieldModes);
+            $dataType = $this->dataTypes->getAuftragList($this->listView->filter,
+                ['column' => $this->listView->order, 'direction' => $this->listView->orderDir],
+                $vopStatus, $limitfilter, $this->listView->fieldModes
+            );
         } else {
-            $dataType = $this->dataTypes->getOPOSList(
-                                false, $this->listView->filter, $status,
-                                        [
-                                            'column' => $this->listView->order, 'direction' => $this->listView->orderDir, ], $vopStatus, $frist, $limitfilter, null, 0, $this->listView->fieldModes);
+            $dataType = $this->dataTypes->getOPOSList(false, $this->listView->filter, $status,
+                ['column' => $this->listView->order, 'direction' => $this->listView->orderDir,],
+                $vopStatus, $frist, $limitfilter, null, 0, $this->listView->fieldModes
+            );
         }
 
         $this->listView->columns = $dataType['order'];
@@ -1033,10 +1038,10 @@ class DebitConnectCore
         $CompanyData = DC()->dataTypes->getShopCompanyData();
         $this->View('CompanyData', $CompanyData);
 
-        $registerMethod = ($this->db->singleResult('SELECT count(shopID) as registeredshops from dc_firma'));
+        $registerMethod = $this->db->singleResult('SELECT count(shopID) as registeredshops from dc_firma');
         $registered = false;
 
-        if ((DC()->hasvalue('SKRSkonto'))) {
+        if (DC()->hasvalue('SKRSkonto')) {
             $this->setConf('conf_skr_buchungpos', json_encode(DC()->get('skr')));
             $this->setConf('conf_skonto', json_encode(DC()->get('skonto')));
             $this->setConf('conf_skr_payment', json_encode(DC()->get('skrpayment')));
@@ -1045,7 +1050,7 @@ class DebitConnectCore
         $this->settings->getSKR();
 
         $this->View('skr', $this->settings->SKRSkonto);
-        if ((DC()->hasvalue('setmatching')) && (DC()->hasvalue('savematching'))) {
+        if (DC()->hasvalue('setmatching') && DC()->hasvalue('savematching')) {
             $regex = [];
             $_regex = DC()->get('regex');
             if (count($_regex['replace']) > 0) {
@@ -1055,7 +1060,7 @@ class DebitConnectCore
             }
 
             DC()->setConf('regex', json_encode($regex));
-            $this->regExList = json_decode(DC()->getConf('regex', json_encode(DC()->get('regex'))));
+            $this->regExList = json_decode(DC()->getConf('regex', json_encode(DC()->get('regex'))), true);
             DC()->setConf('matched', DC()->get('eindeutig'), true);
             DC()->setConf('similar', DC()->get('aehnlich'), true);
             DC()->setConf('matching_threads', DC()->get('matching_threads'), true);
@@ -1071,31 +1076,29 @@ class DebitConnectCore
         $this->View('matching_threads', $matching_threads);
         $this->View('matching_ignore_paymentstate', $matching_ignore_paymentstate);
 
-        if ((DC()->hasvalue('deleteBlacklist'))) {
-            if (DC()->get('deleteId') >= 0) {
-                if (count($blacklist) == 1) {
-                    $newBlackList = [];
-                } else {
-                    unset($blacklist[DC()->get('deleteId')]);
-                    $newBlackList = array_values($blacklist);
-                }
-                $blacklist = $newBlackList;
-                $this->setConf('hbciBlacklist', json_encode($blacklist), true);
-                DC()->settings->hbciBlacklist = json_decode($this->getConf('hbciBlacklist', json_encode([]), true));
+        if (DC()->hasvalue('deleteBlacklist') && DC()->get('deleteId') >= 0) {
+            if (count($blacklist) === 1) {
+                $newBlackList = [];
+            } else {
+                unset($blacklist[DC()->get('deleteId')]);
+                $newBlackList = array_values($blacklist);
             }
+            $blacklist = $newBlackList;
+            $this->setConf('hbciBlacklist', json_encode($blacklist), true);
+            DC()->settings->hbciBlacklist = json_decode($this->getConf('hbciBlacklist', json_encode([]), true), true);
         }
-        if ((DC()->hasvalue('setblacklist'))) {
+        if (DC()->hasvalue('setblacklist')) {
             // BLACKLISTE
             $_blacklist = DC()->get('blacklist');
-            if (strlen($_blacklist['art']) > 0 && strlen($_blacklist['cString']) > 0) {
+            if ($_blacklist['art'] != '' && $_blacklist['cString'] != '') {
                 $newEntry = ['art' => $_blacklist['art'], 'cString' => $_blacklist['cString']];
                 $blacklist[] = $newEntry;
                 $this->setConf('hbciBlacklist', json_encode($blacklist), true);
-                DC()->settings->hbciBlacklist = json_decode($this->getConf('hbciBlacklist', json_encode([]), true));
+                DC()->settings->hbciBlacklist = json_decode($this->getConf('hbciBlacklist', json_encode([]), true), true);
             }
         }
 
-        if ((DC()->hasvalue('userregistration'))) {
+        if (DC()->hasvalue('userregistration')) {
             $handle = md5('D3B!7C0NN3CT_' . date('Ymd') . 'AUTH_TOKEN');
             $soap = $this->API->mahnwesen();
             if (DC()->get('activate')) {
@@ -1107,7 +1110,7 @@ class DebitConnectCore
                     try {
                         $res = $soap->activateNewCustomer($user[0], $pwd, $handle);
 
-                        if ($res->activated == 'yes') {
+                        if ($res->activated === 'yes') {
                             $dbUpdate = new stdClass();
                             $dbUpdate->activated = 1;
                             $this->db->dbUpdate('dc_firma', $dbUpdate, 'shopID = ' . (int) $this->settings->selectedShop);
@@ -1169,14 +1172,12 @@ class DebitConnectCore
                 $this->getSettings();
             }
         }
-        if (DC()->hasvalue('updatetemplate')) {
-            if (DC()->hasvalue('tpl')) {
-                if (DC()->get('art') == 'zetpl') {
-                    $this->View('tpl_saved', $this->setConf('tpl_zahlungserinnerung', base64_encode(DC()->get('tpl'))));
-                }
-                if (DC()->get('art') == 'zatpl') {
-                    $this->View('tpl_saved', $this->setConf('tpl_zahlungseingang', base64_encode(DC()->get('tpl'))));
-                }
+        if (DC()->hasvalue('updatetemplate') && DC()->hasvalue('tpl')) {
+            if (DC()->get('art') === 'zetpl') {
+                $this->View('tpl_saved', $this->setConf('tpl_zahlungserinnerung', base64_encode(DC()->get('tpl'))));
+            }
+            if (DC()->get('art') === 'zatpl') {
+                $this->View('tpl_saved', $this->setConf('tpl_zahlungseingang', base64_encode(DC()->get('tpl'))));
             }
         }
         if (DC()->hasvalue('updatesettings') || DC()->hasvalue('updatehbci')) {
@@ -1209,10 +1210,10 @@ class DebitConnectCore
                 } else {
                     $this->View('registered', true);
                 }
-                $regvalues = json_decode($shops['registerJson']);
+                $regvalues = json_decode($shops['registerJson'], true);
 
-                if (isset($regvalues)) {
-                    foreach (@$regvalues as $key => $value) {
+                if (is_array($regvalues)) {
+                    foreach ($regvalues as $key => $value) {
                         $this->View($key, $value);
                     }
                 }
@@ -1300,7 +1301,7 @@ class DebitConnectCore
             }
         }
 
-        if ($setting == 'hbci') {
+        if ($setting === 'hbci') {
             $this->View('blackliste', DC()->settings->hbciBlacklist);
 
             $hbcicustomergroup = $kundengruppe;
@@ -1312,10 +1313,10 @@ class DebitConnectCore
             $this->View('hbcicustomergroup', $hbcicustomergroup);
         }
 
-        if (DC()->get('art') == 'zatpl') {
+        if (DC()->get('art') === 'zatpl') {
             $this->View('tpl', base64_decode($this->getConf('tpl_zahlungseingang', base64_encode(file_get_contents(__DIR__ . '/../tpl/bestaetigung.tpl')))));
         }
-        if (DC()->get('art') == 'zetpl') {
+        if (DC()->get('art') === 'zetpl') {
             $this->View('tpl', base64_decode($this->getConf('tpl_zahlungserinnerung', base64_encode(file_get_contents(__DIR__ . '/../tpl/standardtemplate.tpl')))));
         }
         $this->View('states', $states);
@@ -1364,20 +1365,20 @@ class DebitConnectCore
     {
         $hbciProfiles = $this->settings->hbciProfiles;
         if ($this->hasvalue('resetMatches')) {
-            $this->hbci->matches = null;
+            $this->hbci->matches = [];
         }
 
         $csvFiles = DC()->hbci->getCSVList();
         if (count($csvFiles) > 0) {
             $this->View('hbci_csv_list', $csvFiles);
         }
-        if ((DC()->hasvalue('CSVFile')) && (DC()->hasvalue('GetCSV'))) {
-            if (strtoupper(substr(DC()->get('CSVFile'), -3)) == 'CSV') {
-                DC()->hbci->abrufUmsatzCSV(';', '', '', DC()->get('CSVFile'));
+        if (DC()->hasvalue('CSVFile') && DC()->hasvalue('GetCSV')) {
+            if (strtoupper(substr(DC()->get('CSVFile'), -3)) === 'CSV') {
+                DC()->hbci->abrufUmsatzCSV(DC()->get('CSVFile'), ';', '', '');
             }
         }
 
-        $active = count($hbciProfiles) > 0 ? true : false;
+        $active = count($hbciProfiles) > 0;
         if ($active) {
             $this->View('konten', DC()->settings->currentHBCI['konten']);
             if (@DC()->get('requesthbci')) {
@@ -1397,7 +1398,7 @@ class DebitConnectCore
                 }
             }
         }
-        if ((DC()->hasvalue('HBCIDelete'))) {
+        if (DC()->hasvalue('HBCIDelete')) {
             if (count(DC()->get('selected')) > 0) {
                 foreach (DC()->get('selected') as $key => $item) {
                     $update = new stdClass();
@@ -1407,7 +1408,7 @@ class DebitConnectCore
                 }
             }
         }
-        if ((DC()->hasvalue('HBCIdelUmsatz'))) {
+        if (DC()->hasvalue('HBCIdelUmsatz')) {
             /*
             foreach(DC()->get('selected'] as $key => $item)
                 {
@@ -1419,12 +1420,10 @@ class DebitConnectCore
         DC()->hbci->UmsaetzeFromDB();
         DC()->dataTypes->getZahlungsabgleichBestellungen();
 
-        if ((DC()->hasvalue('HBCIAction'))) {
-            if ((DC()->hasvalue('HBCItoDB'))) {
-                //DC()->get('HBCItoDB') = null;
-                $this->hbci->writeBackUmsatz();
-                $this->Zahlungsabgleich();
-            }
+        if (DC()->hasvalue('HBCIAction') && DC()->hasvalue('HBCItoDB')) {
+            //DC()->get('HBCItoDB') = null;
+            $this->hbci->writeBackUmsatz();
+            $this->Zahlungsabgleich();
         }
 
         $this->View('Umsatzcounter', count(DC()->hbci->umsaetze));
@@ -1446,7 +1445,7 @@ class DebitConnectCore
 
     public function createDTA()
     {
-        if ((DC()->hasvalue('createDTA')) && count(DC()->get('cbx')) > 0) {
+        if (DC()->hasvalue('createDTA') && count(DC()->get('cbx')) > 0) {
             $selectedKonto = explode(';', DC()->get('konto'));
             if (count($selectedKonto) < 2) {
                 $this->View('ERROR_MSG', 'Fehler bei Kontoauswahl');
@@ -1505,7 +1504,7 @@ class DebitConnectCore
 
                                 // Retrieve the resulting XML
                                 $addedTransfers[] = ['id' => $pkOrder, 'amount' => $dtaRow['amount']];
-                                $amountTransfer = $amountTransfer + $dtaRow['amount'];
+                                $amountTransfer += $dtaRow['amount'];
                             } else {
                                 print_r($dtaRow);
                                 $this->View('ERROR_MSG', 'Fehler in Daten ' . print_r($dtaRow, true));
@@ -1522,7 +1521,7 @@ class DebitConnectCore
                         $dbEntrySepaFile->pkOrder = 0;
                         $dbEntrySepaFile->nType = 0;
                         $dbEntrySepaFile->dateCreated = date('Y-m-d');
-                        $dbEntrySepaFile->dtaFile = DebitConnectCore::encrypt($dtaXML->xmlFile->asXML());
+                        $dbEntrySepaFile->dtaFile = self::encrypt($dtaXML->xmlFile->asXML());
                         $dbEntrySepaFile->cTransaktion = $transactionName;
                         $dbEntrySepaFile->idProfile = $profile->id;
                         $dbEntrySepaFile->idKonto = $konto->IBAN;
@@ -1559,7 +1558,7 @@ class DebitConnectCore
         }
         $dtaCreatedList = $this->db->getSQLResults('select * from dc_dtacreatelog left outer join dc_umsatz on dc_umsatz.kUmsatz = dc_dtacreatelog.kUmsatz where dc_dtacreatelog.nType = 0 and shopId = ' . (int) $this->getShopId() . ' order by id desc ');
         $profiles = $this->settings->hbciProfiles;
-        $active = count($profiles) > 0 ? true : false;
+        $active = count($profiles) > 0;
         if ($active) {
             $this->View('profiles', $profiles);
         }
@@ -1601,7 +1600,7 @@ class DebitConnectCore
 
     public function FILE_LOG($message, $logfile = 'File_LOG.txt')
     {
-        $logreader = fopen($logfile, 'a+');
+        $logreader = fopen($logfile, 'ab+');
         fwrite($logreader, $message . "\r\n");
         fclose($logreader);
     }
@@ -1624,7 +1623,7 @@ class DebitConnectCore
         if ($this->zalogdate == null) {
             $this->zalogdate = date('d.m.Y');
         }
-        if ((DC()->hasvalue('datefilter'))) {
+        if (DC()->hasvalue('datefilter')) {
             $this->zalogdate = DC()->get('datefilter');
         }
         $dt = new DateTime($this->zalogdate);
@@ -1634,24 +1633,25 @@ class DebitConnectCore
         $this->listView = new listView($aktionsbtn, '', false);
         $this->listView->sessName = 'bonilog';
         $this->listView->getCurrentOrder();
-        $dataType['order'] = ['PK' => [false, 'logtab.logid', 'Key', false],
-                                    'customer_vname' => [true, 'logtab.customer_vname', 'Vorname', true],
-                                    'customer_nname' => [true, 'logtab.customer_nname', 'Nachname', true],
-                                    'customer_firma' => [true, 'logtab.customer_firma', 'Firma', true],
-                                    'tstamp' => [true, 'logtab.tstamp', 'Datum', false],
-                                    'zahlungsart' => [true, 'logtab.zahlungsart', 'Zahlungsart', true],
-                                    'cArt' => [true, 'logtab.cArt', 'Art', true],
-                                    'ResponseText' => [true, 'logtab.responseText', 'Antwort', false],
-                                    'scoreinfo' => [true, 'logtab.scoreInfo', 'ScoreInfo', false],
-                                    'cssclass' => [false, 'cssclass', 'cssclass', false],
-                                    ];
+        $dataType['order'] = [
+            'PK' => [false, 'logtab.logid', 'Key', false],
+            'customer_vname' => [true, 'logtab.customer_vname', 'Vorname', true],
+            'customer_nname' => [true, 'logtab.customer_nname', 'Nachname', true],
+            'customer_firma' => [true, 'logtab.customer_firma', 'Firma', true],
+            'tstamp' => [true, 'logtab.tstamp', 'Datum', false],
+            'zahlungsart' => [true, 'logtab.zahlungsart', 'Zahlungsart', true],
+            'cArt' => [true, 'logtab.cArt', 'Art', true],
+            'ResponseText' => [true, 'logtab.responseText', 'Antwort', false],
+            'scoreinfo' => [true, 'logtab.scoreInfo', 'ScoreInfo', false],
+            'cssclass' => [false, 'cssclass', 'cssclass', false],
+        ];
 
         $this->listView->columns = $dataType['order'];
         $dataType['query'] = "SELECT logtab.*, logid as id , CASE WHEN logtab.ergebnis = 1 THEN 'error' ELSE 'success' END as cssclass from dc_gatewaylog  as logtab where 1=1 ";
         $setFilter = false;
-        if ((DC()->hasvalue('setFilter'))) {
+        if (DC()->hasvalue('setFilter')) {
             foreach (DC()->get('setFilter') as $key => $value) {
-                if (strlen($value) > 0) {
+                if ($value != '') {
                     $setFilter = true;
                     $dataType['query'] .= " AND $key LIKE '%" . DC()->db->dbEscape($value) . "%' ";
                 }
@@ -1705,7 +1705,7 @@ class DebitConnectCore
         $gatewaySettings = $this->getBoniGatewaySettings();
         $gatewayLanguage = $this->getBoniGatewayLanguage();
 
-        if ((DC()->hasvalue('gateway'))) {
+        if (DC()->hasvalue('gateway')) {
             foreach (DC()->get('gateway') as $key => $value) {
                 if (array_key_exists($key, $gatewaySettings)) {
                     $update = new stdClass();
@@ -1722,7 +1722,7 @@ class DebitConnectCore
             }
         }
 
-        if ((DC()->hasvalue('lang'))) {
+        if (DC()->hasvalue('lang')) {
             foreach (DC()->get('lang') as $key => $value) {
                 if ($gatewayLanguage[$key]['shopID'] > 0) {
                     $update = new stdClass();
@@ -1767,7 +1767,7 @@ class DebitConnectCore
             $gwpwd = md5($gatewaySettings['passwd']);
             if (strlen($gwusr) > 0 && strlen($gwpwd) == 32) {
                 $result = $client->getGatewayLogin($gwusr, $gwpwd);
-                if ($result->status == 'True') {
+                if ($result->status === 'True') {
                     $this->View('eap_state', 'LOGIN');
                     $projekte = $client->getProject($gwusr, $gwpwd, '1');
 
@@ -1778,18 +1778,18 @@ class DebitConnectCore
                         $b2bProjects = [];
                         $b2bcount = 0;
                         $b2ccount = 0;
-                        for ($i = 0, $iMax = count($projekte); $i < $iMax; ++$i) {
-                            if ($projekte[$i]->projecttype == 'B2C') {
+                        foreach ($projekte as $iValue) {
+                            if ($iValue->projecttype === 'B2C') {
                                 $encProjects[$b2ccount] = new stdClass();
-                                $encProjects[$b2ccount]->bezeichnung = ($projekte[$i]->bezeichnung);
+                                $encProjects[$b2ccount]->bezeichnung = ($iValue->bezeichnung);
                                 $encProjects[$b2ccount]->row = $b2ccount;
-                                $encProjects[$b2ccount]->projectvalue = ($projekte[$i]->projectvalue);
+                                $encProjects[$b2ccount]->projectvalue = ($iValue->projectvalue);
                                 ++$b2ccount;
                             } else {
                                 $b2bProjects[$b2bcount] = new stdClass();
-                                $b2bProjects[$b2bcount]->bezeichnung = ($projekte[$i]->bezeichnung);
+                                $b2bProjects[$b2bcount]->bezeichnung = ($iValue->bezeichnung);
                                 $b2bProjects[$b2bcount]->row = $b2bcount;
-                                $b2bProjects[$b2bcount]->projectvalue = ($projekte[$i]->projectvalue);
+                                $b2bProjects[$b2bcount]->projectvalue = ($iValue->projectvalue);
                                 ++$b2bcount;
                             }
                         }
@@ -1822,7 +1822,7 @@ class DebitConnectCore
 
     public function hbciProfiles()
     {
-        if ((DC()->hasvalue('newProfile')) && strlen(DC()->get('ProfileName')) > 0) {
+        if (DC()->hasvalue('newProfile') && DC()->get('ProfileName') != '') {
             $entry = new stdClass();
             $entry->profileName = DC()->get('ProfileName');
             $entry->shopID = $this->getShopId();
@@ -1832,15 +1832,15 @@ class DebitConnectCore
 
         $profiles = $this->settings->getHBCIProfiles();
 
-        if ((DC()->hasvalue('updateProfile')) && (DC()->hasvalue('profile'))) {
+        if (DC()->hasvalue('updateProfile') && DC()->hasvalue('profile')) {
             $this->settings->updateProfile((int) DC()->get('getProfileId'), DC()->get('profile'));
             $profiles = $this->settings->getHBCIProfiles();
         }
         $this->View('profiles', $profiles);
-        if ((DC()->hasvalue('getProfileId'))) {
+        if (DC()->hasvalue('getProfileId')) {
             // BEI GEWÄHLTEM PROFIL HBCI ABRUF FÜR KONTEN DURCHFÜHREN
             $selectedProfile = $profiles[DC()->get('getProfileId')];
-            if (strlen($selectedProfile->profileData->blz) > 0 && strlen($selectedProfile->profileData->pin) > 0 && strlen($selectedProfile->profileData->url) > 0 && strlen($selectedProfile->profileData->alias) > 0) {
+            if ($selectedProfile->profileData->blz != '' && $selectedProfile->profileData->pin != '' && $selectedProfile->profileData->url != '' && $selectedProfile->profileData->alias != '') {
                 try {
                     $this->View('konten', DC()->hbci->returnKonten($selectedProfile));
                 } catch (Exception $e) {
@@ -1899,7 +1899,7 @@ class DebitConnectCore
             $soap = $this->API->mahnwesen();
             $musterList = $soap->getMusterArt($handle);
             $this->View('musterList', $musterList);
-            if ((DC()->hasvalue('art'))) {
+            if (DC()->hasvalue('art')) {
                 $musterArt = $soap->getMusterList($handle, DC()->get('art'));
                 $this->View('musterArt', $musterArt);
             }
@@ -1983,7 +1983,7 @@ class DebitConnectCore
             $currentLog = date('d.m.Y');
         }
 
-        if ($currentLog == date('d.M.Y') && count($logEntrys[$currentLog]) == 0) {
+        if ($currentLog === date('d.M.Y') && count($logEntrys[$currentLog]) === 0) {
             $this->View('CRONJOB_ERROR_MSG', 'Cronjob wurde heute noch nicht ausgeführt');
         }
         $this->smarty->assign('currentLog', $logEntrys[$currentLog]);
@@ -1998,9 +1998,9 @@ class DebitConnectCore
         $res = $this->db->singleResult('SELECT pkOrder from dc_auftrag where id = ' . (int) DC()->get('id'));
         $pkOrder = $res['pkOrder'];
 
-        if ((DC()->hasvalue('nachrichtsb'))) {
+        if (DC()->hasvalue('nachrichtsb')) {
             $msg = $soap->insertMSG($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int) $pkOrder, DC()->get('nachrichtsb'));
-            if ($msg->Error == 'OK') {
+            if ($msg->Error === 'OK') {
                 $this->View('SUCCESS_MSG', 'Die Nachricht wurde übermittelt');
             } else {
                 $this->View('ERROR_MSG', 'Die Nachricht konnte nicht übermittelt werden');
@@ -2009,7 +2009,7 @@ class DebitConnectCore
 
         try {
             $schuldner = $soap->getSchuldner($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int) $pkOrder);
-            if ($schuldner->Error != 'Error') {
+            if ($schuldner->Error !== 'Error') {
                 $this->View('schuldner', $schuldner);
             } else {
                 $this->View('API_ERROR', 'Daten Konnten nicht abgerufen werden');
@@ -2023,14 +2023,14 @@ class DebitConnectCore
             }
 
             $vbdaten = $soap->getVBDaten($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int) $pkOrder);
-            if ($vbdaten->Error != 'Error') {
+            if ($vbdaten->Error !== 'Error') {
                 $this->View('vbdaten', $vbdaten);
             } else {
                 $this->View('API_ERROR', 'Daten Konnten nicht abgerufen werden');
             }
 
             $fkto = $soap->getFKTO($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int) $pkOrder);
-            if ($fkto->Error != 'Error') {
+            if ($fkto->Error !== 'Error') {
                 $_fkto['hauptforderung'] = ['soll' => number_format(round($fkto->Hauptforderung, 2), 2, ',', '.'),
                     'haben' => number_format(round($fkto->ZEaufHaupt, 2), 2, ',', '.'),
                     'saldo' => number_format((round($fkto->Hauptforderung, 2) - round($fkto->ZEaufHaupt, 2)), 2, ',', '.'), ];
@@ -2064,17 +2064,15 @@ class DebitConnectCore
 
     public function zaLOG()
     {
-        if ((DC()->hasvalue('removeUmsatz'))) {
-            if ((DC()->hasvalue('cbx'))) {
-                foreach (DC()->get('cbx') as $key => $val) {
-                    $this->hbci->removeUmsatz((int) $val);
-                }
+        if (DC()->hasvalue('removeUmsatz') && DC()->hasvalue('cbx')) {
+            foreach (DC()->get('cbx') as $key => $val) {
+                $this->hbci->removeUmsatz((int) $val);
             }
         }
         if ($this->zalogdate == null) {
             $this->zalogdate = date('d.m.Y');
         }
-        if ((DC()->hasvalue('datefilter'))) {
+        if (DC()->hasvalue('datefilter')) {
             $this->zalogdate = DC()->get('datefilter');
         }
         $dt = new DateTime($this->zalogdate);
@@ -2085,20 +2083,21 @@ class DebitConnectCore
         $this->listView = new listView($aktionsbtn, __DIR__ . '/../tpl/btn/zalog.tpl', true);
         $this->listView->sessName = 'zalog';
         $this->listView->getCurrentOrder();
-        $dataType['order'] = ['PK' => [false, 'umsatz.kUmsatz', 'Key', false],
-                                    'name' => [true, 'umsatz.cName', 'Name', true],
-                                    'dBuchung' => [true, 'umsatz.dBuchung', 'Datum ', false],
-                                    'wert' => [true, 'umsatz.fWert', 'Betrag', false],
-                                    'cVzweck' => [true, 'umsatz.cVzweck', 'Verwendungszweck', true],
-                                    'sumGesamt' => [false, 'fWert', 'Betrag', false],
-                                    ];
+        $dataType['order'] = [
+                'PK' => [false, 'umsatz.kUmsatz', 'Key', false],
+                'name' => [true, 'umsatz.cName', 'Name', true],
+                'dBuchung' => [true, 'umsatz.dBuchung', 'Datum ', false],
+                'wert' => [true, 'umsatz.fWert', 'Betrag', false],
+                'cVzweck' => [true, 'umsatz.cVzweck', 'Verwendungszweck', true],
+                'sumGesamt' => [false, 'fWert', 'Betrag', false],
+            ];
 
         $this->listView->columns = $dataType['order'];
         $dataType['query'] = "SELECT umsatz.kUmsatz ,umsatz.cName,DATE_FORMAT(umsatz.dBuchung,'%d.%m.%Y') as dBuchung,CAST(umsatz.fWert AS DECIMAL(12,2)) as fWert,umsatz.cVzweck,umsatz.kUmsatz as id  from dc_umsatz as umsatz where (nVerbucht = 1 or nNichtverbuchen = 1) ";
         $setFilter = false;
-        if ((DC()->hasvalue('setFilter'))) {
+        if (DC()->hasvalue('setFilter')) {
             foreach (DC()->get('setFilter') as $key => $value) {
-                if (strlen($value) > 0) {
+                if ($value != '') {
                     $setFilter = true;
                     $dataType['query'] .= " AND $key LIKE '%" . DC()->db->dbEscape($value) . "%' ";
                 }
@@ -2148,68 +2147,71 @@ class DebitConnectCore
 
     public function zahlungsabgleichManuell()
     {
+        DC()->hbci->UmsaetzeFromDB(false);
         DC()->dataTypes->getZahlungsabgleichBestellungen();
         $SteuerDateifromSoap = '';
 
         $vopUmsatz = false;
 
-        if ((DC()->hasvalue('selectedDTA'))) {
-            if (DC()->get('selectedDTA') > 0) {
-                DC()->hbci->matchDTA(DC()->get('transaction'), DC()->get('selectedDTA'));
-            }
+        $transaction = DC()->get('transaction');
+        if (DC()->hasvalue('selectedDTA') && DC()->get('selectedDTA') > 0) {
+            DC()->hbci->matchDTA($transaction, DC()->get('selectedDTA'));
         }
-        $umsatz = DC()->hbci->umsaetze[DC()->get('transaction')];
+        $umsatz = DC()->hbci->umsaetze[$transaction];
 
-        $this->lastSelected = DC()->get('transaction');
+        $this->lastSelected = $transaction;
 
-        if ((DC()->hasvalue('addbestellung')) && count(DC()->get('addbestellung')) > 0) {
+        if (DC()->hasvalue('addbestellung') && count(DC()->get('addbestellung')) > 0) {
             foreach (DC()->get('addbestellung') as $addMatch) {
-                DC()->hbci->addMatching((int) DC()->get('transaction'), (int) $addMatch);
-                DC()->hbci->matches[DC()->get('transaction')]['selected'] = (int) $addMatch;
+                DC()->hbci->addMatching((int)$transaction, (int) $addMatch);
+                DC()->hbci->matches[$transaction]['selected'] = (int) $addMatch;
             }
         }
 
-        if ((DC()->hasvalue('submitaction'))) {
-            if (DC()->get('submitaction') == 'setVerbuchen') {
-                DC()->hbci->matches[DC()->get('transaction')]['verbuchen'] = (DC()->get('verbuchen')) ? true : false;
+        if (DC()->hasvalue('submitaction')) {
+            if (DC()->get('submitaction') === 'setVerbuchen') {
+                DC()->hbci->matches[$transaction]['verbuchen'] = (DC()->get('verbuchen')) ? true : false;
             }
-            if ((DC()->hasvalue('changeselected'))) {
-                DC()->hbci->matches[DC()->get('transaction')]['selected'] = DC()->get('changeselected');
+            if (DC()->hasvalue('changeselected')) {
+                DC()->hbci->matches[$transaction]['selected'] = DC()->get('changeselected');
             }
-            if ((DC()->hasvalue('change'))) {
-                if (DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->richtung == '+') {
-                    if (DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->Offen < 0) {
-                        DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->Zahlbetrag = '0.00';
+
+            $match = DC()->hbci->matches[$transaction]['pos'][DC()->get('pkOrder')];
+            if (DC()->hasvalue('change')) {
+                if ($match->richtung === '+') {
+                    if ($match->Offen < 0) {
+                        $match->Zahlbetrag = '0.00';
                     } else {
-                        DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->Zahlbetrag = DC()->get('zahlbetrag') > DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->Offen ? DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->Offen : DC()->get('zahlbetrag');
+                        $match->Zahlbetrag = DC()->get('zahlbetrag') > $match->Offen ? $match->Offen : DC()->get('zahlbetrag');
                     }
-                    DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->Ueberzahlung = DC()->get('Ueberzahlung');
-                    DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->skonto = DC()->get('skonto');
-                    DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->mahnkosten = DC()->get('mahnkosten');
-                } elseif (DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->richtung == '-') {
-                    DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->bankruecklast = DC()->get('bankruecklast');
-                    DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->bankruecklastkosten = DC()->get('bankruecklastkosten');
-                    DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->gutschrift = DC()->get('gutschrift');
-                    DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->erstattung = DC()->get('erstattung');
+                    $match->Ueberzahlung = DC()->get('Ueberzahlung');
+                    $match->skonto = DC()->get('skonto');
+                    $match->mahnkosten = DC()->get('mahnkosten');
+                } elseif ($match->richtung === '-') {
+                    $match->bankruecklast = DC()->get('bankruecklast');
+                    $match->bankruecklastkosten = DC()->get('bankruecklastkosten');
+                    $match->gutschrift = DC()->get('gutschrift');
+                    $match->erstattung = DC()->get('erstattung');
                 }
                 DC()->hbci->setSumMatches($umsatz);
             }
-            if ((DC()->get('delete'))) {
-                DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('pkOrder')]->zugeordnet = false;
+            if (DC()->get('delete')) {
+                $match->zugeordnet = false;
             }
-            if ((DC()->hasvalue('add'))) {
-                DC()->hbci->matches[DC()->get('transaction')]['pos'][DC()->get('changeselected')]->zugeordnet = true;
+            if (DC()->hasvalue('add')) {
+                DC()->hbci->matches[$transaction]['pos'][DC()->get('changeselected')]->zugeordnet = true;
             }
+            DC()->hbci->matches[$transaction]['pos'][DC()->get('pkOrder')] = $match;
         }
 
-        if (strlen($umsatz['cName']) > 0 && strpos(strtoupper($umsatz['cName']), strtoupper('V.O.P')) !== false) {
+        if ($umsatz['cName'] != '' && stripos($umsatz['cName'], 'V.O.P') !== false) {
             $vopUmsatz = true;
             $explodeSVWZ = explode(' ', $umsatz['cVzweck']);
-            if (strlen($explodeSVWZ[0]) == 19) {
+            if (strlen($explodeSVWZ[0]) === 19) {
                 try {
                     $soap = $this->API->mahnwesen();
                     $soapResponse = $soap->getPaymentFile($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), $explodeSVWZ[0], $umsatz['fWert']);
-                    if ($soapResponse->Error == 'OK') {
+                    if ($soapResponse->Error === 'OK') {
                         $SteuerDateifromSoap = base64_decode($soapResponse->bFile);
                     }
                 } catch (Exception $e) {
@@ -2217,7 +2219,7 @@ class DebitConnectCore
             }
         }
         // STEUERDATEI VOP
-        if ((DC()->get('submitaction') != 'setVerbuchen' && strlen($SteuerDateifromSoap) > 10) || ((DC()->hasvalue('submitSteuerDatei')) && isset($_FILES['steuerdatei']))) {
+        if ((DC()->get('submitaction') !== 'setVerbuchen' && strlen($SteuerDateifromSoap) > 10) || (DC()->hasvalue('submitSteuerDatei') && isset($_FILES['steuerdatei']))) {
             if (strlen($SteuerDateifromSoap) > 10) {
                 $xml = simplexml_load_string($SteuerDateifromSoap);
             } else {
@@ -2231,28 +2233,28 @@ class DebitConnectCore
                 $fVorsteuerGesamt += (float) $rechnung->fVorsteuer;
             }
 
-            DC()->hbci->matches[DC()->get('transaction')] = null;
-            DC()->hbci->matches[DC()->get('transaction')]['fVorsteuerGesamt'] = $fVorsteuerGesamt;
+            DC()->hbci->matches[$transaction] = [];
+            DC()->hbci->matches[$transaction]['fVorsteuerGesamt'] = $fVorsteuerGesamt;
 
-            if (number_format($umsatz['fWert'], 2) != number_format($countSumSteuerdatei, 2)) {
+            if (number_format($umsatz['fWert'], 2) !== number_format($countSumSteuerdatei, 2)) {
                 $this->View('SUM_MISSMATCH', $countSumSteuerdatei);
             }
             foreach ($xml->rechnung as $rechnung) {
-                (float) $maxBetrag = (float) $rechnung->fZahlbetrag + (float) $rechnung->fVorsteuer - (float) $rechnung->fMahnkosten;
+                $maxBetrag = (float) $rechnung->fZahlbetrag + (float) $rechnung->fVorsteuer - (float) $rechnung->fMahnkosten;
                 $pkOrderArr = explode(',', (string) $rechnung->kRechnung);
                 $transactionCount = 1;
                 foreach ($pkOrderArr as $pkOrder) {
                     if (DC()->hbci->bestellungen[$pkOrder] != null) {
                         $matching = [];
-                        (float) $betragOffen = (float) DC()->hbci->bestellungen[$pkOrder]['offen'];
-                        (float) $sumBuchen = $maxBetrag;
-                        (float) $fVorsteuer = (float) $rechnung->fVorsteuer;
-                        (float) $fZahlbetrag = (float) $rechnung->fZahlbetrag;
-                        (float) $fMahnkosten = (float) $rechnung->fMahnkosten;
+                        $betragOffen = (float) DC()->hbci->bestellungen[$pkOrder]['offen'];
+                        $sumBuchen = $maxBetrag;
+                        $fVorsteuer = (float) $rechnung->fVorsteuer;
+                        $fZahlbetrag = (float) $rechnung->fZahlbetrag;
+                        $fMahnkosten = (float) $rechnung->fMahnkosten;
 
                         if ($sumBuchen > 0 && $betragOffen > 0 && count($pkOrderArr) > 1 && $sumBuchen > $betragOffen) {
                             $sumBuchen = $betragOffen;
-                            $maxBetrag = $maxBetrag - $sumBuchen;
+                            $maxBetrag -= $sumBuchen;
                         }
 
                         if ($transactionCount == 1 && ($fMahnkosten > 0 || $fMahnkosten < 0)) {
@@ -2264,7 +2266,7 @@ class DebitConnectCore
 
                         //DC()->hbci->matches[$umsatz["kUmsatz"]]['pos'][$pkOrder] = new buchungsPos($pkOrder,true,$umsatz,DC()->hbci->bestellungen[$pkOrder],$matching,null,true,$beleg);
                         $arrPos = count(DC()->hbci->matches[$umsatz['kUmsatz']]['pos']) + 1;
-                        DC()->hbci->matches[$umsatz['kUmsatz']]['pos'][$arrPos] = new buchungsPos($pkOrder, true, $umsatz, DC()->hbci->bestellungen[$pkOrder], $matching, null, true, $beleg);
+                        DC()->hbci->matches[$umsatz['kUmsatz']]['pos'][$arrPos] = new BuchungsPos($pkOrder, true, $umsatz, DC()->hbci->bestellungen[$pkOrder], $matching, null, true, $beleg);
                         $maxBetrag = number_format($maxBetrag - $sumBuchen, 2);
                     }
 
@@ -2273,11 +2275,11 @@ class DebitConnectCore
             }
         }
         // STEUERDATEI VOP
-        $this->View('selectedBestellung', DC()->hbci->matches[DC()->get('transaction')]['selected']);
+        $this->View('selectedBestellung', DC()->hbci->matches[$transaction]['selected']);
 
         $umsatz['zugeordnetvalue'] = DC()->hbci->returnCountBuchungPos($umsatz);
         if ($vopUmsatz) {
-            $umsatz['zugeordnetvalue']['value'] = number_format($umsatz['zugeordnetvalue']['value'] - DC()->hbci->matches[DC()->get('transaction')]['fVorsteuerGesamt'], 2, '.', '');
+            $umsatz['zugeordnetvalue']['value'] = number_format($umsatz['zugeordnetvalue']['value'] - DC()->hbci->matches[$transaction]['fVorsteuerGesamt'], 2, '.', '');
         }
 
         $differenz = $umsatz['nType'] == 1 ? ($umsatz['fWert'] * -1) - $umsatz['zugeordnetvalue']['value'] : ($umsatz['fWert']) - $umsatz['zugeordnetvalue']['value'];
@@ -2287,17 +2289,18 @@ class DebitConnectCore
             $umsatz['zugeordnetvalue']['class'] = 'success';
         }
 
-        if ($differenz == '0' && (DC()->hasvalue('change'))) {
+        if ($differenz == '0' && DC()->hasvalue('change')) {
             //DC()->get('verbuchen') = true;
-            DC()->hbci->matches[DC()->get('transaction')]['verbuchen'] = (DC()->hasvalue('verbuchen')) ? true : false;
+            DC()->hbci->matches[$transaction]['verbuchen'] = DC()->hasvalue('verbuchen');
         }
 
         $this->View('differenz', number_format($differenz, 2, '.', ''));
-        $this->View('verbuchen', DC()->hbci->matches[DC()->get('transaction')]['verbuchen']);
-        $this->View('verbucht', DC()->hbci->matches[DC()->get('transaction')]['verbucht']);
+        $this->View('verbuchen', DC()->hbci->matches[$transaction]['verbuchen']);
+        $this->View('verbucht', DC()->hbci->matches[$transaction]['verbucht']);
         $this->View('umsatz', $umsatz);
-        $this->View('debitconnectstatus', $this->getVOPStatusText(DC()->hbci->matches[DC()->get('transaction')]['selected']));
-        $this->View('buchungsPos', DC()->hbci->matches[DC()->get('transaction')]['pos']);
+        $this->View('debitconnectstatus', $this->getVOPStatusText(DC()->hbci->matches[$transaction]['selected']));
+        $this->View('buchungsPos', DC()->hbci->matches[$transaction]['pos']);
+
         if (!$vopUmsatz) {
             $dt = new DateTime($umsatz['datum']);
             $dtEnd = $dt->format('Y-m-d');
@@ -2370,7 +2373,7 @@ class DebitConnectCore
                     $this->View($key, $value);
                 }
                 DC()->dataTypes->assignTemplateVars($pkOrder);
-                $tpl = ($this->getConf('tpl_zahlungseingang', base64_encode(file_get_contents(__DIR__ . '/../tpl/bestaetigung.tpl'))));
+                $tpl = $this->getConf('tpl_zahlungseingang', base64_encode(file_get_contents(__DIR__ . '/../tpl/bestaetigung.tpl')));
                 $tpl = $this->parseHTMLTemplate(base64_decode($tpl));
 
                 $htmlEMAIL = $this->smarty->fetch('string:' . $tpl . '');
@@ -2420,7 +2423,7 @@ class DebitConnectCore
         DC()->dataTypes->assignTemplateVars($pkOrder);
         switch ($this->settings->currentSetting->zeArt) {
             case '1':
-            $tpl = ($this->getConf('tpl_zahlungserinnerung', base64_encode(file_get_contents(__DIR__ . '/../tpl/standardtemplate.tpl'))));
+            $tpl = $this->getConf('tpl_zahlungserinnerung', base64_encode(file_get_contents(__DIR__ . '/../tpl/standardtemplate.tpl')));
             break;
             default:
             $tpl = templates::vopTPL();
@@ -2467,19 +2470,24 @@ class DebitConnectCore
     public function zaSuche()
     {
         DC()->dataTypes->getZahlungsabgleichBestellungen();
-        if ((DC()->hasvalue('dta'))) {
-            $umsatz = DC()->hbci->umsaetze[DC()->get('transaction')];
+
+        if (DC()->hasvalue('dta')) {
+            $transaction = DC()->get('transaction');
+            $umsatz = DC()->hbci->umsaetze[$transaction];
+
             $dt = new DateTime($umsatz['datum']);
             $dtEnd = $dt->format('Y-m-d');
             $dt->modify('-14 day');
             $dtStart = $dt->format('Y-m-d');
+
             $dtaListQuery = "SELECT dateCreated,idTransaktion,nAnzahl FROM `dc_dtacreatelog` WHERE `nType` = 0 AND kUmsatz = 0 and `dateCreated` > '" . $dtStart . "' and dateCreated < '" . $dtEnd . "' and fSumme = '" . $umsatz['fWert'] . "'";
             $dtaList = DC()->db->getSQLResults($dtaListQuery, false);
+
             if (count($dtaList) > 0) {
                 $this->View('dtaList', $dtaList);
             }
             $searchres = [];
-            if ((DC()->hasvalue('selectedDTA')) && DC()->get('selectedDTA') > 0) {
+            if (DC()->hasvalue('selectedDTA') && DC()->get('selectedDTA') > 0) {
                 $sqlRs = DC()->db->getSQLResults('SELECT pkOrder from dc_dtacreatelog where idTransaktion = ' . (int) DC()->get('selectedDTA') . ' and nType = 1', false);
                 foreach ($sqlRs as $row) {
                     $searchres[] = DC()->hbci->bestellungen[$row['pkOrder']];
@@ -2487,27 +2495,26 @@ class DebitConnectCore
                 $this->View('searchres', $searchres);
             }
         }
-        if ((DC()->hasvalue('suchebestellung'))) {
+        if (DC()->hasvalue('suchebestellung')) {
             $searchres = [];
             $directSearch = explode(';', DC()->get('searchfield'));
             foreach (DC()->hbci->bestellungen as $bestellung) {
-                if ((DC()->hasvalue('limit')) && DC()->get('limit') == 'open') {
-                    if ($bestellung['offen'] <= 0) {
-                        continue;
-                    }
+                if (DC()->hasvalue('limit') && DC()->get('limit') === 'open' && $bestellung['offen'] <= 0) {
+                    continue;
                 }
 
+                $searchfield = strtoupper(DC()->get('searchfield'));
                 if (count($directSearch) > 0 && in_array($bestellung['id'], $directSearch)) {
                     $searchres[] = $bestellung;
-                } elseif (strtoupper($bestellung['RechnungsNr']) == strtoupper(DC()->get('searchfield'))) {
+                } elseif (strtoupper($bestellung['RechnungsNr']) === $searchfield) {
                     $searchres[] = $bestellung;
-                } elseif (strtoupper($bestellung['ordernumber']) == strtoupper(DC()->get('searchfield'))) {
+                } elseif (strtoupper($bestellung['ordernumber']) === $searchfield) {
                     $searchres[] = $bestellung;
-                } elseif (strtoupper($bestellung['firstname']) == strtoupper(DC()->get('searchfield'))) {
+                } elseif (strtoupper($bestellung['firstname']) === $searchfield) {
                     $searchres[] = $bestellung;
-                } elseif (strtoupper($bestellung['lastname']) == strtoupper(DC()->get('searchfield'))) {
+                } elseif (strtoupper($bestellung['lastname']) === $searchfield) {
                     $searchres[] = $bestellung;
-                } elseif (strtoupper($bestellung['KundenNr']) == strtoupper(DC()->get('searchfield'))) {
+                } elseif (strtoupper($bestellung['KundenNr']) === $searchfield) {
                     $searchres[] = $bestellung;
                 }
             }
@@ -2548,7 +2555,7 @@ class DebitConnectCore
     public function hbcirequestmanuell()
     {
         $profiles = $this->settings->hbciProfiles;
-        $active = count($profiles) > 0 ? true : false;
+        $active = count($profiles) > 0;
         if ($active) {
             $this->View('profiles', $profiles);
         }
@@ -2566,9 +2573,9 @@ class DebitConnectCore
 
     public function setMahnstop()
     {
-        if ((DC()->hasvalue('changeMahnstop'))) {
+        if (DC()->hasvalue('changeMahnstop')) {
             $_date = DC()->get('bis');
-            if ((DC()->hasvalue('pkCustomer'))) {
+            if (DC()->hasvalue('pkCustomer')) {
                 $pkCustomer = (int) DC()->get('pkCustomer');
                 $entry = new stdClass();
                 $entry->pk = $pkCustomer;
@@ -2582,19 +2589,19 @@ class DebitConnectCore
                     }
                 }
 
-                if ((DC()->hasvalue('addMahnstopCustomer'))) {
+                if (DC()->hasvalue('addMahnstopCustomer')) {
                     DC()->db->dbInsert('dc_mahnstop', $entry);
-                } elseif ((DC()->hasvalue('removeMahnstopCustomer'))) {
+                } elseif (DC()->hasvalue('removeMahnstopCustomer')) {
                     DC()->db->dbQuery(' DELETE FROM dc_mahnstop where nType = ' . $entry->nType . ' and pk = ' . $pkCustomer);
                 }
             }
-            if ((DC()->hasvalue('pkOrder'))) {
+            if (DC()->hasvalue('pkOrder')) {
                 $pkOrder = (int) DC()->get('pkOrder');
                 $entry = new stdClass();
                 $entry->pk = $pkOrder;
                 $entry->cCommentary = DC()->get('cCommentary');
                 $entry->nType = 0;
-                if ((DC()->hasvalue('addMahnstopOrder'))) {
+                if (DC()->hasvalue('addMahnstopOrder')) {
                     if (strlen($_date) > 3) {
                         try {
                             $dt = new dateTime($_date);
@@ -2603,7 +2610,7 @@ class DebitConnectCore
                         }
                     }
                     DC()->db->dbInsert('dc_mahnstop', $entry);
-                } elseif ((DC()->hasvalue('removeMahnstopOrder'))) {
+                } elseif (DC()->hasvalue('removeMahnstopOrder')) {
                     DC()->db->dbQuery(' DELETE FROM dc_mahnstop where nType = ' . $entry->nType . ' and pk = ' . $pkOrder);
                 }
             }
@@ -2809,14 +2816,14 @@ class DebitConnectCore
 
     public function checkLogin()
     {
-        if ((DC()->hasvalue('sessid')) && DC()->get('usr')) {
+        if (DC()->hasvalue('sessid') && DC()->get('usr')) {
             $userlogin = $this->dataTypes->getUserLogin('', '');
             if ($userlogin > 0) {
                 $this->setUserLogin($userlogin);
             }
         }
 
-        if ((DC()->hasvalue('login'))) {
+        if (DC()->hasvalue('login')) {
             $userlogin = $this->dataTypes->getUserLogin(DC()->get('userlogin'), DC()->get('passwd'));
             if ($userlogin > 0) {
                 $this->loginData['logged_in'] = true;
@@ -2824,7 +2831,7 @@ class DebitConnectCore
             }
         }
 
-        if ($this->loginData != null and $this->loginData['logged_in'] && $this->user > 0) {
+        if ($this->loginData != null && $this->loginData['logged_in'] && $this->user > 0) {
             $this->getSettings();
 
             $this->getCurrentPage();
@@ -2895,7 +2902,7 @@ class DebitConnectCore
         $this->openConnection = null;
         $this->dataTypes = null;
 
-        $this->hbci->bestellungen = null;
+        $this->hbci->bestellungen = [];
 
         Shopware()->BackendSession()->{$this->sessName} = serialize($this);
     }
@@ -2903,9 +2910,9 @@ class DebitConnectCore
     public static function encrypt($string, $key = ';vOp!deB1TC0nn3CTSEnCKey.:')
     {
         $result = '';
-        for ($i = 0; $i < strlen($string); ++$i) {
+        for ($i = 0, $iMax = strlen($string); $i < $iMax; ++$i) {
             $char = substr($string, $i, 1);
-            $keychar = substr($key, ($i % strlen($key)) - 1, 1);
+            $keychar = $key[($i % strlen($key)) - 1];
             $char = chr(ord($char) + ord($keychar));
             $result .= $char;
         }
@@ -2919,8 +2926,8 @@ class DebitConnectCore
         $string = base64_decode($string);
 
         for ($i = 0, $iMax = strlen($string); $i < $iMax; ++$i) {
-            $char = substr($string, $i, 1);
-            $keychar = substr($key, ($i % strlen($key)) - 1, 1);
+            $char = $string[$i];
+            $keychar = $key[($i % strlen($key)) - 1];
             $char = chr(ord($char) - ord($keychar));
             $result .= $char;
         }
@@ -2948,10 +2955,10 @@ class DebitConnectCore
 
         foreach ($versions as $file) {
             if (strlen($file) > 2) {
-                $file = $file . '.sql';
+                $file .= '.sql';
                 $sqlVersion = str_replace('.sql', '', $file);
                 if (version_compare($sqlVersion, $_lastVersion, '>')) {
-                    $query = (file_get_contents($installdir . $file));
+                    $query = file_get_contents($installdir . $file);
                     try {
                         $queryRows = explode(';', $query);
 
@@ -2974,7 +2981,7 @@ class DebitConnectCore
         }
         if ($installed) {
             $this->getConf('dbVersion', 0, true);
-            $this->setConf('dbVersion', DebitConnectCore::$DC_VERSION, true);
+            $this->setConf('dbVersion', self::$DC_VERSION, true);
         }
 
         return $installed;
@@ -2990,7 +2997,7 @@ class DebitConnectCore
             $this->View('installmode', 'update');
         }
 
-        return $dbVersion != DebitConnectCore::$DC_VERSION;
+        return $dbVersion != self::$DC_VERSION;
     }
 
     public function getDBVersion()
@@ -3008,33 +3015,31 @@ class DebitConnectCore
     public function checkInstallation()
     {
         $updateRequired = $this->getUpdate();
-        $installstate = $updateRequired === true ? false : true;
+        $installstate = $updateRequired !== true;
         $dbVersion = $this->getDBVersion();
         if ($updateRequired) {
-            if ((DC()->hasvalue('cronjob'))) {
+            if (DC()->hasvalue('cronjob')) {
                 header('Content-Type: application/json');
                 echo json_encode(['InstallationRequired' => true]);
             } else {
-                $this->View('version', DebitConnectCore::$DC_VERSION);
+                $this->View('version', self::$DC_VERSION);
                 try {
-                    $soap = new SoapClient(DebitConnectCore::$SOAP);
+                    $soap = new SoapClient(self::$SOAP);
                     $handshake = $soap->handshake();
                     $handshake = $handshake->status;
                 } catch (Exception $e) {
                 }
                 $this->View('handshake', $handshake);
 
-                if (!(DC()->hasvalue('install'))) {
+                if (!DC()->hasvalue('install')) {
                     $this->View('SOFTWARELIZENZ', utf8_encode(file_get_contents('Softwarelizenzvertragsbedingungen.txt')));
                     echo  $this->smarty->fetch(__DIR__ . '/../tpl/install.tpl');
+                } else if ($this->doInstallOrUpdate($dbVersion)) {
+                    $this->View('SUCCESS_MSG', 'Installation abgeschlossen.');
+                    $installstate = true;
                 } else {
-                    if ($this->doInstallOrUpdate($dbVersion)) {
-                        $this->View('SUCCESS_MSG', 'Installation abgeschlossen.');
-                        $installstate = true;
-                    } else {
-                        $this->View('INSTALL_ERROR', 'Installation fehlgeschlagen');
-                        echo  $this->smarty->fetch(__DIR__ . '/../tpl/install.tpl');
-                    }
+                    $this->View('INSTALL_ERROR', 'Installation fehlgeschlagen');
+                    echo  $this->smarty->fetch(__DIR__ . '/../tpl/install.tpl');
                 }
             }
         }

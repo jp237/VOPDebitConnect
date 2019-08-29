@@ -35,7 +35,7 @@ class DC_DataTypes
             $selectPickwarePayment = "+IFNULL(pickware.sumPayment,'0.00')";
             $this->joinPickwarePayment = 'LEFT OUTER JOIN  ( SELECT SUM(amount) as sumPayment,orderId as pkOrder from s_plugin_viison_bank_transfer_matching_booking group by orderId) pickware on pickware.pkOrder = ';
         }
-        if ((DC()->settings->currentSetting->gutschriften) != null && DC()->settings->currentSetting->gutschriften > 0) {
+        if (DC()->settings->currentSetting->gutschriften != null && DC()->settings->currentSetting->gutschriften > 0) {
             $this->SELECT_OFFEN = " CAST(ROUND((CAST(ROUND(`invoice_amount`,2) as DECIMAL(12,2))
 									-CAST(ROUND(IFNULL(zahlung.fWert,'0.00')" . $selectPickwarePayment . ",2)  AS DECIMAL(12,2))
 									-CAST(ROUND(IFNULL(gutschrift.amount,'0.00'),2)  AS DECIMAL(12,2))
@@ -50,7 +50,7 @@ class DC_DataTypes
 
     public function setStatus()
     {
-        return DC()->settings->currentSetting->shopwareapibenutzen > 0 ? true : false;
+        return DC()->settings->currentSetting->shopwareapibenutzen > 0;
     }
 
     public function getCountryISO()
@@ -188,7 +188,7 @@ class DC_DataTypes
         $rows = DC()->db->getSQLResults($query);
         $found_invoice = false;
         $data = [];
-        if ($rows[1]['Auftrag'] != 'Rechnung') {
+        if ($rows[1]['Auftrag'] !== 'Rechnung') {
             // BEI B2B VORKASSE KLONE AUFTRAGSZEILE MIT KOMMENTAR ALS RECHNUNGSZEILE
             $data[0] = $rows[0];
             $clonedOrderRow = $rows[0];
@@ -233,7 +233,7 @@ class DC_DataTypes
         $rootElement->appendChild($dom->createElement('ordervalue', str_replace(',', '.', $orderDataArray[0][$order[27]])));
         $rootElement->appendChild($dom->createElement('orderdate', $orderDate->format('Y-m-d H:i:s')));
         $rootElement->appendChild($dom->createElement('paymentType', null));
-        if ($invoice[1] == 'Rechnung') {
+        if ($invoice[1] === 'Rechnung') {
             $invoiceDate = new DateTime($orderDataArray[1][$invoice[2]]);
             $rootElement->appendChild($dom->createElement('invoicenumber', $orderDataArray[0]['ordernumber']));
             $rootElement->appendChild($dom->createElement('invoicedate', $invoiceDate->format('Y-m-d H:i:s')));
@@ -246,7 +246,7 @@ class DC_DataTypes
 
         foreach ($orderDataArray as $row) {
             $keys = array_keys($row);
-            if ($row[$keys[2]] == 'Auftrag' || $row[$keys[2]] == 'Rechnung') {
+            if ($row[$keys[2]] === 'Auftrag' || $row[$keys[2]] === 'Rechnung') {
                 continue;
             }
             //if($row[$keys[2]] == "Korrektur")
@@ -274,7 +274,7 @@ class DC_DataTypes
         $debtor = $dom->createElement('debtor');
         $debtor->appendChild($dom->createElement('firstname', $orderDataArray[0][$order[11]]));
         $debtor->appendChild($dom->createElement('lastname', $orderDataArray[0][$order[12]]));
-        $debtor->appendChild($dom->createElement('company', ($orderDataArray[0][$order[10]])));
+        $debtor->appendChild($dom->createElement('company', $orderDataArray[0][$order[10]]));
         $debtor->appendChild($dom->createElement('dateofbirth', $orderDataArray[0][$order[22]]));
         $debtor->appendChild($dom->createElement('street', $orderDataArray[0][$order[13]]));
         $debtor->appendChild($dom->createElement('zipcode', $orderDataArray[0][$order[14]]));
@@ -292,7 +292,7 @@ class DC_DataTypes
         $debtor = $dom->createElement('debtor');
         $debtor->appendChild($dom->createElement('firstname', null));
         $debtor->appendChild($dom->createElement('lastname', null));
-        $debtor->appendChild($dom->createElement('company', ($details['problem']['flight']['airline']['name'])));
+        $debtor->appendChild($dom->createElement('company', $details['problem']['flight']['airline']['name']));
         $debtor->appendChild($dom->createElement('dateofbirth', null));
         $debtor->appendChild($dom->createElement('street', $airline['street']));
         $debtor->appendChild($dom->createElement('zipcode', $airline['zipcode']));
@@ -366,9 +366,8 @@ class DC_DataTypes
         $rootElement->appendChild($additionalInformations);
 
         $dom->appendChild($rootElement);
-        $xml = $dom->saveXML();
 
-        return $xml;
+        return $dom->saveXML();
     }
 
     public function array_insert(&$array, $position, $insert)
@@ -452,7 +451,7 @@ class DC_DataTypes
         if (is_array($fieldModes)) {
             $values = 0;
             foreach ($fieldModes as $key => $value) {
-                if ($key != 'none' && $key != '' && strlen($value) > 0) {
+                if ($key !== 'none' && $key != '' && strlen($value) > 0) {
                     $query .= $values == 0 ? ' HAVING ' . $key . " = '" . DC()->db->dbEscape($value) . "'" : ' AND ' . $key . " = '" . DC()->db->dbEscape($value) . "'";
                     ++$values;
                 }
@@ -494,7 +493,7 @@ class DC_DataTypes
         if (is_array($fieldModes)) {
             $values = 0;
             foreach ($fieldModes as $key => $value) {
-                if ($key != 'none' && $key != '' && strlen($value) > 0) {
+                if ($key !== 'none' && $key != '' && strlen($value) > 0) {
                     $query .= $values == 0 ? ' HAVING ' . $key . " = '" . DC()->db->dbEscape($value) . "'" : ' AND ' . $key . " = '" . DC()->db->dbEscape($value) . "'";
                     ++$values;
                 }
@@ -541,9 +540,7 @@ class DC_DataTypes
 
     public function getArtikelPos($pkOrder)
     {
-        return DC()->db->getSQLResults((
-        'SELECT * from s_order_details where orderID = ' . $pkOrder
-    ));
+        return DC()->db->getSQLResults('SELECT * from s_order_details where orderID = ' . $pkOrder);
     }
 
     public function getZEVars($pkOrder)
@@ -572,7 +569,7 @@ class DC_DataTypes
 								 where s_order.id = ' . (int) $pkOrder;
         $output = DC()->db->singleResult($query);
         $docID = $output['attachment'];
-        if ($output['anrede'] == 'ms') {
+        if ($output['anrede'] === 'ms') {
             $output['anrede'] = 'Sehr geehrte Frau';
         } else {
             $output['anrede'] = 'Sehr geehrter Herr';
@@ -594,7 +591,7 @@ class DC_DataTypes
                 $docId = $key['ID'];
                 $user = DC()->settings->registration['vopUser'];
                 $pass = md5(DC()->settings->registration['vopToken']);
-                $path = __DIR__ . '/../../../../../../../../../files/documents/';
+                $path = Shopware()->DocPath() . '/files/documents/';
 
                 if (file_exists($path . $key['hash'] . '.pdf')) {
                     $request['pdfDocument'] = base64_encode(file_get_contents($path . $key['hash'] . '.pdf'));
@@ -605,7 +602,7 @@ class DC_DataTypes
 
                 if (strlen($request['pdfDocument']) > 10) {
                     $res = $soap->newAllDoc($user, $pass, '1', $docId . '-shopware', '0', '0', '0', $request['pdfDocument'], $pkOrder, '0');
-                    if ($res->status == 'OK') {
+                    if ($res->status === 'OK') {
                         DC()->Log('Dokument', 'Dokument ' . $docId . ' übermittelt', 0);
                         ++$ret;
                     }
@@ -629,7 +626,7 @@ class DC_DataTypes
         try {
             $rs = DC()->db->singleResult('SELECT ID,hash from s_order_documents where ID = ' . (int) $docId);
 
-            $path = __DIR__ . '/../../../../../../../../../files/documents/';
+            $path = Shopware()->DocPath() . '/files/documents/';
             $folderFile = $path . $rs['hash'] . '.pdf';
 
             if (file_exists($folderFile)) {
@@ -671,7 +668,7 @@ class DC_DataTypes
 
     public function getUserLogin($username, $password)
     {
-        if ((DC()->hasvalue('sessid')) && (DC()->hasvalue('usr'))) {
+        if (DC()->hasvalue('sessid') && DC()->hasvalue('usr')) {
             $sessions = DC()->db->getSQLResults('SELECT * from s_core_sessions_backend ');
             foreach ($sessions as $session) {
                 if ($session['id'] == DC()->get('sessid')) {
@@ -684,14 +681,8 @@ class DC_DataTypes
             $users = DC()->db->getSQLResults($query);
             $options = ['cost' => 10];
             foreach ($users as $user) {
-                if (strlen($username) > 0 && strlen($password) > 0) {
-                    if ($username == $user['username']) {
-                        if ($user['encoder'] == 'bcrypt') {
-                            if (password_verify($password, $user['password'])) {
-                                return (int) $user['id'];
-                            }
-                        }
-                    }
+                if ($username != '' && $password != '' && ($username === $user['username']) && ($user['encoder'] === 'bcrypt') && password_verify($password, $user['password'])) {
+                    return (int) $user['id'];
                 }
             }
             DC()->smarty->assign('loginerror', 'Falscher Benutzer/Passwort');
@@ -750,7 +741,7 @@ class DC_DataTypes
 
         $rs = DC()->db->getSQLResults($query);
 
-        $bestellung = [];
+        $bestellungen = [];
         foreach ($rs as $bestellung) {
             $bestellungen[$bestellung['id']] = $bestellung;
         }
@@ -821,28 +812,32 @@ class DC_DataTypes
                      ['id' => 1000, 'description' => 'Geloescht'],
                     ];
 
-        $output = ['order' => [
-                                        'PK' => [false, '_order.id', 'Key', false],
-                                        'AuftragsNr' => [true, '_order.ordernumber', 'Auftragsnr', true],
-                                        'RechnungsNr' => [true, 'rechnung.docID', 'RechnungsNr', true],
-                                        'Betrag' => [true, '_order.invoice_amount', 'Betrag', false],
-                                        'Offen' => [true, 'fWert', 'Offen', false],
-                                        'Zahlung' => [true, 'zahlungseingang', 'Zahlung', false],
-                                        'Datum' => [true, 'datum', 'Datum', false],
-                                        'Anrede' => [false, 'billing.salutation', 'Anrede', false],
-                                        'Firma' => [true, 'billing.company', 'Firma', true],
-                                        'KundenNr' => [true, 'billing.customernumber', 'KundenNr', true],
-                                        'Vorname' => [true, 'billing.firstname', 'Vorname', true],
-                                        'Nachname' => [true, 'billing.lastname', 'Nachname', true],
-                                        'Kundengruppe' => [true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups()],
-                                        'Zahlart' => [true, 'zahlartname', 'Zahlart', false, 'arrayFilter' => $this->getPaymentMethods()],
-                                        'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
-                                        'Land' => [false, 'land.iso3', 'Land', false],
-                                        'mahnstop' => [false, 'mahnstop', 'mahnstop', false],
-                                        'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
-                                        'sumOffen' => [false, 'fWert', 'Offen', false],
-                                        'StatusVOP' => [true, '_statusVOP', 'StatusVOP', false, 'arrayFilter' => $filterVOP],
-                                    ], 'query' => $query, 'count' => $countquery];
+        $output = [
+            'order' => [
+                    'PK' => [false, '_order.id', 'Key', false],
+                    'AuftragsNr' => [true, '_order.ordernumber', 'Auftragsnr', true],
+                    'RechnungsNr' => [true, 'rechnung.docID', 'RechnungsNr', true],
+                    'Betrag' => [true, '_order.invoice_amount', 'Betrag', false],
+                    'Offen' => [true, 'fWert', 'Offen', false],
+                    'Zahlung' => [true, 'zahlungseingang', 'Zahlung', false],
+                    'Datum' => [true, 'datum', 'Datum', false],
+                    'Anrede' => [false, 'billing.salutation', 'Anrede', false],
+                    'Firma' => [true, 'billing.company', 'Firma', true],
+                    'KundenNr' => [true, 'billing.customernumber', 'KundenNr', true],
+                    'Vorname' => [true, 'billing.firstname', 'Vorname', true],
+                    'Nachname' => [true, 'billing.lastname', 'Nachname', true],
+                    'Kundengruppe' => [true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups()],
+                    'Zahlart' => [true, 'zahlartname', 'Zahlart', false, 'arrayFilter' => $this->getPaymentMethods()],
+                    'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
+                    'Land' => [false, 'land.iso3', 'Land', false],
+                    'mahnstop' => [false, 'mahnstop', 'mahnstop', false],
+                    'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
+                    'sumOffen' => [false, 'fWert', 'Offen', false],
+                    'StatusVOP' => [true, '_statusVOP', 'StatusVOP', false, 'arrayFilter' => $filterVOP],
+                ],
+                'query' => $query,
+                'count' => $countquery
+            ];
 
         return $output;
     }
@@ -850,7 +845,7 @@ class DC_DataTypes
     public function getAuftragList($filter, $order, $nVOPStatus, $limit, $fieldModes = [])
     {
         $joinPickware = strlen($this->joinPickwarePayment) > 5 ? $this->joinPickwarePayment . ' s_order.id ' : '';
-        $b2bshop = DC()->settings->currentSetting->mahnwesenvorkasse == 'on' ? true : false;
+        $b2bshop = DC()->settings->currentSetting->mahnwesenvorkasse === 'on';
         $paymentID = DC()->settings->currentPayments;
         $vorkasse = DC()->settings->currentVorkasse;
         $nullvalueVOPOffen = $nVOPStatus == 39 || $nVOPStatus == 100 ? '0.00' : 'auftrag.fWert-auftrag.fZahlung';
@@ -869,7 +864,7 @@ class DC_DataTypes
         $query .= $joinPickware;
         $query .= ' where  s_order.ordernumber > 0 AND auftrag.trash = 0 and auftrag.VOPStatus = ' . (int) $nVOPStatus . '  AND auftrag.subshopID =  ' . (int) DC()->settings->selectedShop;
         foreach ($filter as $key => $value) {
-            if (strlen($value) > 0) {
+            if ($value != '') {
                 $query .= " AND $key LIKE '%" . DC()->db->dbEscape($value) . "%' ";
             }
         }
@@ -882,7 +877,7 @@ class DC_DataTypes
         if (is_array($fieldModes)) {
             $values = 0;
             foreach ($fieldModes as $key => $value) {
-                if ($key != 'none' && $key != '' && strlen($value) > 0) {
+                if ($key !== 'none' && $key != '' && strlen($value) > 0) {
                     $query .= $values == 0 ? ' HAVING ' . $key . " = '" . DC()->db->dbEscape($value) . "'" : ' AND ' . $key . " = '" . DC()->db->dbEscape($value) . "'";
                     ++$values;
                 }
@@ -897,30 +892,28 @@ class DC_DataTypes
         $query .= " LIMIT $limitStart , $limitEnd ";
 
         $output = ['order' => [
-                                        'PK' => [false, 'auftrag.pkOrder', 'Key', false],
-                                        'Progressbarvalue' => [false, 'status.percentvalue', 'progressbar', false],
-                                        'Betrag' => [true, 's_order.invoice_amount', 'Betrag', false],
-                                        'Offen' => [$nVOPStatus == 39 || $nVOPStatus == 100 ? true : false, 'fWert', 'Offen', false],
-                                        'offenVOP' => [$nVOPStatus == 39 || $nVOPStatus == 100 ? false : true, 'OffenVOP', 'Offen (VOP)', false],
-                                        'RechnungNr' => [true, 'auftrag.cRechnungsNr', 'RechnungsNr', true],
-                                        'AuftragsNr' => [true, 's_order.ordernumber', 'AuftragsNr', true],
-                                        'Datum' => [true, 'datum', 'Datum', false],
-                                        'Anrede' => [false, 'auftrag.cAnrede', 'Anrede', false],
-                                        'Firma' => [true, 'auftrag.cFirma', 'Firma', true],
-                                        'Vorname' => [true, 'auftrag.cVorname', 'Vorname', true],
-                                        'Nachname' => [true, 'auftrag.cNachname', 'Nachname', true],
-                                        'Kundengruppe' => [
-                                                        true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups(),
-                                                        ],
-                                        'Zahlart' => [
-                                                    true, 'zahlartname', 'Zahlart', false, 'arrayFilter' => $this->getPaymentMethods(),
-                                                ],
-                                        'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
-                                        'Land' => [false, 'auftrag.cLand', 'Land', true],
-                                        'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
-                                        'sumOffen' => [false, 'OffenVOP', 'Offen', false],
-                                        ],
-                    'query' => $query, 'count' => $countquery, ];
+                        'PK' => [false, 'auftrag.pkOrder', 'Key', false],
+                        'Progressbarvalue' => [false, 'status.percentvalue', 'progressbar', false],
+                        'Betrag' => [true, 's_order.invoice_amount', 'Betrag', false],
+                        'Offen' => [($nVOPStatus == 39 || $nVOPStatus == 100), 'fWert', 'Offen', false],
+                        'offenVOP' => [!($nVOPStatus == 39 || $nVOPStatus == 100), 'OffenVOP', 'Offen (VOP)', false],
+                        'RechnungNr' => [true, 'auftrag.cRechnungsNr', 'RechnungsNr', true],
+                        'AuftragsNr' => [true, 's_order.ordernumber', 'AuftragsNr', true],
+                        'Datum' => [true, 'datum', 'Datum', false],
+                        'Anrede' => [false, 'auftrag.cAnrede', 'Anrede', false],
+                        'Firma' => [true, 'auftrag.cFirma', 'Firma', true],
+                        'Vorname' => [true, 'auftrag.cVorname', 'Vorname', true],
+                        'Nachname' => [true, 'auftrag.cNachname', 'Nachname', true],
+                        'Kundengruppe' => [true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups()],
+                        'Zahlart' => [true, 'zahlartname', 'Zahlart', false, 'arrayFilter' => $this->getPaymentMethods()],
+                        'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
+                        'Land' => [false, 'auftrag.cLand', 'Land', true],
+                        'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
+                        'sumOffen' => [false, 'OffenVOP', 'Offen', false],
+                    ],
+                'query' => $query,
+                'count' => $countquery
+            ];
 
         return $output;
     }
@@ -968,7 +961,7 @@ class DC_DataTypes
             if ($orderstatus != null && $orderstatus != 'null') {
                 $params['orderStatusId'] = $orderstatus;
             }
-            if (strlen($comment) > 0) {
+            if ($comment !== '') {
                 $params['comment'] = $comment;
             }
             if (count($params) < 1) {
@@ -999,9 +992,8 @@ class DC_DataTypes
     {
         $getMandref = 'SELECT `value` from s_core_config_values where element_id = 945 and shop_id = ' . (int) $shopID;
         $rs = DC()->db->singleResult($getMandref);
-        $value = unserialize($rs['value']);
 
-        return $value;
+        return unserialize($rs['value']);
     }
 
     public function createDTA($pkOrder)
@@ -1082,7 +1074,7 @@ class DC_DataTypes
 
         if (count($filter) > 0) {
             foreach ($filter as $key => $value) {
-                if (strlen($value) > 0) {
+                if ($value != '') {
                     $query .= " AND $key LIKE '%" . DC()->db->dbEscape($value) . "%' ";
                 }
             }
@@ -1110,23 +1102,26 @@ class DC_DataTypes
         $query .= " LIMIT $limitStart , $limitEnd ";
 
         $output = ['order' => [
-                                        'PK' => [false, '_order.id', 'Key', false],
-                                        'AuftragsNr' => [true, '_order.ordernumber', 'Auftragsnr', true],
-                                        'RechnungsNr' => [true, 'rechnung.docID', 'RechnungsNr', true],
-                                        'Betrag' => [true, '_order.invoice_amount', 'Betrag', false],
-                                        'Datum' => [true, 'datum', 'Datum', false],
-                                        'Anrede' => [false, 'billing.salutation', 'Anrede', false],
-                                        'Firma' => [true, 'billing.company', 'Firma', true],
-                                        'KundenNr' => [true, 'billing.customernumber', 'KundenNr', true],
-                                        'Vorname' => [true, 'billing.firstname', 'Vorname', true],
-                                        'Nachname' => [true, 'billing.lastname', 'Nachname', true],
-                                        'Kundengruppe' => [true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups()],
-                                        'Zahlart' => [true, 'zahlartname', 'Zahlart', false],
-                                        'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
-                                        'Land' => [false, 'land.iso3', 'Land', false],
-                                        'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
-                                        'sumOffen' => [false, 'fWert', 'Offen', false],
-                                    ], 'query' => $query, 'count' => $countquery];
+                        'PK' => [false, '_order.id', 'Key', false],
+                        'AuftragsNr' => [true, '_order.ordernumber', 'Auftragsnr', true],
+                        'RechnungsNr' => [true, 'rechnung.docID', 'RechnungsNr', true],
+                        'Betrag' => [true, '_order.invoice_amount', 'Betrag', false],
+                        'Datum' => [true, 'datum', 'Datum', false],
+                        'Anrede' => [false, 'billing.salutation', 'Anrede', false],
+                        'Firma' => [true, 'billing.company', 'Firma', true],
+                        'KundenNr' => [true, 'billing.customernumber', 'KundenNr', true],
+                        'Vorname' => [true, 'billing.firstname', 'Vorname', true],
+                        'Nachname' => [true, 'billing.lastname', 'Nachname', true],
+                        'Kundengruppe' => [true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups()],
+                        'Zahlart' => [true, 'zahlartname', 'Zahlart', false],
+                        'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
+                        'Land' => [false, 'land.iso3', 'Land', false],
+                        'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
+                        'sumOffen' => [false, 'fWert', 'Offen', false],
+                    ],
+                    'query' => $query,
+                    'count' => $countquery
+                ];
 
         return $output;
     }
@@ -1142,7 +1137,7 @@ class DC_DataTypes
             $SELECT_MAHNSTOP = ',IFNULL(dc_mahnstop.id,0) as mahnstop ';
         }
         $status = count($status) > 0 ? $status : [-100];
-        $b2bshop = DC()->settings->currentSetting->mahnwesenvorkasse == 'on' ? true : false;
+        $b2bshop = DC()->settings->currentSetting->mahnwesenvorkasse === 'on';
         $paymentID = count(DC()->settings->currentPayments) > 0 ? DC()->settings->currentPayments : [-1];
         $vorkasse = count(DC()->settings->currentVorkasse) > 0 ? DC()->settings->currentVorkasse : [-1];
         $sepa = count(DC()->settings->currentSEPA) > 0 ? DC()->settings->currentSEPA : [-1];
@@ -1171,7 +1166,7 @@ class DC_DataTypes
 
         if (count($filter) > 0) {
             foreach ($filter as $key => $value) {
-                if (strlen($value) > 0) {
+                if ($value != '') {
                     $query .= " AND $key LIKE '%" . DC()->db->dbEscape($value) . "%' ";
                 }
             }
@@ -1233,7 +1228,7 @@ class DC_DataTypes
         if (is_array($fieldModes)) {
             $values = 0;
             foreach ($fieldModes as $key => $value) {
-                if ($key != 'none' && $key != '' && strlen($value) > 0) {
+                if ($key !== 'none' && $key != '' && strlen($value) > 0) {
                     $query .= $values == 0 ? ' HAVING ' . $key . " = '" . DC()->db->dbEscape($value) . "'" : ' AND ' . $key . " = '" . DC()->db->dbEscape($value) . "'";
                     ++$values;
                 }
@@ -1256,27 +1251,30 @@ class DC_DataTypes
         }
 
         $output = ['order' => [
-                                        'PK' => [false, '_order.id', 'Key', false],
-                                        'AuftragsNr' => [true, '_order.ordernumber', 'Auftragsnr', true],
-                                        'RechnungsNr' => [true, 'rechnung.docID', 'RechnungsNr', true],
-                                        'Betrag' => [true, '_order.invoice_amount', 'Betrag', false],
-                                        'Offen' => [true, 'fWert', 'Offen', false],
-                                        'Datum' => [true, 'datum', 'Datum', false],
-                                        'Anrede' => [false, 'billing.salutation', 'Anrede', false],
-                                        'Firma' => [true, 'billing.company', 'Firma', true],
-                                        'KundenNr' => [true, 'billing.customernumber', 'KundenNr', true],
-                                        'Vorname' => [true, 'billing.firstname', 'Vorname', true],
-                                        'Nachname' => [true, 'billing.lastname', 'Nachname', true],
-                                        'Kundengruppe' => [true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups()],
-                                        'Zahlart' => [true, 'zahlartname', 'Zahlart', false, 'arrayFilter' => $this->getPaymentMethods()],
-                                        'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
-                                        'Land' => [false, 'land.iso3', 'Land', false],
-                                        'mahnstop' => [false, 'mahnstop', 'mahnstop', false],
-                                        'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
-                                        'sumOffen' => [false, 'fWert', 'Offen', false],
-                                         'bestellstatus' => [true, 'versandstatus.description', 'Bestellstatus', false],
-                                         'versanddate' => [true, 'versanddatum', 'Versanddatum', false],
-                                    ], 'query' => $query, 'count' => $countquery];
+                        'PK' => [false, '_order.id', 'Key', false],
+                        'AuftragsNr' => [true, '_order.ordernumber', 'Auftragsnr', true],
+                        'RechnungsNr' => [true, 'rechnung.docID', 'RechnungsNr', true],
+                        'Betrag' => [true, '_order.invoice_amount', 'Betrag', false],
+                        'Offen' => [true, 'fWert', 'Offen', false],
+                        'Datum' => [true, 'datum', 'Datum', false],
+                        'Anrede' => [false, 'billing.salutation', 'Anrede', false],
+                        'Firma' => [true, 'billing.company', 'Firma', true],
+                        'KundenNr' => [true, 'billing.customernumber', 'KundenNr', true],
+                        'Vorname' => [true, 'billing.firstname', 'Vorname', true],
+                        'Nachname' => [true, 'billing.lastname', 'Nachname', true],
+                        'Kundengruppe' => [true, 'kundengruppename', 'Kundengruppe', false, 'arrayFilter' => $this->getCustomerGroups()],
+                        'Zahlart' => [true, 'zahlartname', 'Zahlart', false, 'arrayFilter' => $this->getPaymentMethods()],
+                        'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
+                        'Land' => [false, 'land.iso3', 'Land', false],
+                        'mahnstop' => [false, 'mahnstop', 'mahnstop', false],
+                        'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
+                        'sumOffen' => [false, 'fWert', 'Offen', false],
+                         'bestellstatus' => [true, 'versandstatus.description', 'Bestellstatus', false],
+                         'versanddate' => [true, 'versanddatum', 'Versanddatum', false],
+                    ],
+                    'query' => $query,
+                    'count' => $countquery
+                ];
 
         return $output;
     }
@@ -1289,27 +1287,31 @@ class DC_DataTypes
         $values['payment'] = [4];
         $values['vorkasse'] = [5];
         $values['sepa'] = [2, 6];
-        $values['hbci'] = ['statusbezahlt' => 12,
-                            'teilzahlung' => 11,
-                            'orderstatus' => 1,
-                            'setpaymentdate' => 1,
-                            'bestaetigung' => 0,
-                            'bankruecklast' => 17,
-                            'betreff' => 'Zahlungseingang bei Ihr-Onlineshop', ];
+        $values['hbci'] = [
+            'statusbezahlt' => 12,
+            'teilzahlung' => 11,
+            'orderstatus' => 1,
+            'setpaymentdate' => 1,
+            'bestaetigung' => 0,
+            'bankruecklast' => 17,
+            'betreff' => 'Zahlungseingang bei Ihr-Onlineshop'
+        ];
 
-        $values['mainsettings'] = ['shopwareapibenutzen' => 0,
-                                    'gutschriften' => 1,
-                                    'mahnwesenvorkasse' => 'on',
-                                    'statusZE' => 13,
-                                    'fristZE' => 14,
-                                    'zeArt' => 1,
-                                    'smtpbetreff' => 'Zahlungserinnerung Ihr-Onlineshop',
-                                    'smtpabsender' => '',
-                                    'smtpkopie' => '',
-                                    'statusMA' => '14',
-                                    'fristMA' => '7',
-                                    'statusIN' => '16',
-                                    'blackliste' => 0, ];
+        $values['mainsettings'] = [
+            'shopwareapibenutzen' => 0,
+            'gutschriften' => 1,
+            'mahnwesenvorkasse' => 'on',
+            'statusZE' => 13,
+            'fristZE' => 14,
+            'zeArt' => 1,
+            'smtpbetreff' => 'Zahlungserinnerung Ihr-Onlineshop',
+            'smtpabsender' => '',
+            'smtpkopie' => '',
+            'statusMA' => '14',
+            'fristMA' => '7',
+            'statusIN' => '16',
+            'blackliste' => 0
+        ];
 
         foreach ($values as $key => $value) {
             DC()->getConf($key, json_encode($value));
