@@ -877,7 +877,9 @@ class HBCI_MODULE
 
     public function getCSVList()
     {
-        $fileFolder = './CSVImport/';
+
+
+        $fileFolder = __DIR__ .'/../CSVImport/';
         $files = scandir($fileFolder);
 
         $file = [];
@@ -896,8 +898,8 @@ class HBCI_MODULE
 
     public function abrufUmsatzCSV($delimiter = ';', $enclosure = '', $escape = '', $filename)
     {
-        $fileFolder = './CSVImport/';
-        $fileFolderLog = './CSVImport/Log/';
+        $fileFolder = __DIR__ .'/../CSVImport/';
+        $fileFolderLog = __DIR__ .'/../CSVImport/Log/';
         //$files = scandir("./CSVImport/");
 
         if (strlen($filename) > 0) {
@@ -905,6 +907,7 @@ class HBCI_MODULE
                 if (!file_exists($fileFolder . $filename) || !is_readable($fileFolder . $filename)) {
                     return;
                 }
+
 
                 $header = null;
                 $data = [];
@@ -920,9 +923,14 @@ class HBCI_MODULE
                     fclose($handle);
                 }
                 $imported = 0;
+
+
                 foreach ($data as $row) {
                     $insert = new stdClass();
-                    $insert->dBuchung = $row['dBuchung'];
+                    $dt = new DateTime($row["dBuchung"]);
+
+                    $insert->dBuchung = $dt->format("Y-m-d");
+
                     $insert->IdKonto = $row['IdKonto'];
                     $insert->fWert = number_format(str_replace(',', '', $row['fWert']), 2, '.', '');
                     $insert->cVzweck = $row['cVzweck'];

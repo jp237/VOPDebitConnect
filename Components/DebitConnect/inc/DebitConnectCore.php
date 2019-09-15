@@ -25,10 +25,10 @@ require __DIR__ . '/defines.php';
 require __DIR__ . '/api.php';
 require __DIR__ . '/createDTA.php';
 require __DIR__ . '/BoniGateway.php';
-
+require __DIR__ . '/VopLogger.php';
 class DebitConnectCore
 {
-    public static $DC_VERSION = '0.3.20';
+    public static $DC_VERSION = '0.3.21';
     public static $SOAP = 'https://api.eaponline.de/debitconnect.php?wsdl';
 
     public $request = null;
@@ -1351,6 +1351,7 @@ class DebitConnectCore
 
     public function HBCICSVFiles()
     {
+
         $csvFiles = DC()->hbci->getCSVList();
         if (count($csvFiles) > 0) {
             $this->View('hbci_csv_list', $csvFiles);
@@ -1372,6 +1373,7 @@ class DebitConnectCore
         }
         if ((DC()->hasvalue('CSVFile')) && (DC()->hasvalue('GetCSV'))) {
             if (strtoupper(substr(DC()->get('CSVFile'), -3)) == 'CSV') {
+
                 DC()->hbci->abrufUmsatzCSV(';', '', '', DC()->get('CSVFile'));
             }
         }
