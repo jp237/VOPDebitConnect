@@ -1,9 +1,9 @@
   <div class="col-sm-8"></div>
   <div class="col-sm-3"><select class="form-control small" name='konto'>
     <option value=''>Bitte Konto auswählen</option>
-    {foreach from=$profiles item=profile}
-          {foreach from=$profile->profileData->konto item=konto}
-              {if $konto->enabled == 1}<option value='{$profile->id};{$konto->IBAN}'>{$konto->IBAN} ({$profile->profileName})</option>{/if}
+    {foreach from=$profiles->bankAccounts item="bank"}
+          {foreach from=$bank key=key item="iban"}
+              <option value='{$iban}'>{$iban}</option>
           {/foreach}
     {/foreach}
     </select>

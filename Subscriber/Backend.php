@@ -18,6 +18,7 @@
 namespace VOPDebitConnect\Subscriber;
 
 use Enlight\Event\SubscriberInterface;
+use mysql_xdevapi\Exception;
 
 class Backend implements SubscriberInterface
 {
@@ -32,4 +33,8 @@ class Backend implements SubscriberInterface
     {
         return __DIR__ . '/../Controllers/Backend/VOPDebitConnect.php';
     }
+
+
+
+
 }

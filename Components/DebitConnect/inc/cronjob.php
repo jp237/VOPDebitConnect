@@ -59,6 +59,7 @@ class DebitConnect_Cronjob
                 DC()->getSettings($shop['shopID']);
                 DC()->getSyncList(true);
                 $copySynclist = DC()->syncList;
+
                 $status['syncdata']['count'] = count($copySynclist);
                 foreach ($copySynclist as $syncitem) {
                     $syncResult = DC()->doSync();
@@ -72,32 +73,38 @@ class DebitConnect_Cronjob
                     ini_set('display_errors', true);
                     //echo "debug";
                 }
-                $hbciProfiles = DC()->settings->hbciProfiles;
+                /** @var hbciProfile $hbciProfiles */
+                $hbciProfiles = DC()->settings->getHBCIProfiles();
                 $firstRun = new DateTime(date('Y-m-d H:i:s'));
                 $firstRun->modify('-3 hour');
                 $lastRun = DC()->getConf('cronjobHBCI', $firstRun->format('Y-m-d H:i:s'), true);
                 $diff = strtotime(date('Y-m-d H:i:s')) - strtotime($lastRun);
                 $TimeNewRequest = 10800;
 
-                if (count($hbciProfiles) > 0 && DC()->settings->cronjob->zahlungsabgleich > 0) {
+                if (count($hbciProfiles->bankAccounts) > 0 && DC()->settings->cronjob->zahlungsabgleich > 0) {
+
                     if ($diff >= $TimeNewRequest) {
                         // JUST CALL EVERY 3 HOURS THE BANK REQUEST
-                        foreach ($hbciProfiles as $profile) {
+
                             // KONTENABRUF
                             try {
-                                foreach ($profile->profileData->konto as $konto) {
-                                    if ($konto->enabled == 1) {
-                                        $from = new DateTime(date('d.m.Y'));
-                                        $from->modify('-7 day');
-                                        $to = new DateTime(date('d.m.Y'));
-                                        DC()->hbci->abrufUmsatz($profile->id, $konto->IBAN, $from, $to);
-                                        $status[$firma]['imported'] = $status[$firma]['imported'] + DC()->hbci->imported;
+
+
+
+
+                                   foreach($hbciProfiles->bankAccounts as  $bank){
+                                       foreach($bank as $id => $iban ) {
+                                           $from = new DateTime(date('d.m.Y'));
+                                           $from->modify('-7 day');
+                                           $to = new DateTime(date('d.m.Y'));
+                                           DC()->hbci->abrufUmsatz($id, $from, $to);
+                                           $status[$firma]['imported'] = $status[$firma]['imported'] + DC()->hbci->imported;
+                                       }
                                     }
-                                }
                             } catch (Exception $e) {
                                 DC()->Log('HBCI', $e->getMessage(), 10, 0);
                             }
-                        }
+
                         DC()->setConf('cronjobHBCI', date('Y-m-d H:i:s'), true);
                     }
                     DC()->hbci->flushdata();

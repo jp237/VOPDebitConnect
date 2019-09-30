@@ -26,6 +26,8 @@ require __DIR__ . '/api.php';
 require __DIR__ . '/createDTA.php';
 require __DIR__ . '/BoniGateway.php';
 require __DIR__ . '/VopLogger.php';
+require __DIR__.   '/finAPI.php';
+
 class DebitConnectCore
 {
     public static $DC_VERSION = '0.3.21';
@@ -50,6 +52,11 @@ class DebitConnectCore
     public $listView;
     /** @var HBCI_MODULE */
     public $hbci;
+
+    public $alerts;
+
+    /** @var finAPI */
+    public $fints;
     public $user = 0;
     public $mailer;
     public $zalogdate;
@@ -66,6 +73,22 @@ class DebitConnectCore
     public static function getVersion()
     {
         return '0.0.2';
+    }
+
+    public function setAlert($type,$msg){
+        $this->alerts[] = [
+            "type" => $type,
+            "msg" => $msg
+            ];
+    }
+
+    /** @return finAPI */
+    public function finTS(hbciProfile $profile){
+
+
+        $this->fints = new finAPI($profile);
+
+        return $this->fints;
     }
 
     public function hasvalue($value)
@@ -181,10 +204,27 @@ class DebitConnectCore
         }
     }
 
+    public function loadModels(){
+        $modelDirectory = __DIR__. "/../model/";
+        $files = scandir($modelDirectory);
+        foreach($files as $file){
+            if(substr($file,-3) != "php") continue;
+            require_once $modelDirectory.$file;
+        }
+    }
     public function init($smarty)
     {
         $this->db = new dbConn();
         $this->db->dbOpen();
+        $this->loadModels();
+
+       // $profile = new hbciProfile();
+       // $profile->client_secret = "e320f8cb-7da2-40d1-b2e9-820fcfd47916";
+        //$profile->client_id = "7eef3f74-f638-4300-9a9b-bc47520e4007";
+
+  //      $this->finTS($profile);
+
+
 
         CoreInstance::$getCore = $this;
         /** @return  DebitConnectCore */
@@ -207,6 +247,7 @@ class DebitConnectCore
             $this->API = new API_VOP();
             $this->API->sendVersionInformation();
         }
+
     }
 
     public function View($key, $value)
@@ -264,6 +305,12 @@ class DebitConnectCore
         $this->checkRegistered();
         $this->regExList = json_decode(DC()->getConf('regex', ''));
         $this->checkLastSync();
+
+        $current_webforms = json_decode(DC()->getConf('webFormAction',json_encode([])));
+
+        if(count($current_webforms)>0){
+            $this->setAlert('danger',"Authentifzierung benötigt. Bitte unter HBCI Einstellung die Webform Bestätigen.");
+        }
     }
 
     public function writeListView($dataType)
@@ -1362,7 +1409,9 @@ class DebitConnectCore
 
     public function Zahlungsabgleich()
     {
-        $hbciProfiles = $this->settings->hbciProfiles;
+
+
+        $hbciProfiles = $this->settings->getHBCIProfiles();
         if ($this->hasvalue('resetMatches')) {
             $this->hbci->matches = null;
         }
@@ -1378,23 +1427,14 @@ class DebitConnectCore
             }
         }
 
-        $active = count($hbciProfiles) > 0 ? true : false;
+        $active = count($hbciProfiles->bankAccounts) > 0 ? true : false;
         if ($active) {
             $this->View('konten', DC()->settings->currentHBCI['konten']);
             if (@DC()->get('requesthbci')) {
-                $ProfileItem = explode(';', DC()->get('selectedKonten'));
+                $ProfileItem = DC()->get('selectedKonten');
                 $from = new DateTime(DC()->get('von'));
                 $to = new DateTime(DC()->get('bis'));
-
-                DC()->hbci->abrufUmsatz($ProfileItem[0], $ProfileItem[1], $from, $to);
-                $logger = (DC()->hbci->hbci->getLogger());
-                if (count($logger->msg_error) > 0) {
-                    $errormsg = '';
-                    foreach ($logger->msg_error as $message) {
-                        $errormsg .= $message . '<br>';
-                    }
-                    $this->View('ERROR_MSG', $errormsg);
-                }
+                DC()->hbci->abrufUmsatz($ProfileItem, $from, $to);
             }
         }
         if ((DC()->hasvalue('HBCIDelete'))) {
@@ -1407,15 +1447,7 @@ class DebitConnectCore
                 }
             }
         }
-        if ((DC()->hasvalue('HBCIdelUmsatz'))) {
-            /*
-            foreach(DC()->get('selected'] as $key => $item)
-                {
-                     $sqlq = " DELETE FROM dc_umsatz where kUmsatz = ".(int) $item;
-                     DC()->db->dbQuery($sqlq);
-                }
-            */
-        }
+
         DC()->hbci->UmsaetzeFromDB();
         DC()->dataTypes->getZahlungsabgleichBestellungen();
 
@@ -1446,19 +1478,19 @@ class DebitConnectCore
 
     public function createDTA()
     {
+
+       $konto = $this->get('konto');
         if ((DC()->hasvalue('createDTA')) && count(DC()->get('cbx')) > 0) {
-            $selectedKonto = explode(';', DC()->get('konto'));
-            if (count($selectedKonto) < 2) {
-                $this->View('ERROR_MSG', 'Fehler bei Kontoauswahl');
+            $profile = $this->settings->getHBCIProfiles();
+            foreach($profile->bankAccounts as $bank){
 
-                return;
-            }
 
-            foreach ($this->settings->hbciProfiles as $profile) {
-                foreach ($profile->profileData->konto as $konto) {
-                    if ($profile->id == $selectedKonto[0] && $konto->IBAN == $selectedKonto[1]) {
-                        if (strlen($konto->OWNER) < 1) {
-                            $this->View('ERROR_MSG', 'Kein Kontoinhaber zu ' . $konto->IBAN . ' (' . $profile->profileName . ') hinterlegt');
+                foreach ($bank as $kontoId => $iban) {
+
+                    if ($konto == $iban) {
+
+                        if (strlen($profile->dtaInformation[$kontoId]["owner"]) < 1) {
+                            $this->View('ERROR_MSG', 'Kein Kontoinhaber zu ' . $iban .' hinterlegt');
 
                             return;
                         }
@@ -1480,10 +1512,14 @@ class DebitConnectCore
                             return;
                         }
 
+
                         $transactionName = md5($ident_number . $newId);
                         $payment_name = 'Payment-Id-' . $newId . '-';
 
-                        $dtaXML = new DTA($transactionName, 'Me', $konto, $konto->OWNER, $ident_number, $transactionName, $payment_name);
+                        $dtaXML = new DTA($transactionName, 'Me', null, $profile->dtaInformation[$kontoId]["owner"],
+                            $ident_number, $transactionName, $payment_name,$profile->dtaInformation[$kontoId]["iban"],
+                            $profile->dtaInformation[$kontoId]["bic"]);
+
 
                         $amountTransfer = '0.00';
                         foreach (DC()->get('cbx') as $pkOrder) {
@@ -1500,7 +1536,7 @@ class DebitConnectCore
                                         'debtorMandate' => $dtaRow['ordernumber'],
 
                                         //'debtorMandateSignDate' => '13.10.2012',
-                                        'remittanceInformation' => $konto->VWZ . ' ' . $dtaRow['ordernumber'] . ' ' . $dtaRow['invoicenumber'] . ' ' . $dtaRow['customernumber'],
+                                        'remittanceInformation' => $profile->dtaInformation[$kontoId]["usagePrepend"] . ' ' . $dtaRow['ordernumber'] . ' ' . $dtaRow['invoicenumber'] . ' ' . $dtaRow['customernumber'],
                                     ]);
 
                                 // Retrieve the resulting XML
@@ -1558,8 +1594,8 @@ class DebitConnectCore
             echo $e->getMessage() . '<br>' . $e->getTraceAsString();
         }
         $dtaCreatedList = $this->db->getSQLResults('select * from dc_dtacreatelog left outer join dc_umsatz on dc_umsatz.kUmsatz = dc_dtacreatelog.kUmsatz where dc_dtacreatelog.nType = 0 and shopId = ' . (int) $this->getShopId() . ' order by id desc ');
-        $profiles = $this->settings->hbciProfiles;
-        $active = count($profiles) > 0 ? true : false;
+        $profiles = $this->settings->getHBCIProfiles();
+        $active = count($profiles->bankAccounts) > 0 ? true : false;
         if ($active) {
             $this->View('profiles', $profiles);
         }
@@ -1820,26 +1856,69 @@ class DebitConnectCore
         return (int) $this->settings->selectedShop;
     }
 
+    public function castJson($destination , \stdClass $source){
+        $sourceReflection = new \ReflectionObject($source);
+        $sourceProperties = $sourceReflection->getProperties();
+        foreach ($sourceProperties as $sourceProperty) {
+            $name = $sourceProperty->getName();
+            $destination->{$name} = $source->$name;
+        }
+        return $destination;
+    }
     public function hbciProfiles()
     {
-        if ((DC()->hasvalue('newProfile')) && strlen(DC()->get('ProfileName')) > 0) {
-            $entry = new stdClass();
-            $entry->profileName = DC()->get('ProfileName');
-            $entry->shopID = $this->getShopId();
-            $entry->profileData = json_encode([]);
-            $this->db->dbInsert('dc_hbciprofiles', $entry);
-        }
 
-        $profiles = $this->settings->getHBCIProfiles();
+        $selectedProfile = $this->settings->getHBCIProfiles();
 
-        if ((DC()->hasvalue('updateProfile')) && (DC()->hasvalue('profile'))) {
-            $this->settings->updateProfile((int) DC()->get('getProfileId'), DC()->get('profile'));
-            $profiles = $this->settings->getHBCIProfiles();
+        if ((DC()->hasvalue('profile'))) {
+            $this->settings->updateProfile($selectedProfile);
+          //  $profiles = $this->settings->getHBCIProfiles();
         }
-        $this->View('profiles', $profiles);
-        if ((DC()->hasvalue('getProfileId'))) {
+        $this->View('profiles', $selectedProfile);
+
             // BEI GEWÄHLTEM PROFIL HBCI ABRUF FÜR KONTEN DURCHFÜHREN
-            $selectedProfile = $profiles[DC()->get('getProfileId')];
+            /** @var hbciProfile $selectedProfile */
+
+            if(strlen($selectedProfile->client_id) > 0 && strlen($selectedProfile->client_secret)>0){
+                try {
+                    $fints = $this->finTS($selectedProfile);
+
+                    if(DC()->hasvalue('addBankAccount')){
+                        $formData = DC()->get('addBankAccount');
+                        $accountName = DC()->get('accountName');
+
+                        $bankId = key($formData);
+                        $account = $accountName[$bankId];
+                        $fints->createBankAccount($bankId,$account);
+
+                    }
+
+                    if(DC()->hasvalue('deleteAccount')){
+                        $formData = $this->get('deleteAccount');
+                        $key = key($formData);
+                        $fints->deleteAccount($key);
+                    }
+
+                    $this->View('bankLogin',true);
+                   if($this->hasvalue('searchBank')){
+                       $searchvalue = $this->get('searchBank');
+                       if(strlen($searchvalue)>2) {
+                           $searchRes = $fints->getAndSearchAllBanks($searchvalue);
+                           $this->View('searchResultBankAccounts', $searchRes);
+                       }
+                   }
+                   $this->View('currentAccounts',$fints->getCurrentBankConnections());
+
+
+                   $current_webforms = json_decode(DC()->getConf('webFormAction',json_encode([])));
+                   $this->View('webForms',$current_webforms);
+
+
+                }catch(Exception $e){
+                    $this->setAlert("danger",$e->getMessage());
+                }
+            }
+            /*
             if (strlen($selectedProfile->profileData->blz) > 0 && strlen($selectedProfile->profileData->pin) > 0 && strlen($selectedProfile->profileData->url) > 0 && strlen($selectedProfile->profileData->alias) > 0) {
                 try {
                     $this->View('konten', DC()->hbci->returnKonten($selectedProfile));
@@ -1857,9 +1936,10 @@ class DebitConnectCore
                     $this->View('HBCI_FAULT', $errormsg);
                 }
             }
+        */
 
-            $this->View('selected', $selectedProfile);
-        }
+
+            $this->View('profile', $selectedProfile);
 
         return $this->smarty->fetch(__DIR__ . '/../tpl/hbciprofiles.tpl');
     }
@@ -2546,8 +2626,8 @@ class DebitConnectCore
 
     public function hbcirequestmanuell()
     {
-        $profiles = $this->settings->hbciProfiles;
-        $active = count($profiles) > 0 ? true : false;
+        $profiles = $this->settings->getHBCIProfiles();
+        $active = count($profiles->bankAccounts) > 0 ? true : false;
         if ($active) {
             $this->View('profiles', $profiles);
         }
@@ -2888,7 +2968,7 @@ class DebitConnectCore
     public function setSession()
     {
         $this->db->dbClose();
-
+        $this->alerts = [];
         $this->db = null;
         $this->smarty = null;
         $this->openConnection = null;

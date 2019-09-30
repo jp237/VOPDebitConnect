@@ -1,78 +1,167 @@
-<h5>HBCI-Profilverwaltung</h5>
-<div class='box-group'>
-<table class='full'>
+<style type="text/css">
+    .top10{
+        padding-top:10px;
+    }
+</style>
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="{if !$bankLogin}active{/if}"><a data-toggle="tab" href="#home">Zugangsdaten</a></li>
+        {if $bankLogin}
+        <li class="active"><a data-toggle="tab" href="#bankaccounts">Bankverbindungen</a></li>
+        {/if}
+        {if $webForms|count > 0}
+            <li><a data-toggle="tab" href="#webforms">Webforms</a></li>
+        {/if}
+    </ul>
 
-<tr><td colspan="2"><h5>HBCI-Profilverwaltung</h5></td></tr>
-<tbody>
-{if $profiles|@count == 0}
-<tr><td colspan="2"><b>Keine Profile eingerichtet.</b></td></tr>
-{else}
-<tr><td style='border-right:1px solid #f2f2f2;width:300px;min-height:500px;' valign="top">
-{foreach from=$profiles item=profil}
-<a onclick='showLoader();' class="btn btn-info btn-sm" href='VOPDebitConnect?switchTo=hbciProfiles&getProfileId={$profil->id}'>{$profil->profileName}</a><br />
-{/foreach}
-</td><td valign="top">
-{if $smarty.get.getProfileId>0}
-<form method="post">
-<input type='hidden' name='updateProfile' />
-<h4>Zugangsdaten</h4>
-<table class='full'>
-    <td width="24%">Bankleitzahl</td>
-    <td width="76%"><input type='text' class='form-control'  name='profile[blz]' required value='{$selected->profileData->blz}'></td>
-  </tr>
-  
-   <tr>
-    <td>HBCI-URL</td>
-    <td><input type='text' class='form-control'  name='profile[url]' required value='{$selected->profileData->url}'></td>
-  </tr>
-     <tr>
-    <td>HBCI-Benutzer</td>
-    <td><input type='text' class='form-control'  name='profile[alias]' required value='{$selected->profileData->alias}'></td>
-  </tr>
-  <tr>
-    <td>HBCI-PIN</td>
-    <td><input type='password' class="form-control" name='profile[pin]' required value='{$selected->profileData->pin}'></td>
-  </tr>
-  {if $konten|@count > 0}
-    <tr><td colspan="2"><br /><h4>Konten</h4> </td></tr>
-    <tr><td colspan="2">
-        <table width="100%">
-        <tr>
-        	<td>IBAN</td>
-            <td style='padding-left:10px'>BIC</td>
-            <td style='padding-left:10px'>DTA-Verwendungszweck vorranstellen</td>
-            <td style='padding-left:10px'>Kontoinhaber (DTA)</td>
-            <td style='padding-left:10px'>Aktion</td>
-            {foreach from=$konten item=konto}
-            	<input type='hidden' name='profile[konto][{$konto.IBAN}][IBAN]' value='{$konto.IBAN}' />
-            	<input type='hidden' name='profile[konto][{$konto.IBAN}][BIC]' value='{$konto.BIC}' />
-            <tr>
-                <td>{$konto.IBAN}</td>
-                <td><span style="padding-left:10px">{$konto.BIC}</span></td>
-                <td style='padding-left:10px'>  <input type='text' class='form-control' name='profile[konto][{$konto.IBAN}][VWZ]' value='{$konto.VWZ}' /></td>
-               	<td style='padding-left:10px'>  <input type='text' class='form-control' name='profile[konto][{$konto.IBAN}][OWNER]' value='{$konto.OWNER}' /></td>
-                <td style='padding-left:10px'>
-                    <select class="form-control" name='profile[konto][{$konto.IBAN}][enabled]'>
-                        <option {if $konto.enabled == 0} selected {/if} value='0'>Nicht verwenden</option>
-                        <option  {if $konto.enabled == 1} selected {/if}value='1'>Verwenden</option>
-                    </select>
-                </td>
-            </tr>
-            {/foreach}
-        </table>
-     </td></tr>
-    {/if}
-    {if isset($HBCI_FAULT)} <tr><td colspan="2"><div class='errormsg'> <b>HBCI-Fehler :</b><br />{$HBCI_FAULT} </div></td></tr>{/if}
-  <tr><td colspan="2"><input type="submit" class="btn btn-success"  value="Profil {$selected->profileName} Speichern" /></td></tr>
-</table>
+    <form method="post">
+        <div class="box-group">
+            <div class="tab-content">
+                <div id="webforms" class="tab-pane fade">
+                    <h4>Webforms</h4>
+                    <p>Aufgrund PSD-2 wird Ihre Aktion benötigt</p>
+                    <div class="row">
+                        <div class="col-sm-4">Funktion</div>
+                        <div class="col-sm-4">Datum</div>
+                        <div class="col-sm-4">Bestätigen</div>
+                    </div>
+                    {foreach from=$webForms key=key item="webForm"}
+                        <div class="row">
+                            <div class="col-sm-4">{$webForm->function}</div>
+                            <div class="col-sm-4">{$webForm->dateTime|date_format:"%d.%m.%y %H:%m"}</div>
+                            <div class="col-sm-4"><a target="_blank" href="VOPDebitConnect?webForm={$key}">Bestätigen</a></div>
+                        </div>
+                    {/foreach}
+                </div>
+                <div id="home" class="tab-pane fade {if !$bankLogin}  in active{/if}">
+                    <h4>Ihre Zugangsdaten</h4>
+                   <p>Bitte hierlegen Sie hier Ihre Zugangsdaten die Sie von V.O.P erhalten haben.<p></p>
+                    <div class="row top10">
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" placeholder="Benutzername" name="profile[client_id]" value="{$profile->client_id}">
+                        </div>
+                    </div>
+                    <div class="row top10">
+                        <div class="col-sm-12">
+                            <input type="password" class="form-control" placeholder="Passwort" name="profile[client_secret]" value="{$profile->client_secret}">
+                        </div>
+                    </div>
+                     <div class="row top10">
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" placeholder="finAPI Url" name="profile[url]" value="{$profile->url}">
+                        </div>
+                    </div>
 
-</form>
+                    <div class="row top10">
+                        <div class="col-sm-12"><input type="submit" name="saveLoginCredentials" class="btn btn-success" value="Zugangsdaten speichern"> </div>
+                    </div>
+                </div>
+                {if $bankLogin}
+                <div id="bankaccounts" style="min-height:768px" class="tab-pane fade {if $bankLogin}in active{/if}">
+                    <div class="row top10">
 
-{else} <b> Kein Profil ausgewählt</b>
-{/if}
-</td></tr>
-{/if}
-</tbody>
-    <tr><td><b>Profil erstellen</b></td><td><form method="post"><input type='hidden' name='newProfile' /><div class="col-sm-3"><input type='text' class="form-control" required placeholder="Bitte Profilnamen eingeben" name='ProfileName' /></div><div class="col-sm-1"><input style='margin-left:30px' type="submit" class='btn btn-success' value='Neues Profil erstellen'/></div></form>
-</td></tr>
-</table></div>
+                        <div class="col-sm-12">
+                            <h4 class="top10">Neue Bankverbindung hinzufügen </h4>
+                            <div class="col-sm-3">
+                                Bankverbindung suchen
+                            </div>
+                            <div class="col-sm-7">
+                                <input type="text" name="searchBank" class="form-control" value="">
+                            </div>
+                                <div class="col-sm-2"><input type="submit" name="searchBankData" class="btn btn-primary">
+                            </div>
+                        </div>
+                    </div>
+                    {if $smarty.post.searchBank && $searchResultBankAccounts|count == 0}
+                        <div class="alert alert-danger top10">Keine Bank gefunden.</div>
+                        {else if $searchResultBankAccounts|count>0}
+                        <div class="row top10">
+                            <div class="col-sm-4">Name</div>
+                            <div class="col-sm-4">Ort</div>
+                            <div class="col-sm-2">BIC</div>
+                            <div class="col-sm-2">Aktion</div>
+                        </div>
+                        <div style="max-height:300px;overflow:scroll">
+                            {foreach from=$searchResultBankAccounts item=bankData}
+                                <input type="hidden" name="accountName[{$bankData.id}]" value="{$bankData.name}">
+                                <div class="row">
+                                    <div class="col-sm-4">{$bankData.name}</div>
+                                    <div class="col-sm-4">{$bankData.city}</div>
+                                    <div class="col-sm-2">{$bankData.bic}</div>
+
+                                    <div class="col-sm-2"><input type="submit" name="addBankAccount[{$bankData.id}]" value="Konto hinzufügen" class="btn btn-primary"> </div>
+                                </div>
+
+                            {/foreach}
+                        </div>
+                    {/if}
+
+                    {if $currentAccounts|count == 0}
+                        <div class="alert alert-info top10">Sie haben derzeit noch keine Bank hinzugefügt</div>
+                        {else}
+                        {foreach from=$currentAccounts key=key item=accountData}
+                            <h4 class="top10">Ihre Banken ( {$currentAccounts|count} ) {$accountData.bic}</h4>
+                            <div class="panel-group top10" id="accordion">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#account{$key}">
+                                                {$accountData.name}</a>
+                                        </h4>
+                                    </div>
+
+
+                                    <div id="account{$key}" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-sm-2">Name</div>
+                                                <div class="col-sm-3">IBAN</div>
+                                                <div class="col-sm-2">Letztes Update</div>
+                                                <div class="col-sm-2">Saldo</div>
+                                                <div class="col-sm-2">Verwenden</div>
+                                            </div>
+                                            {foreach from=$accountData.accounts item="account"}
+                                               <div class="row">
+                                                    <div class="col-sm-2">{$account.account_name}</div>
+                                                    <div class="col-sm-3">{$account.iban}</div>
+                                                    <div class="col-sm-2">{$account.update|date_format:"%d.%m.%Y %H:%m"}</div>
+                                                    <div class="col-sm-2">{$account.balance}</div>
+                                                    <div class="col-sm-2"><input type="checkbox" {if array_key_exists($account.id,$profile->bankAccounts[$key])} checked {/if} name="profile[accounts][{$account.id}]" value="{$account.iban}">  </div>
+                                                </div>
+
+                                            {/foreach}
+                                            <h4>DTA-Informationen</h4>
+                                            {foreach from=$accountData.accounts item="account"}
+                                                <input type="hidden" name="profile[dtaInformation][{$account.id}][iban]" value="{$account.iban}">
+                                                <input type="hidden" name="profile[dtaInformation][{$account.id}][bic]" value="{$accountData.bic}">
+                                                <div class="row">
+                                                    <div class="col-sm-4">{$account.iban}</div>
+                                                    <div class="col-sm-4">
+                                                        <input type="text" class="form-control" placeholder="Kontoinhaber" name="profile[dtaInformation][{$account.id}][owner]" value="{$profile->dtaInformation[{$account.id}].owner}">
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <input type="text" class="form-control" placeholder="Verwendungszweck z.B Ihr Einkauf bei..." name="profile[dtaInformation][{$account.id}][usagePrepend]" value="{$profile->dtaInformation[{$account.id}].usagePrepend}">
+                                                    </div>
+                                                </div>
+
+                                            {/foreach}
+                                            <div class="row top10">
+                                            <div class="col-sm-3">
+                                                <input type="submit" name="saveAccount[{$key}]" value="Kontoeinstellungen speichern" class="btn btn-success ">
+                                            </div> <div class="col-sm-3">
+                                                <input type="submit" name="deleteAccount[{$accountData.id}]" value="Bankverbindung löschen" class="btn btn-danger ">
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {/foreach}
+                    {/if}
+
+                </div>
+                {/if}
+            </div>
+        </div>
+    </form>
+</div>

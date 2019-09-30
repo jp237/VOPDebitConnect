@@ -22,14 +22,16 @@ class DTA
 {
     public $xmlFile;
 
-    public function __construct($var1, $var2, $konto, $companyName, $ident_number, $transactionName, $payment_name)
+    public function __construct($var1, $var2, $konto, $companyName, $ident_number, $transactionName, $payment_name,$iban,$bic)
     {
         $this->xmlFile = TransferFileFacadeFactory::createDirectDebit($var1, $var2);
+
+
         $this->xmlFile->addPaymentInfo($payment_name, [
                     'id' => $payment_name,
                     'creditorName' => $companyName,
-                    'creditorAccountIBAN' => $konto->IBAN,
-                    'creditorAgentBIC' => $konto->BIC,
+                    'creditorAccountIBAN' => $iban,
+                    'creditorAgentBIC' => $bic,
                     'seqType' => PaymentInformation::S_ONEOFF,
                     'creditorId' => $ident_number,
                 ]);

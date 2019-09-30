@@ -27,6 +27,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
 {
     public function indexAction()
     {
+
         $csrfToken = $this->get('BackendSession')->offsetGet('X-CSRF-Token');
         $this->View()->assign(['csrfToken' => $csrfToken]);
         $smarty = $this->View();
@@ -60,6 +61,18 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                 $cfg->user = $identity->id;
 
                 $usr = [];
+
+                if($cfg->hasvalue('webForm')){
+                    $webForm = $cfg->get('webForm');
+
+                    $current_webForms = finAPI::getCurrentWebForms();
+                    $selected_webForm = $current_webForms[$webForm];
+                    unset($current_webForms[$webForm]);
+                    $current_webForms = array_values($current_webForms);
+                    $cfg->setConf("webFormAction",json_encode($current_webForms));
+                    header("Location: ".$selected_webForm->webForm);
+                    exit;
+                }
 
                 if (($cfg->hasvalue('ajaxwritepayments'))) {
                     $usr['logged_in'] = $cfg->checkLogin();
@@ -140,12 +153,17 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                 if ($usr['logged_in'] == true && $cfg->user > 0) {
                     $smarty->assign('shopList', $cfg->shopList);
 
-                    if (@$cfg->hasvalue('fancy')) {
-                        $this->View()->assign(['nomenu' => true]);
-                        $smarty->assign('DebitConnectOutput', $cfg->fetchFancy($cfg->get('switchTo'), $smarty));
-                    } else {
-                        $smarty->assign('DebitConnectOutput', $cfg->fetchTemplate($cfg->current_page, $smarty));
+                    try {
+                        if (@$cfg->hasvalue('fancy')) {
+                            $this->View()->assign(['nomenu' => true]);
+                            $smarty->assign('DebitConnectOutput', $cfg->fetchFancy($cfg->get('switchTo'), $smarty));
+                        } else {
+                            $smarty->assign('DebitConnectOutput', $cfg->fetchTemplate($cfg->current_page, $smarty));
+                        }
+                    }catch(Exception $e){
+                        $cfg->setAlert('danger',$e->getMessage());
                     }
+                    $smarty->assign('alerts',$cfg->alerts);
                 } else {
                     $smarty->assign('version', DebitConnectCore::$DC_VERSION);
                     try {

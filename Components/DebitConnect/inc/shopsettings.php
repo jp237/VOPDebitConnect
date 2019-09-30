@@ -83,27 +83,39 @@ class shopsettings
 
     public function getHBCIProfiles()
     {
-        $shop = $this->selectedShop;
-        $profiles = DC()->db->getSQLResults('SELECT * from dc_hbciprofiles where shopID = ' . $shop);
-        $hbciProfiles = [];
-        foreach ($profiles as $profil) {
-            $newProfil = new stdClass();
-            $newProfil->id = $profil['id'];
-            $newProfil->profileName = $profil['profileName'];
-            $newProfil->profileData = json_decode(DebitConnectCore::decrypt($profil['profileData']));
-            $hbciProfiles[$newProfil->id] = $newProfil;
-        }
-
-        return $hbciProfiles;
+        $std = DebitConnectCore::encrypt(
+            json_encode(new hbciProfile())
+        );
+       $profile = DC()->getConf("finapi",$std);
+       $profile = DC()->castJson(new hbciProfile(),
+           json_decode(DebitConnectCore::decrypt($profile)));
+       $profile->bankAccounts = json_decode(json_encode($profile->bankAccounts),true);
+        $profile->dtaInformation = json_decode(json_encode($profile->dtaInformation),true);
+        return $profile;
     }
 
-    public function updateProfile($profilId, $formData)
+    public function updateProfile(hbciProfile $currentProfil)
     {
-        $shop = $this->selectedShop;
-        $update = new stdClass();
+        $formData = DC()->get('profile');
+        if(DC()->hasvalue('saveLoginCredentials')){
+            $currentProfil->client_secret = $formData["client_secret"];
+            $currentProfil->client_id = $formData["client_id"];
+            $currentProfil->url = $formData["url"];
+        }
 
-        $update->profileData = DebitConnectCore::encrypt(json_encode($formData));
-        DC()->db->dbUpdate('dc_hbciprofiles', $update, 'id = ' . (int) $profilId);
+
+        if(DC()->hasvalue('saveAccount')){
+            $accountData = DC()->get('saveAccount');
+            $bank = key($accountData);
+            $currentProfil->bankAccounts[$bank] = $formData["accounts"];
+        }
+
+        if(isset($formData["dtaInformation"])){
+            $currentProfil->dtaInformation = $formData["dtaInformation"];
+        }
+
+        DC()->setConf("finapi",DebitConnectCore::encrypt(json_encode($currentProfil)));
+
     }
 
     public function getHBCIsettings($object)
@@ -148,13 +160,9 @@ class shopsettings
         $this->cronjob = json_decode(DC()->getConf('cronjob', ''));
         $this->currentHBCI = $this->getHBCIsettings(json_decode(DC()->getConf('hbci', '')));
         $this->getSKR();
-        $this->hbciProfiles = $this->getHBCIProfiles((int) $this->selectedShop);
+
         $this->hbciBlacklist = json_decode(DC()->getConf('hbciBlacklist', json_encode([]), true));
         $this->hbciMailCustomerGroupDisable = json_decode(DC()->getConf('hbciCustomerGroup', json_encode([]), false));
-        //if(($this->currentPayments) == 0)$this->currentPayments[] = false;
-                //if(count($this->currentStates) == 0) $this->currentStates[] = false;
-
-        //	}
-        //}
+       
     }
 }

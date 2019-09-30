@@ -1,4 +1,10 @@
 {
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/jp237/fints-api.git"
+    }
+  ],
   "scripts": {
     "cs-check": "php-cs-fixer fix --dry-run -v",
     "cs-fix": "php-cs-fixer fix -v",
@@ -7,12 +13,12 @@
   },
   "require": {
     "digitick/sepa-xml": "1.6.*",
-    "mschindler83/fints-hbci-php": "^1.0",
     "ext-soap": "^7.1",
     "ext-curl": "^7.1",
     "ext-json": "^1.5",
     "ext-SimpleXML": "^7.1",
-    "ext-dom": "20031129"
+    "ext-dom": "20031129",
+    "vop/swagger" : "*@dev"
   }
   ,
   "require-dev": {

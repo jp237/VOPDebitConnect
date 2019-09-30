@@ -102,6 +102,9 @@
 
 
                      <div class='bodycontainer'>
+                         {foreach from=$alerts item="alert"}
+                             <div class="alert alert-{$alert.type}">{$alert.msg}</div>
+                         {/foreach}
                          <div class="alert alert-info" style="padding: 5px" >Gewählter Shop/Sub-Shop : {$SELECTED_SUBSHOP}</div>
                      <div class='msgoutput'><div>
                      {$DebitConnectOutput}                     

@@ -1,11 +1,12 @@
 <div class='box-group first' style='height:400px'>
 <form action="VOPDebitConnect?switchTo=zahlungsabgleich" autocomplete="off" target="_parent" method="post">
 <table width="100%"><tr><td colspan="2"><h5>Umsatzabruf HBCI</h5></td></tr><tr><td>Konto</td><td><select class=' form-control'  name="selectedKonten">
-  {foreach from=$profiles item=profile}
-    	{foreach from=$profile->profileData->konto item=konto}
- 			{if $konto->enabled == 1}<option value='{$profile->id};{$konto->IBAN}'>{$konto->IBAN} ({$profile->profileName})</option>{/if}
+
+{foreach from=$profiles->bankAccounts item="bank"}
+    	{foreach from=$bank key=key item=konto}
+ 		<option value='{$key}'>{$konto}</option>
   		{/foreach}
-  {/foreach}
+{/foreach}
     
 </select>
 </td></tr>

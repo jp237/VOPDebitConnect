@@ -6,6 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Fhp' => array($vendorDir . '/mschindler83/fints-hbci-php/lib'),
     'Digitick\\Sepa' => array($vendorDir . '/digitick/sepa-xml/lib'),
 );

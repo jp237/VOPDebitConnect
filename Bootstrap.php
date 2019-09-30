@@ -75,6 +75,7 @@ class Shopware_Plugins_Backend_VOPDebitConnect_Bootstrap extends Shopware_Compon
     public function afterInit()
     {
         $this->registerCustomModels();
+
     }
 
     /**

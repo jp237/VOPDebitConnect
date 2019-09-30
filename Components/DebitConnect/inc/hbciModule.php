@@ -957,14 +957,55 @@ class HBCI_MODULE
         }
     }
 
-    public function abrufUmsatz($profileId, $selectedKonto, $from, $to)
+    public function abrufUmsatz($kontoId, $from, $to)
     {
         DC()->setIgnoreAbort();
 
-        $this->initProfileById($profileId);
-        if ($this->selectedProfile == null) {
-            return;
-        }
+       $profile = DC()->settings->getHBCIProfiles();
+       foreach($profile->bankAccounts as $bank){
+
+           foreach($bank as $kontoItem => $iban){
+               if($kontoItem == $kontoId){
+                   $fints = DC()->finTS($profile);
+                   $daytransActionList = $fints->getAllTransActionsByDate($kontoId,$from,$to);
+
+                   foreach($daytransActionList as $transactionList){
+
+                       if($transactionList == null ) continue;
+                       foreach($transactionList->getTransactions() as $transaction){
+
+                           $date = new DateTime($transaction->getBankBookingDate());
+                           $date = $date->format("Y-m-d h:i:s");
+                           $fWert = number_format($transaction->getAmount(), 2, '.', '');
+                           $name = str_replace('@', '', $transaction->getCounterpartName());
+                           $vwz = $transaction->getPurpose();
+
+                           $identity = md5($vwz . $name . $fWert . $date . $iban.$transaction->getId());
+                           $checkValue = DC()->db->singleResult(" SELECT count(kUmsatz) as zaehler from dc_umsatz where IdUmsatz = '$identity' and IdKonto = '$iban'");
+
+                           $vwz = strpos($vwz, 'ABWA+') !== false ? substr($vwz, 0, strpos($vwz, 'ABWA+')) : $vwz;
+                           if ($checkValue['zaehler'] == '0') {
+                               ++$this->imported;
+                               $insert = new stdClass();
+                               $insert->dBuchung = $date;
+                               $insert->IdUmsatz = $identity;
+                               $insert->IdKonto = $iban;
+                               $insert->fWert = number_format(str_replace(',', '', $fWert), 2, '.', '');
+                               $insert->cVzweck = $vwz;
+                               $insert->cName = $name;
+                               $insert->kShop = DC()->settings->selectedShop;
+                               $insert->nType = $fWert > 0 ? 0 : 1;
+                               DC()->db->dbInsert('dc_umsatz', $insert, false);
+                           }
+
+                       }
+                   }
+                   break;
+               }
+           }
+       }
+
+       /*
         try {
             $this->imported = 0;
             $ret = [];
@@ -972,10 +1013,10 @@ class HBCI_MODULE
 
             foreach ($konten as $konto) {
                 if ($konto->getIban() == $selectedKonto) {
-                    /** @var $umsaetze */
+
                     $umsaetze = $this->hbci->getStatementOfAccount($konto, $from, $to);
 
-                    /* @var Statement $statement */
+
                     if (DC()->hasvalue('debug')) {
                         print_r($this->logger);
                     }
@@ -1032,6 +1073,7 @@ class HBCI_MODULE
                 DC()->cronJob->Log('Umsatzimport', $e->getMessage(), null, 1);
             }
         }
+        */
 
         return $ret;
     }
