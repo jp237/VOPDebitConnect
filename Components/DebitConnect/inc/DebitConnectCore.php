@@ -14,7 +14,8 @@
  * Geschäftsführer: Thomas Pütz
  * Handelsregister HRA20499, Koblenz
  */
-include_once __DIR__."/../../../vendor/autoload.php";
+
+require_once __DIR__ . '/../../../vendor/autoload.php';
 include __DIR__ . '/listView.php';
 include __DIR__ . '/cronjob.php';
 require __DIR__ . '/shopware.php';
@@ -30,7 +31,7 @@ require __DIR__.   '/finAPI.php';
 
 class DebitConnectCore
 {
-    public static $DC_VERSION = '0.3.21';
+    public static $DC_VERSION = '0.3.22';
     public static $SOAP = 'https://api.eaponline.de/debitconnect.php?wsdl';
 
     public $request = null;
