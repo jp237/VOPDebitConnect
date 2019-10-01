@@ -15,7 +15,7 @@
  * Handelsregister HRA20499, Koblenz
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 include __DIR__ . '/listView.php';
 include __DIR__ . '/cronjob.php';
 require __DIR__ . '/shopware.php';
