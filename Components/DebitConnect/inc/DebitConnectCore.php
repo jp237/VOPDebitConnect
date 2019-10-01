@@ -14,7 +14,7 @@
  * Geschäftsführer: Thomas Pütz
  * Handelsregister HRA20499, Koblenz
  */
-
+include_once __DIR__."/../../../vendor/autoload.php";
 include __DIR__ . '/listView.php';
 include __DIR__ . '/cronjob.php';
 require __DIR__ . '/shopware.php';
