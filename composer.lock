@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "feae3ba6013626996532d3bb430d3cbb",
+    "content-hash": "b02b281eee008064bc71b50b71392dd5",
     "packages": [
         {
             "name": "digitick/sepa-xml",
@@ -340,13 +340,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jp237/fints-api.git",
-                "reference": "db3b816e21c5f2dda5dc09b83e05fed4f80c9642"
+                "reference": "2e975bd7bfc0b03ec833f184b31a2ff9885f805c"
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "guzzlehttp/guzzle": "^6.2",
                 "php": ">=5.5"
             },
             "require-dev": {
@@ -381,7 +380,7 @@
                 "sdk",
                 "swagger"
             ],
-            "time": "2019-10-01T10:42:07+00:00"
+            "time": "2019-10-02T08:19:55+00:00"
         }
     ],
     "packages-dev": [

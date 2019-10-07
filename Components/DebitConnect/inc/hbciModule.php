@@ -962,11 +962,19 @@ class HBCI_MODULE
         DC()->setIgnoreAbort();
 
        $profile = DC()->settings->getHBCIProfiles();
+
+
+       $lastImport = DC()->getConf('lastImportFinapi',"");
+        $fints = DC()->finTS($profile);
+        if($fints->UpdateBankAccounts($profile,$lastImport)){
+            DC()->setConf('lastImportFinapi',date("Y-m-d H:i:s"));
+        }
+
        foreach($profile->bankAccounts as $bank){
 
            foreach($bank as $kontoItem => $iban){
                if($kontoItem == $kontoId){
-                   $fints = DC()->finTS($profile);
+
                    $daytransActionList = $fints->getAllTransActionsByDate($kontoId,$from,$to);
 
                    foreach($daytransActionList as $transactionList){

@@ -1,11 +1,12 @@
 <?php
 
-
 use GuzzleHttp\Client;
 use Swagger\Client\Api\AccountsApi;
 use Swagger\Client\Api\AuthorizationApi;
 use Swagger\Client\Api\BankConnectionsApi;
 use Swagger\Client\Api\BanksApi;
+
+
 
 class finAPI
 {
@@ -15,6 +16,7 @@ class finAPI
     private $client_secret;
     private $config;
 
+    private $client;
     /**
      * @return mixed
      */
@@ -45,10 +47,16 @@ class finAPI
     public function getConfig()
     {
         return $this->config;
+
     }
 
     public function __construct(hbciProfile $profile)
     {
+
+        include __DIR__ . "/../../../vendor/autoload.php";
+        if(version_compare(\GuzzleHttp\ClientInterface::VERSION,"6.0.0","<=")){
+            throw new \Exception("Loaded Wrong Guzzle Version ".\GuzzleHttp\ClientInterface::VERSION." > 6.x.x required");
+        }
 
         $this->client_id = $profile->client_id;
         $this->client_secret = $profile->client_secret;
@@ -59,6 +67,57 @@ class finAPI
 
     }
 
+    public function getBankAccountInformation(){
+        $this->createToken();
+
+        $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
+            $this->client,
+            $this->config
+        );
+        $res = $apiInstance->getAllBankConnections();
+
+        return $res;
+    }
+
+    public function UpdateBankAccount(Swagger\Client\Model\BankConnection $bankConnection){
+
+        try {
+            $this->createToken();
+
+            $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
+                $this->client,
+                $this->config
+            );
+
+            $model = new \Swagger\Client\Model\UpdateBankConnectionParams();
+            $model->setBankConnectionId($bankConnection->getId());
+            $model->setInterface($bankConnection->getInterfaces()[0]->getInterface());
+            $model->setLoginCredentials($bankConnection->getInterfaces()[0]->getLoginCredentials());
+            $model->setImportNewAccounts(false);
+
+            $result = $apiInstance->updateBankConnection($model);
+            
+        }catch(\Swagger\Client\ApiException $exception){
+
+            $this->checkWebFormRequired($exception,__FUNCTION__);
+        }
+    }
+    public function UpdateBankAccounts(hbciProfile $profile,$lastImport){
+
+
+        $dtImport = new DateTime($lastImport);
+        $dtNow = new DateTime();
+        if(strlen($lastImport) == 0 || $dtImport<$dtNow->modify("-12 hours")) {
+            /** @var \Swagger\Client\Model\BankConnectionList $bankAccounts */
+            $bankAccounts = $this->getBankAccountInformation();
+            foreach ($bankAccounts->getConnections() as $bankConnection) {
+                $this->UpdateBankAccount($bankConnection);
+            }
+            return true;
+        }
+
+        return false;
+    }
 
     /** @return \Swagger\Client\Model\TransactionList[] */
     public function getAllTransActionsByDate($kontoId,$startDate,$endDate){
@@ -66,11 +125,11 @@ class finAPI
         try {
             $this->createToken();
             $apiInstance = new Swagger\Client\Api\AccountsApi(
-
-                new GuzzleHttp\Client(),
+               $this->client,
                 $this->config
             );
             $res = $apiInstance->getDailyBalances($kontoId, $startDate->format("Y-m-d"), $endDate->format("Y-m-d"));
+
             $retvalues = [];
 
             foreach ($res->getDailyBalances() as $balance) {
@@ -93,7 +152,7 @@ class finAPI
         $this->createToken();
         $apiInstance = new Swagger\Client\Api\TransactionsApi(
 
-            new GuzzleHttp\Client(),
+            $this->client,
             $this->config
         );
 
@@ -113,7 +172,7 @@ class finAPI
         $this->createToken();
          $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
 
-            new GuzzleHttp\Client(),
+           $this->client,
             $this->config
         );
 
@@ -157,7 +216,7 @@ class finAPI
         $this->createToken();
         $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
 
-            new GuzzleHttp\Client(),
+           $this->client,
             $this->config
         );
 
@@ -174,7 +233,7 @@ class finAPI
     public function getAndSearchAllBanks($searchValue){
         $this->createToken();
         $apiInstance = new Swagger\Client\Api\BanksApi(
-            new GuzzleHttp\Client(),
+            $this->client,
            $this->config
         );
 
@@ -200,13 +259,16 @@ class finAPI
         if(count($ids)>0) {
             $this->createToken();
             $apiInstance = new Swagger\Client\Api\AccountsApi(
-                new GuzzleHttp\Client(),
+                $this->client,
                 $this->config
             );
 
+            if(count($ids) == 1){
+                $ids[] = $ids[0];
+            }
 
-            $res = $apiInstance->getMultipleAccounts(implode(",", $ids));
-            $this->config->getDebugFile();
+            $res = $apiInstance->getMultipleAccounts(implode(",",$ids));
+
             $arr = [];
             foreach ($res->getAccounts() as $account) {
 
@@ -224,15 +286,10 @@ class finAPI
         return $arr;
     }
     public function getCurrentBankConnections(){
-        $this->createToken();
 
-        $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
-            new GuzzleHttp\Client(),
-            $this->config
-        );
-        $res = $apiInstance->getAllBankConnections();
         $arr = [];
 
+        $res = $this->getBankAccountInformation();
 
         foreach($res->getConnections() as $account){
 
@@ -262,6 +319,13 @@ class finAPI
             if(strpos($token,"error") !== true){
                 $this->access_token = $token;
                 $this->config->setAccessToken($this->access_token);
+
+                $this->client = new GuzzleHttp\Client([
+                    "headers" => [
+                        "X-REQUEST-ID" => "vop-".$settings["vopUser"]."-".date("ymdhis")
+                    ]
+                ]);
+
             }else{
                 throw new \Exception("Error Creating Token Reason : $token");
             }

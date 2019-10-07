@@ -219,6 +219,8 @@ class DebitConnectCore
         $this->db->dbOpen();
         $this->loadModels();
 
+
+
        // $profile = new hbciProfile();
        // $profile->client_secret = "e320f8cb-7da2-40d1-b2e9-820fcfd47916";
         //$profile->client_id = "7eef3f74-f638-4300-9a9b-bc47520e4007";
@@ -310,7 +312,7 @@ class DebitConnectCore
         $current_webforms = json_decode(DC()->getConf('webFormAction',json_encode([])));
 
         if(count($current_webforms)>0){
-            $this->setAlert('danger',"Authentifzierung benötigt. Bitte unter HBCI Einstellung die Webform Bestätigen.");
+            $this->setAlert('danger',"Bank-Authentifzierung benötigt (PSD-2).<a href='VOPDebitConnect?webForm=0' target='_blank' class='btn btn-primary'>Bitte hier klicken</a>");
         }
     }
 
@@ -1413,6 +1415,7 @@ class DebitConnectCore
 
 
         $hbciProfiles = $this->settings->getHBCIProfiles();
+
         if ($this->hasvalue('resetMatches')) {
             $this->hbci->matches = null;
         }
@@ -1900,7 +1903,7 @@ class DebitConnectCore
                         $fints->deleteAccount($key);
                     }
 
-                    $this->View('bankLogin',true);
+
                    if($this->hasvalue('searchBank')){
                        $searchvalue = $this->get('searchBank');
                        if(strlen($searchvalue)>2) {
@@ -1910,7 +1913,7 @@ class DebitConnectCore
                    }
                    $this->View('currentAccounts',$fints->getCurrentBankConnections());
 
-
+                   $this->View('bankLogin',true);
                    $current_webforms = json_decode(DC()->getConf('webFormAction',json_encode([])));
                    $this->View('webForms',$current_webforms);
 
