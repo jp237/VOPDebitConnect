@@ -1062,14 +1062,16 @@ class DC_DataTypes
         $sepa = count(DC()->settings->currentSEPA) > 0 ? DC()->settings->currentSEPA : [-1];
         $query = 'SELECT _order.`id` , `ordernumber` , CAST(ROUND(`invoice_amount`,2) AS DECIMAL(12,2)) as invoice_amount,' . $this->SELECT_OFFEN . " as fWert, `ordertime` , billing.salutation, billing.company, billing.customernumber, billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, billing.phone, land.iso3
 					,rechnung.docID  , DATE_FORMAT(_order.ordertime,'%d.%m.%Y') as datum ,zahlart.description as zahlartname,states.description as zahlstatus,kundengruppe.description as kundengruppename
-					," . $zahlungseingang . ' as zahlungseingang 
+					," . $zahlungseingang . ' as zahlungseingang ,versandstatus.description
 					FROM `s_order` _order
 					LEFT JOIN s_order_billingaddress billing ON _order.id = billing.orderID 
 					LEFT OUTER JOIN ( SELECT SUM(fWert) as fWert,pkOrder  FROM `dc_tzahlung` where  nType != 8 and  nType != 1   group by pkOrder ) zahlung on zahlung.pkOrder = _order.id 
 					LEFT OUTER JOIN s_order_documents rechnung on rechnung.orderID = _order.id and rechnung.type = 1 
 					left outer join s_order_documents gutschrift on gutschrift.orderID = _order.id and gutschrift.type = 3 
 					left outer join s_order_documents storno on storno.orderID = _order.id and storno.type = 4 
-					LEFT JOIN s_core_countries land on land.id = billing.countryID  ';
+					LEFT JOIN s_core_countries land on land.id = billing.countryID  
+					LEFT OUTER JOIN s_core_states versandstatus on versandstatus.id = _order.status ';
+
         $query .= ' LEFT  JOIN s_core_paymentmeans zahlart on _order.paymentID = zahlart.id ';
         $query .= $joinPickware;
         $query .= ' LEFT  JOIN s_core_states states on _order.cleared = states.id ';
@@ -1125,6 +1127,7 @@ class DC_DataTypes
                                         'Zahlstatus' => [true, 'zahlstatus', 'Zahlstatus', false],
                                         'Land' => [false, 'land.iso3', 'Land', false],
                                         'sumGesamt' => [false, 'invoice_amount', 'Betrag', false],
+                                        'bestellstatus' => [true, 'versandstatus.description', 'Bestellstatus', false],
                                         'sumOffen' => [false, 'fWert', 'Offen', false],
                                     ], 'query' => $query, 'count' => $countquery];
 
