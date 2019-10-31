@@ -17,7 +17,8 @@
     "ext-curl": "^7.1",
     "ext-json": "^1.5",
     "ext-SimpleXML": "^7.1",
-    "ext-dom": "20031129"
+    "ext-dom": "20031129",
+    "vop/swagger" : "@dev"
   }
   ,
   "require-dev": {
