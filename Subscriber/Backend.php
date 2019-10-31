@@ -24,8 +24,9 @@ class Backend implements SubscriberInterface
 {
     public static function getSubscribedEvents()
     {
+
         return [
-            'Enlight_Controller_Dispatcher_ControllerPath_Backend_VOPDebitConnect' => 'onGetControllerPathBackend',
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_VOPDebitConnect' => array('onGetControllerPathBackend',0)
         ];
     }
 

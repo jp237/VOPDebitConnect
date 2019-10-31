@@ -8,7 +8,8 @@
         <div style='float:right;'>{if $hbci_csv_list}
                 <a class='fancybox button' href='#' data-fancybox-href='VOPDebitConnect?switchTo=CSVData&fancy=1'>CSV</a>{/if}
             {if $zaActive}
-                <a class='fancybox btn btn-info' href='#' data-fancybox-href='VOPDebitConnect?switchTo=hbcirequest&fancy=1'>HBCI-Abruf</a>
+                <a class='btn btn-info'  href='VOPDebitConnect?switchTo=zahlungsabgleich&updateFinApi'>FINAPI-Update</a>
+                <a class='fancybox btn btn-info' href='#' data-fancybox-href='VOPDebitConnect?switchTo=hbcirequest&fancy=1'>FINAPI-Abruf</a>
             {/if}
             <a class='btn btn-info fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIMatching&fancy=1" >Abgleichen</a>
             <a class='btn btn-success fancyboxreload' data-fancybox-href="VOPDebitConnect?switchTo=HBCIPayments&fancy=1" >Zahlungen Buchen</a>

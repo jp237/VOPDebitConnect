@@ -988,6 +988,8 @@ class HBCI_MODULE
                            $name = str_replace('@', '', $transaction->getCounterpartName());
                            $vwz = $transaction->getPurpose();
 
+                           if(strlen($vwz) == 0) $vwz =  "--- Kein Verwendungszweck bekannt -- ";
+
                            $identity = md5($vwz . $name . $fWert . $date . $iban.$transaction->getId());
                            $checkValue = DC()->db->singleResult(" SELECT count(kUmsatz) as zaehler from dc_umsatz where IdUmsatz = '$identity' and IdKonto = '$iban'");
 

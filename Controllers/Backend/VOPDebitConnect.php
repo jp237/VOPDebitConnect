@@ -85,7 +85,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     echo json_encode($status);
 
                     DC()->setSession();
-                    exit();
+                    exit;
                 } elseif (($cfg->hasvalue('export'))) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     $export = DC()->Export;
@@ -98,7 +98,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     }
 
                     echo $exportData;
-                    exit();
+                    exit;
                 } elseif (($cfg->hasvalue('downloadDTA'))) {
                     $usr['logged_in'] = $cfg->checkLogin();
 
@@ -125,9 +125,12 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                         $status['state'] = 'sessionerror';
                     }
 
+
                     echo json_encode($status);
+                    exit;
                     DC()->setSession();
-                    exit();
+
+                    exit;
                 } elseif (($cfg->hasvalue('syncList'))) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     header('Content-Type: application/json');
@@ -135,7 +138,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     $outputData['order'] = DC()->syncList[0]['cRechnungsNr'];
                     echo json_encode($outputData);
                     DC()->setSession();
-                    exit();
+                    exit;
                 } elseif (($cfg->hasvalue('ajaxsync'))) {
                     $usr['logged_in'] = $cfg->checkLogin();
                     header('Content-Type: application/json');
@@ -145,7 +148,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                     $outputData['res'] = $syncErg['syncText'];
                     echo json_encode($outputData);
                     DC()->setSession();
-                    exit();
+                    exit;
                 }
 
                 $usr['logged_in'] = $cfg->checkLogin();
@@ -183,6 +186,7 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                 $this->View()->addTemplateDir(__DIR__ . '/../../Views/v_o_p_debit_connect/');
             }
         } catch (Exception $e) {
+            print_r($e->getMessage());
         }
     }
 

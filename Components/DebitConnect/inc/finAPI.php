@@ -1,22 +1,44 @@
 <?php
 
-use GuzzleHttp\Client;
+use Buzz\Browser;
+use Buzz\Client\Curl;
+use Buzz\Listener\CookieListener;
+use Http\Adapter\Buzz\Client as BuzzAdapter;
+use Http\Message\MessageFactory\GuzzleMessageFactory;
 use Swagger\Client\Api\AccountsApi;
 use Swagger\Client\Api\AuthorizationApi;
 use Swagger\Client\Api\BankConnectionsApi;
 use Swagger\Client\Api\BanksApi;
 
 
-
 class finAPI
 {
 
+    /** @var Client */
+    private $client;
     private $access_token;
     private $client_id;
     private $client_secret;
     private $config;
+    private $requestId;
 
-    private $client;
+    /**
+     * @return mixed
+     */
+    public function getRequestId()
+    {
+        return $this->requestId;
+    }
+
+    /**
+     * @param mixed $requestId
+     */
+    public function setRequestId()
+    {
+        $this->requestId = "vop-".$this->client_id."-".date("ymdhis");
+    }
+
+
     /**
      * @return mixed
      */
@@ -53,21 +75,19 @@ class finAPI
     public function __construct(hbciProfile $profile)
     {
 
-        include __DIR__ . "/../../../vendor/autoload.php";
-        if(version_compare(\GuzzleHttp\ClientInterface::VERSION,"6.0.0","<=")){
-            throw new \Exception("Loaded Wrong Guzzle Version ".\GuzzleHttp\ClientInterface::VERSION." > 6.x.x required");
-        }
+
 
         $this->client_id = $profile->client_id;
         $this->client_secret = $profile->client_secret;
-        $this->config =  Swagger\Client\Configuration::getDefaultConfiguration();
+        $this->config = Swagger\Client\Configuration::getDefaultConfiguration();
         $this->config->setHost($profile->url);
         $this->config->setDebug(false);
         $this->createToken();
 
     }
 
-    public function getBankAccountInformation(){
+    public function getBankAccountInformation()
+    {
         $this->createToken();
 
         $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
@@ -79,7 +99,8 @@ class finAPI
         return $res;
     }
 
-    public function UpdateBankAccount(Swagger\Client\Model\BankConnection $bankConnection){
+    public function UpdateBankAccount(Swagger\Client\Model\BankConnection $bankConnection)
+    {
 
         try {
             $this->createToken();
@@ -92,22 +113,36 @@ class finAPI
             $model = new \Swagger\Client\Model\UpdateBankConnectionParams();
             $model->setBankConnectionId($bankConnection->getId());
             $model->setInterface($bankConnection->getInterfaces()[0]->getInterface());
-            $model->setLoginCredentials($bankConnection->getInterfaces()[0]->getLoginCredentials());
+            //$model->setLoginCredentials($bankConnection->getInterfaces()[0]->getLoginCredentials());
             $model->setImportNewAccounts(false);
 
             $result = $apiInstance->updateBankConnection($model);
-            
-        }catch(\Swagger\Client\ApiException $exception){
 
-            $this->checkWebFormRequired($exception,__FUNCTION__);
+        } catch (\Swagger\Client\ApiException $exception) {
+
+            $this->checkWebFormRequired($exception, __FUNCTION__);
         }
     }
-    public function UpdateBankAccounts(hbciProfile $profile,$lastImport){
+
+
+    public function displayWebFormAlert(){
+        $current_webforms = json_decode(DC()->getConf('webFormAction',json_encode([])));
+
+        if(count($current_webforms)>0){
+            DC()->setAlert('danger',"Bank-Authentifzierung benötigt (PSD-2).<a href='VOPDebitConnect?webForm=0' target='_blank' class='btn btn-primary'>Bitte hier klicken</a>");
+        }
+    }
+    public function UpdateBankAccounts(hbciProfile $profile, $lastImport)
+    {
 
 
         $dtImport = new DateTime($lastImport);
         $dtNow = new DateTime();
-        if(strlen($lastImport) == 0 || $dtImport<$dtNow->modify("-12 hours")) {
+        if (date("H") < 6) {
+            /** dont update bank accounts before 6h in the morning, webforms have a lifetime */
+            return false;
+        }
+        if (strlen($lastImport) == 0 || $dtImport < $dtNow->modify("-12 hours")) {
             /** @var \Swagger\Client\Model\BankConnectionList $bankAccounts */
             $bankAccounts = $this->getBankAccountInformation();
             foreach ($bankAccounts->getConnections() as $bankConnection) {
@@ -120,12 +155,13 @@ class finAPI
     }
 
     /** @return \Swagger\Client\Model\TransactionList[] */
-    public function getAllTransActionsByDate($kontoId,$startDate,$endDate){
+    public function getAllTransActionsByDate($kontoId, $startDate, $endDate)
+    {
         $retvalues = [];
         try {
             $this->createToken();
             $apiInstance = new Swagger\Client\Api\AccountsApi(
-               $this->client,
+                $this->client,
                 $this->config
             );
             $res = $apiInstance->getDailyBalances($kontoId, $startDate->format("Y-m-d"), $endDate->format("Y-m-d"));
@@ -137,16 +173,17 @@ class finAPI
                 $transActionList = $this->getTransActions($transActions);
                 $retvalues[] = $transActionList;
             }
-        }catch(\Swagger\Client\ApiException $exception){
-            $this->checkWebFormRequired($exception,__FUNCTION__);
+        } catch (\Swagger\Client\ApiException $exception) {
+            $this->checkWebFormRequired($exception, __FUNCTION__);
         }
 
-       return $retvalues;
+        return $retvalues;
     }
 
-    public function getTransActions($transActionIds){
+    public function getTransActions($transActionIds)
+    {
 
-        if(count($transActionIds) == 0 ) return;
+        if (count($transActionIds) == 0) return;
 
 
         $this->createToken();
@@ -157,22 +194,27 @@ class finAPI
         );
 
 
-        $ids = implode(",",$transActionIds);
-        if(count($transActionIds) == 1){
-            $ids = $ids.",".$ids;
+        $ids = implode(",", $transActionIds);
+        if (count($transActionIds) == 1) {
+            $ids = $ids . "," . $ids;
         }
 
-       
-        $res =  $apiInstance->getMultipleTransactions($ids);
+
+        $res = $apiInstance->getMultipleTransactions($ids);
 
         return $res;
     }
 
-    public function createBankAccount($id,$name){
-        $this->createToken();
-         $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
 
-           $this->client,
+    public function createClient(){
+
+    }
+    public function createBankAccount($id, $name)
+    {
+        $this->createToken();
+        $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
+
+            $this->client,
             $this->config
         );
 
@@ -184,39 +226,45 @@ class finAPI
             $body->setStorePin(true);
             $body->setInterface("FINTS_SERVER");
             $res = $apiInstance->importBankConnection($body);
-        }catch(\Swagger\Client\ApiException $exception){
+        } catch (\Swagger\Client\ApiException $exception) {
 
-            $this->checkWebFormRequired($exception,__FUNCTION__);
+            $this->checkWebFormRequired($exception, __FUNCTION__);
 
-      //   file_put_contents($log,print_r($exception,true));
+            //   file_put_contents($log,print_r($exception,true));
         }
     }
 
-    public function checkWebFormRequired(\Swagger\Client\ApiException $exception,$function){
+    public function checkWebFormRequired(\Swagger\Client\ApiException $exception, $function)
+    {
         $body = json_decode($exception->getResponseBody());
         $webFormRequired = false;
-        foreach($body->errors as $error){
-            if($error->code == "WEB_FORM_REQUIRED"){
-              $webFormRequired = true;
-              break;
+        foreach ($body->errors as $error) {
+            if ($error->code == "WEB_FORM_REQUIRED") {
+                $webFormRequired = true;
+                break;
             }
         }
 
-        if($webFormRequired){
+        if ($webFormRequired) {
             $header = $exception->getResponseHeaders();
             $webForm = $header["Location"][0];
-            $current_webforms =$this->getCurrentWebForms();
-            $current_webforms[] = new webForms($webForm,$function);
-            DC()->setConf("webFormAction",json_encode($current_webforms));
-            DC()->setAlert('info',"PSD-2 Starke Kundenauthentifizierung greift. Bitte klicken Sie die Webforms");
+            $current_webforms = $this->getCurrentWebForms();
+            $current_webforms[] = new webForms($webForm, $function);
+            DC()->setConf("webFormAction", json_encode($current_webforms));
+            $this->displayWebFormAlert();
+        } else {
+               foreach ($body->errors as $error) {
+                DC()->setAlert('danger', $error->code." ".$this->getRequestId());
+            }
         }
     }
 
-    public function deleteAccount($accountId){
+    public function deleteAccount($accountId)
+    {
         $this->createToken();
         $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
 
-           $this->client,
+            $this->client,
             $this->config
         );
 
@@ -225,23 +273,25 @@ class finAPI
 
     }
 
-    public static function getCurrentWebForms(){
-       $current_webForms =  json_decode(DC()->getConf('webFormAction',json_encode([])));
-       return $current_webForms;
+    public static function getCurrentWebForms()
+    {
+        $current_webForms = json_decode(DC()->getConf('webFormAction', json_encode([])));
+        return $current_webForms;
     }
 
-    public function getAndSearchAllBanks($searchValue){
+    public function getAndSearchAllBanks($searchValue)
+    {
         $this->createToken();
         $apiInstance = new Swagger\Client\Api\BanksApi(
             $this->client,
-           $this->config
+            $this->config
         );
 
 
-        $res =   $apiInstance->getAndSearchAllBanks(null, $searchValue);
+        $res = $apiInstance->getAndSearchAllBanks(null, $searchValue);
         $banks = $res->getBanks();
         $bankData = null;
-        foreach($banks as $bank){
+        foreach ($banks as $bank) {
             $arr = [
                 "name" => $bank->getName(),
                 "id" => $bank->getId(),
@@ -254,20 +304,21 @@ class finAPI
         return $bankData;
     }
 
-    public function getAccountInformation($ids){
+    public function getAccountInformation($ids)
+    {
         $arr = null;
-        if(count($ids)>0) {
+        if (count($ids) > 0) {
             $this->createToken();
             $apiInstance = new Swagger\Client\Api\AccountsApi(
                 $this->client,
                 $this->config
             );
 
-            if(count($ids) == 1){
+            if (count($ids) == 1) {
                 $ids[] = $ids[0];
             }
 
-            $res = $apiInstance->getMultipleAccounts(implode(",",$ids));
+            $res = $apiInstance->getMultipleAccounts(implode(",", $ids));
 
             $arr = [];
             foreach ($res->getAccounts() as $account) {
@@ -285,13 +336,15 @@ class finAPI
         }
         return $arr;
     }
-    public function getCurrentBankConnections(){
+
+    public function getCurrentBankConnections()
+    {
 
         $arr = [];
 
         $res = $this->getBankAccountInformation();
 
-        foreach($res->getConnections() as $account){
+        foreach ($res->getConnections() as $account) {
 
             $accounts = $this->getAccountInformation($account->getAccountIds());
 
@@ -305,30 +358,38 @@ class finAPI
         }
         return $arr;
     }
+
     public function createToken()
     {
 
         $settings = DC()->settings->shopsArray[0];
 
-        if($settings["activated"] != 1){
+        if ($settings["activated"] != 1) {
             throw  new \Exception("Bitte Firma Registrieren");
         }
 
-            $soap = new SoapClient(DebitConnectCore::$SOAP, ['encoding' => 'UTF-8', 'cache_wsdl' => WSDL_CACHE_NONE, 'trace' => 1]);
-            $token = $soap->getToken($settings["vopUser"],md5($settings["vopToken"]),$this->client_id,$this->client_secret);
-            if(strpos($token,"error") !== true){
-                $this->access_token = $token;
-                $this->config->setAccessToken($this->access_token);
+        $soap = new SoapClient(DebitConnectCore::$SOAP, ['encoding' => 'UTF-8', 'cache_wsdl' => WSDL_CACHE_NONE, 'trace' => 1]);
+        $token = $soap->getToken($settings["vopUser"], md5($settings["vopToken"]), $this->client_id, $this->client_secret);
+        if (strpos($token, "error") !== true) {
+            $this->access_token = $token;
+            $this->config->setAccessToken($this->access_token);
+            $this->setRequestId();
+            $browser = new Browser();
 
-                $this->client = new GuzzleHttp\Client([
-                    "headers" => [
-                        "X-REQUEST-ID" => "vop-".$settings["vopUser"]."-".date("ymdhis")
-                    ]
-                ]);
+            $client = new Curl();
+            $client->setMaxRedirects(0);
+            $browser->setClient($client);
 
-            }else{
-                throw new \Exception("Error Creating Token Reason : $token");
-            }
+
+            $listener = new CookieListener();
+            $browser->addListener($listener);
+            $adapter = new BuzzAdapter($browser, new GuzzleMessageFactory());
+            $this->client = $adapter;
+
+
+        } else {
+            throw new \Exception("Error Creating Token Reason : $token");
+        }
 
     }
 }

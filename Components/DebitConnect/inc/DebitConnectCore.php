@@ -86,9 +86,7 @@ class DebitConnectCore
     /** @return finAPI */
     public function finTS(hbciProfile $profile){
 
-
         $this->fints = new finAPI($profile);
-
         return $this->fints;
     }
 
@@ -308,12 +306,10 @@ class DebitConnectCore
         $this->checkRegistered();
         $this->regExList = json_decode(DC()->getConf('regex', ''));
         $this->checkLastSync();
+        $selectedProfile = $this->settings->getHBCIProfiles();
+        $finapi = $this->finTS($selectedProfile);
+        $finapi->displayWebFormAlert();
 
-        $current_webforms = json_decode(DC()->getConf('webFormAction',json_encode([])));
-
-        if(count($current_webforms)>0){
-            $this->setAlert('danger',"Bank-Authentifzierung benötigt (PSD-2).<a href='VOPDebitConnect?webForm=0' target='_blank' class='btn btn-primary'>Bitte hier klicken</a>");
-        }
     }
 
     public function writeListView($dataType)
@@ -1415,6 +1411,13 @@ class DebitConnectCore
 
 
         $hbciProfiles = $this->settings->getHBCIProfiles();
+
+        if(DC()->hasvalue('updateFinApi')){
+            DC()->setConf("webFormAction",json_encode(null));
+            $finapi = $this->finTS($hbciProfiles);
+            $finapi->UpdateBankAccounts($hbciProfiles,"");
+        }
+
 
         if ($this->hasvalue('resetMatches')) {
             $this->hbci->matches = null;
@@ -2701,10 +2704,31 @@ class DebitConnectCore
         if (DC()->get('requestLogin') && DC()->get('gatewaylogin') && DC()->get('gatewaypass')) {
             $this->boniGateway->checkLoginGateway(DC()->get('gatewaylogin'), DC()->get('gatewaypass'));
         }
-        if ($this->boniGateway->logged_in) {
-            $lastInvoiceAdress = $this->dataTypes->BoniGatewayAdresses($pkCustomer);
+        $lastInvoiceAdress = $this->dataTypes->BoniGatewayAdresses($pkCustomer);
+        if(count($lastInvoiceAdress) > 0){
+            $adress = $lastInvoiceAdress[0];
+            $adress["birthdate"] = $adress["DateOfBirth"];
+            $adress = ["request" => $adress];
+            unset($adress["DateOfBirth"]);
 
-            $this->View('gateway_invoice_address', $lastInvoiceAdress);
+            $this->View('jsonData',
+                base64_encode(
+                    json_encode($adress)
+                )
+            );
+
+            $auth = [
+                "userLogin" => "andreasbo",
+                "userPass" => md5("Sommer2018"),
+            ];
+            $authToken = base64_encode(json_encode($auth));
+            $this->View('vopAuthToken',$authToken);
+        }
+
+        if ($this->boniGateway->logged_in) {
+
+
+
             $this->View('countries', $this->dataTypes->getCountryISO());
             $this->View('projecte_b2c', $this->boniGateway->projecte_b2c);
             $this->View('projecte_b2b', $this->boniGateway->projecte_b2b);
@@ -2977,10 +3001,11 @@ class DebitConnectCore
         $this->smarty = null;
         $this->openConnection = null;
         $this->dataTypes = null;
-
+        $this->fints = null;
         $this->hbci->bestellungen = null;
 
         Shopware()->BackendSession()->{$this->sessName} = serialize($this);
+
     }
 
     public static function encrypt($string, $key = ';vOp!deB1TC0nn3CTSEnCKey.:')

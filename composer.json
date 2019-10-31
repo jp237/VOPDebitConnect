@@ -18,7 +18,6 @@
     "ext-json": "^1.5",
     "ext-SimpleXML": "^7.1",
     "ext-dom": "20031129",
-    "guzzlehttp/guzzle": "^6.3.3",
     "vop/swagger" : "@dev"
 
   }
