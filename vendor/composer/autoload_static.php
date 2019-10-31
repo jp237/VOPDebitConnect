@@ -6,88 +6,6 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit69a3ca8f6589e013b8f87ccdd2a32266
 {
-    public static $files = array (
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        '9c67151ae59aff4788964ce8eb2a0f43' => __DIR__ . '/..' . '/clue/stream-filter/src/functions_include.php',
-        '8cff32064859f4559445b89279f3199c' => __DIR__ . '/..' . '/php-http/message/src/filters.php',
-    );
-
-    public static $prefixLengthsPsr4 = array (
-        'S' => 
-        array (
-            'Swagger\\Client\\' => 15,
-        ),
-        'P' => 
-        array (
-            'Psr\\Http\\Message\\' => 17,
-        ),
-        'H' => 
-        array (
-            'Http\\Promise\\' => 13,
-            'Http\\Message\\' => 13,
-            'Http\\Discovery\\' => 15,
-            'Http\\Client\\' => 12,
-            'Http\\Adapter\\Buzz\\' => 18,
-        ),
-        'G' => 
-        array (
-            'GuzzleHttp\\Psr7\\' => 16,
-        ),
-        'C' => 
-        array (
-            'Clue\\StreamFilter\\' => 18,
-        ),
-        'B' => 
-        array (
-            'Buzz\\' => 5,
-        ),
-    );
-
-    public static $prefixDirsPsr4 = array (
-        'Swagger\\Client\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/vop/swagger/lib',
-        ),
-        'Psr\\Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-        ),
-        'Http\\Promise\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/promise/src',
-        ),
-        'Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/message/src',
-            1 => __DIR__ . '/..' . '/php-http/message-factory/src',
-        ),
-        'Http\\Discovery\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/discovery/src',
-        ),
-        'Http\\Client\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/httplug/src',
-        ),
-        'Http\\Adapter\\Buzz\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/buzz-adapter/src',
-        ),
-        'GuzzleHttp\\Psr7\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
-        ),
-        'Clue\\StreamFilter\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/clue/stream-filter/src',
-        ),
-        'Buzz\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/kriswallsmith/buzz/lib/Buzz',
-        ),
-    );
-
     public static $prefixesPsr0 = array (
         'D' => 
         array (
@@ -101,8 +19,6 @@ class ComposerStaticInit69a3ca8f6589e013b8f87ccdd2a32266
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit69a3ca8f6589e013b8f87ccdd2a32266::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit69a3ca8f6589e013b8f87ccdd2a32266::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInit69a3ca8f6589e013b8f87ccdd2a32266::$prefixesPsr0;
 
         }, null, ClassLoader::class);
