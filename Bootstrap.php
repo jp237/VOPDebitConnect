@@ -167,7 +167,7 @@ class Shopware_Plugins_Backend_VOPDebitConnect_Bootstrap extends Shopware_Compon
             if ($install === true) {
                 return [
                     'success' => true,
-                    'invalidateCache' => ['backend'],
+                    'invalidateCache' => ['backend','frontend'],
                 ];
             }
 
@@ -205,7 +205,17 @@ class Shopware_Plugins_Backend_VOPDebitConnect_Bootstrap extends Shopware_Compon
             'action' => 'Shopware_CronJob_VOPCronjob',
             'interval' => 3600, ], false);
 
-        return true;
+        return [
+            'success' => true,
+            'invalidateCache' => ['backend','frontend'],
+        ];
+    }
+
+    public function disable(){
+        return [
+            'success' => true,
+            'invalidateCache' => ['backend','frontend'],
+        ];
     }
 
     public function DebitConnectZahlungsabgleich(Shopware_Components_Cron_CronJob $job)

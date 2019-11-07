@@ -307,8 +307,7 @@ class DebitConnectCore
         $this->regExList = json_decode(DC()->getConf('regex', ''));
         $this->checkLastSync();
         $selectedProfile = $this->settings->getHBCIProfiles();
-        $finapi = $this->finTS($selectedProfile);
-        $finapi->displayWebFormAlert();
+
 
     }
 
@@ -1465,6 +1464,7 @@ class DebitConnectCore
                 $this->Zahlungsabgleich();
             }
         }
+
 
         $this->View('Umsatzcounter', count(DC()->hbci->umsaetze));
         $this->View('matches', DC()->hbci->matches);

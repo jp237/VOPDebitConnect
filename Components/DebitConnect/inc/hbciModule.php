@@ -588,7 +588,8 @@ class HBCI_MODULE
             $matched = $matched * 2;
         }
 
-        return $matched;
+
+        return (int)$matched;
     }
 
     public function clearchars($inputstring)
@@ -741,6 +742,7 @@ class HBCI_MODULE
                 continue;
             }
 
+
             $selected = false;
             $this->matches[$umsatz['kUmsatz']]['selected'] = 0;
 
@@ -813,6 +815,7 @@ class HBCI_MODULE
             }
         }
 
+        print_r($this->matches);
         return true;
     }
 

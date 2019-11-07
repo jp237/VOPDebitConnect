@@ -125,11 +125,8 @@ class Shopware_Controllers_Backend_VOPDebitConnect extends Enlight_Controller_Ac
                         $status['state'] = 'sessionerror';
                     }
 
-
                     echo json_encode($status);
-                    exit;
                     DC()->setSession();
-
                     exit;
                 } elseif (($cfg->hasvalue('syncList'))) {
                     $usr['logged_in'] = $cfg->checkLogin();

@@ -35,7 +35,7 @@
     <td><input type="checkbox" name="selected[]" value="{$umsatz.kUmsatz}" /></td>
     <td>{$umsatz.datum}</td>
     <td>{$umsatz.fWert}</td>
-    <td>{$matches[$umsatz.kUmsatz].sum} 
+    <td>{$matches[$umsatz.kUmsatz].sum}</td>
     <td>{$umsatz.cName}</td>
     <td>{$umsatz.cVzweck}</td>
     <td><a name='{$umsatz.kUmsatz}'></a>
