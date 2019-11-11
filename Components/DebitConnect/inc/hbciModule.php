@@ -815,7 +815,6 @@ class HBCI_MODULE
             }
         }
 
-        print_r($this->matches);
         return true;
     }
 
