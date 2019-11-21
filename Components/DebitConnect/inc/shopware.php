@@ -65,7 +65,7 @@ class DC_DataTypes
 				  LEFT JOIN s_user_billingaddress billing on kunde.id = billing.userID
 				  LEFT JOIN s_core_countries land on land.id = userbilling.countryID  where kunde.id = " . (int) $pkCustomer . ' ';
 
-        return DC()->db->getSQLResults($query, false);
+        return DC()->db->getSQLResults($query);
     }
 
     public function BoniGatewayBlacklist($pkOrder)
@@ -720,7 +720,7 @@ class DC_DataTypes
     {
         $minDate = new DateTime(date('d.m.Y'));
         //$minDate->modify("- 6month");
-        $minDate->modify('- 36months');
+        $minDate->modify('-5 years');
         $payedStatus = ' AND (s_order.cleared != ' . DC()->settings->currentHBCI['statusbezahlt'] . ' OR dc_status.pkOrder > 0 )';
         $matching_ignore_paymentstate = DC()->getConf('matching_ignore_paymentstate', '0', true);
         $joinPickware = strlen($this->joinPickwarePayment) > 5 ? $this->joinPickwarePayment . ' s_order.id ' : '';

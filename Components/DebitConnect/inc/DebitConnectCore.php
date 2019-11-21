@@ -2701,52 +2701,42 @@ class DebitConnectCore
         if ($this->boniGateway == null) {
             $this->boniGateway = new DebitConnect_BoniGateway();
         }
+
+        $selectedShop =$this->getShopId();
+
+        $entrys = Shopware()->Db()->fetchall('SELECT art,datavalue from dc_gatewaymeta where nType = 0 and shopID = ' . $selectedShop);
+        foreach ($entrys as $entry) {
+            $settings[$entry['art']] = is_object(json_decode($entry['datavalue'])) ? json_decode($entry['datavalue'], true) : $entry['datavalue'];
+        }
+
         if (DC()->get('requestLogin') && DC()->get('gatewaylogin') && DC()->get('gatewaypass')) {
             $this->boniGateway->checkLoginGateway(DC()->get('gatewaylogin'), DC()->get('gatewaypass'));
         }
         $lastInvoiceAdress = $this->dataTypes->BoniGatewayAdresses($pkCustomer);
         if(count($lastInvoiceAdress) > 0){
             $adress = $lastInvoiceAdress[0];
-            $adress["birthdate"] = $adress["DateOfBirth"];
-            $adress = ["request" => $adress];
-            unset($adress["DateOfBirth"]);
 
-            $this->View('jsonData',
-                base64_encode(
-                    json_encode($adress)
-                )
-            );
+            if($adress["zipcode"]>0) {
+                $adress["birthdate"] = $adress["DateOfBirth"];
+                $adress = ["request" => $adress];
+                unset($adress["DateOfBirth"]);
 
-            $auth = [
-                "userLogin" => "andreasbo",
-                "userPass" => md5("Sommer2018"),
-            ];
-            $authToken = base64_encode(json_encode($auth));
-            $this->View('vopAuthToken',$authToken);
-        }
-
-        if ($this->boniGateway->logged_in) {
-
-
-
-            $this->View('countries', $this->dataTypes->getCountryISO());
-            $this->View('projecte_b2c', $this->boniGateway->projecte_b2c);
-            $this->View('projecte_b2b', $this->boniGateway->projecte_b2b);
-            $this->View('kennziffern', $this->boniGateway->kennziffern);
-            if (DC()->get('getRequestBoniGateway')) {
-                $request = $this->boniGateway->getRequest();
-                if (array_key_exists('ergebnis', $request)) {
-                    $this->View('GatewayResult', $request['response']);
-                } elseif (array_key_exists('trefferliste', $request)) {
-                    $this->View('GatewayList', $request['response']);
-                }
+                $this->View('jsonData',
+                    base64_encode(
+                        json_encode($adress)
+                    )
+                );
             }
 
-            $history = $this->dataTypes->BoniGatewayHistory($pkCustomer);
-            $this->View('gateway_history', $history);
+
         }
 
-        $this->View('gatewaylogin', $this->boniGateway->logged_in);
+        $auth = [
+            "userLogin" => $settings["username"],
+            "userPass" => md5($settings["passwd"]),
+        ];
+        $authToken = base64_encode(json_encode($auth));
+        $this->View('vopAuthToken',$authToken);
 
         return $this->smarty->fetch(__DIR__ . '/../tpl/gatewayCustomer.tpl');
     }

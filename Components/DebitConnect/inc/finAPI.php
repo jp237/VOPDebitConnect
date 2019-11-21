@@ -103,12 +103,14 @@ class finAPI
     {
 
         try {
+
             $this->createToken();
 
             $apiInstance = new Swagger\Client\Api\BankConnectionsApi(
                 $this->client,
                 $this->config
             );
+
 
             $model = new \Swagger\Client\Model\UpdateBankConnectionParams();
             $model->setBankConnectionId($bankConnection->getId());
@@ -119,7 +121,6 @@ class finAPI
             $result = $apiInstance->updateBankConnection($model);
 
         } catch (\Swagger\Client\ApiException $exception) {
-
             $this->checkWebFormRequired($exception, __FUNCTION__);
         }
     }
@@ -138,10 +139,7 @@ class finAPI
 
         $dtImport = new DateTime($lastImport);
         $dtNow = new DateTime();
-        if (date("H") < 6) {
-            /** dont update bank accounts before 6h in the morning, webforms have a lifetime */
-            return false;
-        }
+
         if (strlen($lastImport) == 0 || $dtImport < $dtNow->modify("-12 hours")) {
             /** @var \Swagger\Client\Model\BankConnectionList $bankAccounts */
             $bankAccounts = $this->getBankAccountInformation();
