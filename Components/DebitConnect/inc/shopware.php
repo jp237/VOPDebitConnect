@@ -750,6 +750,7 @@ class DC_DataTypes
 
         $rs = DC()->db->getSQLResults($query);
 
+
         $bestellung = [];
         foreach ($rs as $bestellung) {
             $bestellungen[$bestellung['id']] = $bestellung;

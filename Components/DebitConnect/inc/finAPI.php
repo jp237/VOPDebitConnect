@@ -240,6 +240,8 @@ class finAPI
             if ($error->code == "WEB_FORM_REQUIRED") {
                 $webFormRequired = true;
                 break;
+            }else{
+                DC()->setAlert("Error",print_r($body->errors));
             }
         }
 
