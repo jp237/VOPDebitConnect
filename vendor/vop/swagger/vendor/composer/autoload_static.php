@@ -16,19 +16,19 @@ class ComposerStaticInit25bdadbee5eb1d341b9d5b7b2cda5b31
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
+            'Symfony\\Component\\OptionsResolver\\' => 34,
             'Swagger\\Client\\' => 15,
         ),
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
         ),
         'H' => 
         array (
             'Http\\Promise\\' => 13,
             'Http\\Message\\' => 13,
-            'Http\\Discovery\\' => 15,
             'Http\\Client\\' => 12,
-            'Http\\Adapter\\Buzz\\' => 18,
         ),
         'G' => 
         array (
@@ -45,13 +45,22 @@ class ComposerStaticInit25bdadbee5eb1d341b9d5b7b2cda5b31
     );
 
     public static $prefixDirsPsr4 = array (
+        'Symfony\\Component\\OptionsResolver\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/options-resolver',
+        ),
         'Swagger\\Client\\' => 
         array (
             0 => __DIR__ . '/../..' . '/lib',
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
         'Http\\Promise\\' => 
         array (
@@ -62,17 +71,9 @@ class ComposerStaticInit25bdadbee5eb1d341b9d5b7b2cda5b31
             0 => __DIR__ . '/..' . '/php-http/message/src',
             1 => __DIR__ . '/..' . '/php-http/message-factory/src',
         ),
-        'Http\\Discovery\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/discovery/src',
-        ),
         'Http\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-http/httplug/src',
-        ),
-        'Http\\Adapter\\Buzz\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/buzz-adapter/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -84,7 +85,7 @@ class ComposerStaticInit25bdadbee5eb1d341b9d5b7b2cda5b31
         ),
         'Buzz\\' => 
         array (
-            0 => __DIR__ . '/..' . '/kriswallsmith/buzz/lib/Buzz',
+            0 => __DIR__ . '/..' . '/kriswallsmith/buzz/lib',
         ),
     );
 

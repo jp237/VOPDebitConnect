@@ -31,7 +31,7 @@ namespace Swagger\Client\Api;
 use Buzz\Browser;
 use Buzz\Client\Curl;
 use Buzz\Listener\CookieListener;
-use Http\Adapter\Buzz\Client as BuzzAdapter;
+use Buzz\BuzzClientInterface as BuzzAdapter;
 use Http\Message\MessageFactory\GuzzleMessageFactory;
 use Psr\Http\Client\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
@@ -69,12 +69,12 @@ class MocksAndTestsApi
     protected $headerSelector;
 
     /**
-     * @param \Http\Adapter\Buzz\Client $client
+     * @param \Buzz\BuzzClientInterface $client
      * @param Configuration   $config
      * @param HeaderSelector  $selector
      */
     public function __construct(
-        \Http\Adapter\Buzz\Client $client = null,
+        \Buzz\BuzzClientInterface $client = null,
         Configuration $config = null,
         HeaderSelector $selector = null
     ) {
