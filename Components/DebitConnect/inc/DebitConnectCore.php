@@ -1534,6 +1534,11 @@ class DebitConnectCore
                             // $profile = PROFIL , $konto = KONTO
                             if ($dtaRow['amount'] > 0 && strlen($dtaRow['iban']) > 0 && strlen($dtaRow['bic']) > 0 && strlen($dtaRow['bankname']) > 0 &&
                                                             ((strlen($dtaRow['company']) > 0) || (strlen($dtaRow['lastname']) > 0 && strlen($dtaRow['firstname']) > 0))) {
+
+                                // remove whitespace from iban & bic
+                                $dtaRow['iban'] = preg_replace('/\s+/', '', $dtaRow['iban']);
+                                $dtaRow['bic'] = preg_replace('/\s+/', '', $dtaRow['bic']);
+
                                 // Add a Single Transaction to the named payment
                                 $dtaXML->xmlFile->addTransfer($payment_name, [
                                         'amount' => number_format($dtaRow['amount'], '2', '.', ''),
