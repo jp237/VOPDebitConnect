@@ -446,7 +446,8 @@ class HBCI_MODULE
                     $dBuchung = $umsatz['dBuchung'];
                     $settingOrderStatus = DC()->settings->currentHBCI['orderstatus'];
                     $paymentstatus = DC()->settings->currentHBCI['statusbezahlt'];
-                    if ($settingOrderStatus > 0 && in_array($match->bestellung['paymentID'], DC()->settings->currentVorkasse)) {
+
+                    if (($settingOrderStatus >= 0 && $settingOrderStatus !== null) && in_array($match->bestellung['paymentID'], DC()->settings->currentVorkasse)) {
                         $orderstatus = $settingOrderStatus;
                     }
 
