@@ -1,0 +1,1 @@
+ALTER TABLE `dc_mahnstop` ADD `cCommentary` VARCHAR( 2048 )  NULL AFTER `pk` ;

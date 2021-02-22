@@ -1,0 +1,32 @@
+{
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/jp237/fints-api.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/jp237/RestAPI.git"
+    }
+  ],
+  "scripts": {
+    "cs-check": "php-cs-fixer fix --dry-run -v",
+    "cs-fix": "php-cs-fixer fix -v",
+    "phpstan": "phpstan analyse -l 1 -c phpstan.neon.dist --memory-limit=512M",
+    "test": "phpunit -c tests/ --colors=always"
+  },
+  "require": {
+    "digitick/sepa-xml": "1.6.*",
+    "ext-soap": "^7.1",
+    "ext-curl": "^7.1",
+    "ext-json": "^1.5",
+    "ext-SimpleXML": "^7.1",
+    "ext-dom": "20031129",
+    "vop/swagger" : "@dev",
+    "jp237/restapi" : "@dev"
+  }
+  ,
+  "require-dev": {
+    "roave/security-advisories": "dev-master"
+  }
+}

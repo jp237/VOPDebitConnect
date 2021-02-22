@@ -1,0 +1,1 @@
+ALTER TABLE `dc_auftrag` ADD `nBlacklist` INT( 1 ) NOT NULL DEFAULT '0';

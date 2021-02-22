@@ -1,0 +1,97 @@
+/* STANDARDEINSTELLUNGEN */
+.eap_note{
+/* Hinweistext an Kunden */ 
+font-style:italic;
+margin-bottomn:15px;
+font-size:14px;
+}
+
+.eap_err{
+/* Eingabefehler der Daten */
+color:red;
+font-weight:bold;
+margin-top:7px;
+}
+
+.eap_hinweis{
+/* Zeile Geburtsdatum + Telefon */ 
+margin-top:5px;
+}
+#eap_hinweis{
+
+}
+.eap_hinweis > .birthday {
+/* eingabefeld geburtstag */
+margin-left:106px;
+width:100px;
+}
+.eap_h1{
+   font-weight: bold;
+   color:black;
+   
+}
+#tel_error {
+font-size:9px;
+}
+#geb_error{
+font-size:9px;
+}
+.eap_hinweis .telefon
+{
+margin-top:10px;
+}
+
+.eap_continue_postident{
+	background-image:url('../img/postident_inaktiv.png');
+		width:284px !important;
+		height:47px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-left:40px;
+		margin-top:18px;
+}
+.eap_continue_postident:hover{
+		background-image:url('../img/postident_aktiv.png');
+		width:284px !important;
+		height:47px;
+		border:0px;
+		background-repeat:no-repeat;
+		margin-left:40px;
+		margin-top:18px;
+}
+#eap_hr {
+border: 0;
+height: 1px;
+background: #333;
+background-image: -webkit-linear-gradient(left, #ccc, #333, #ccc);
+background-image: -moz-linear-gradient(left, #ccc, #333, #ccc);
+background-image: -ms-linear-gradient(left, #ccc, #333, #ccc);
+background-image: -o-linear-gradient(left, #ccc, #333, #ccc);
+margin-top:5px;
+}
+.eap_back{
+/* Abbrechen Button */
+margin-left:10px;
+margin-top:10px;
+}
+.deaktiviert{
+background-color:#5151511a;
+/*Deaktivierte Zahlart bei Auswahl kann z.B ausgegraut werden */
+
+}
+.fancybox eap_test
+{
+	background-color:green;
+}
+.eap_continue {
+margin-top:9px;
+}
+
+#fancybox-content{
+background-color:white;
+}
+.datepicker{
+						z-index:999999;
+}
+
+

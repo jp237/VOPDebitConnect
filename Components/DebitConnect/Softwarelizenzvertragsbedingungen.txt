@@ -1,0 +1,353 @@
+﻿Software-Lizenzvertragsbedingungen
+EAP-DebitConnect (shopware Edition)
+
+der
+
+V.O.P GmbH & Co. KG
+Hauptstraße 62
+56745 Bell
+Telefon: +49 (2652) 529-0
+Telefax: +49 (2652) 529-129
+E-Mail: info@eaponline.de
+USt-IdNr.: DE 261 538 563
+Pers. Haft. Gesellschafter:
+V.O.P Verwaltungs GmbH, HRB 21231, Koblenz
+Geschäftsführer: Thomas Pütz
+Handelsregister HRA20499, Koblenz
+- Lizenzgeber -
+
+
+
+
+
+
+Bitte lesen Sie diese Softwarelizenzvertragsbedingungen („Vertragsbedingungen“) sorgfältig durch, bevor Sie die Software erwerben oder auf Ihrem Computer installieren bzw.  installieren lassen und einsetzen. Durch Installation der Software erklären Sie Ihr ausdrückliches Einverständnis mit den nachstehenden Lizenzbestimmungen. Diese Vertragsbedingungen gelten ausschließlich. V.O.P GmbH & Co. KG akzeptiert keine diesen Vertragsbedingungen widersprechenden Geschäftsbedingungen des Kunden. Der Einbeziehung solcher Geschäftsbedingungen des Kunden wird ausdrücklich widersprochen. 
+
+
+Inhaltsverzeichnis
+
+Inhaltsverzeichnis	2
+Präambel	3
+§ 1 Vertragsschluss	4
+§ 2 Vertragsgegenstand	4
+§ 3 Rechteeinräumung	5
+§ 4 Beginn und Ende der Rechte des Kunden	8
+§ 5 Leistungszeit, Verzögerungen, Leistungsort	10
+§ 6 Entgelt, Fälligkeit und Verzug	11
+§ 7 Sachmängel	11
+§ 8 Rechtsmängel	12
+§ 9 Haftung	13
+§ 10 Verjährung	14
+§ 11 Sicherungsmaßnahmen, Audit-Recht	15
+§ 12 Vertraulichkeit	16
+§ 13 Datenschutz	17
+§ 14 Weitere Pflichten und Obliegenheiten des Kunden	19
+§ 15 Rechte des Lizenzgebers	20
+§ 16 Sonstiges	22
+§ 17 Nutzungsberechtigung	 - 24 -
+Produktbeschreibung (Anlage 1)	i
+Rahmenvereinbarung (Anlage 2)	iv
+
+
+
+
+Präambel
+Der Kunde beabsichtigt von dem Lizenzgeber den Erwerb einer Lizenz zur Nutzung von Standardsoftware mit der Bezeichnung „EAP-DebitConnect (shopware Edition)“ (folgend: „Software“).
+Die Software wurde von dem Lizenzgeber als Plugin für das Produkt „shopware“ der Firma 
+shopware AG, Ebbinghoff 10, 48624 Schöppingen
+– shopware – 
+entwickelt. 
+Die Software dient der Optimierung der Geschäftsprozesse durch automatisierten  Zahlungsabgleich, Datenübertragung und Mahnwesen, insbesondere der Beauftragung von Zahlungserinnerungen, Mahnungen und Inkasso sowie der Rückmeldung von Statusinformationen und detaillierten Akteneinsicht in die Inkassobearbeitung. 
+Die vom Lizenzgeber betriebene online-Datenbankanwendung „EAP-BoniGateway“ zur Einholung von Auskünften kann mit der Software genutzt werden. Hierbei dient die online-Datenbankanwendung als technische Schnittstelle zu den Auskunfteien/Anbietern. Die Software dient als technische Schnittstelle zwischen shopware und dem EAP-BoniGateway.
+
+Unter Verwendung der Vertragssoftware beauftragtes Mahnwesen als auch Inkasso werden durch die 
+V.O.P. GmbH & Co. KG, Hauptstraße 62, 56745 Bell, 
+– V.O.P. – 
+unter Geltung deren Allgemeiner Geschäftsbedingungen (Rahmenvereinbarung) betrieben. 
+Die Software ist ausschließlich für die Verwendung durch Unternehmer im Sinne des § 14 BGB konzipiert. Der Lizenzgebererteilt eine Lizenz zur Nutzung der Software ausschließlich an Personen, die Unternehmer im Sinne des § 14 BGB sind. Mit Verbrauchern im Sinne des § 13 BGB kommt kein wirksamer Lizenzvertrag zustande. 
+Dies vorausgeschickt vereinbaren die Parteien:
+
+§ 1 Vertragsschluss
+(1) Angebote des Lizenzgebers sind freibleibend und unverbindlich, es sei denn, das Angebot ist schriftlich als bindend bezeichnet. Eine rechtliche Bindung kommt nur durch einen von beiden Vertragsparteien unterzeichneten Vertrag oder durch schriftliche Auftragsbestätigung des Lizenzgebers zustande, außerdem dadurch, dass der Lizenzgeber nach der Bestellung mit der vertragsgemäßen Leistungserbringung beginnt. Der Lizenzgeber kann eine schriftliche Bestätigung mündlicher Vertragserklärungen des Kunden verlangen.
+(2) Der Kunde hält sich vier Wochen an Erklärungen zum Abschluss von Verträgen (Vertragsangebote) gebunden.
+
+§ 2 Vertragsgegenstand
+(1) Gegenstand dieser Vereinbarung ist die Erteilung einer Lizenz zur Nutzung des Computerprogramms im Objektcode inklusive der zugehörigen Benutzerdokumentation („Software“) in dem in § 3 dieses Vertrages beschriebenen Umfang für die in diesem Vertrag vereinbarte Dauer. Die Hardware- und Softwareumgebung, innerhalb derer die Software einzusetzen ist, ist am Ende dieser Vereinbarung aufgeführt. Der Kunde hat keinen Anspruch auf Überlassung des Quellprogramms.
+(2) Der Lizenzgeber überlässt dem Kunden ein Exemplar der Software im Wege des Downloads. Der Lizenzgeber stellt dem Kunden die Software und/oder deren Bestandteile (z.B. in Form von Updates) sowie die Benutzerdokumentation auf seiner Homepage (http://www.eaponline.de) zum Download im Internet bereit. Der Lizenzgeber kann verlangen, dass sich der Kunde vor dem Zugriff auf den geschützten Bereich des Internetauftritts des Lizenzgebers registriert. Für den Log-In in den geschützten Bereich seines Internetauftritts teilt der Lizenzgeber dem Kunden im Rahmen der Registrierung einen Benutzernamen zu sowie das zugehörige Passwort („Zugangsdaten“) mit. 
+(3) Den für die Software benötigten Lizenzschlüssel erhält der Kunde nach Entgeltzahlung. 
+(4) Die Beschaffenheit und Funktionalität der Software aus der Anlage 2). Die darin enthaltenen Angaben (insbesondere Funktionsbeschreibungen, Darstellungen, Testprogramme, Möglichkeiten des Kontrahierens mit Dritten usw.) sind als Leistungsbeschreibungen zu verstehen und nicht als Garantien. Eine Garantie wird nur gewährt, wenn sie als solche ausdrücklich schriftlich bezeichnet worden ist.
+(5) Der Kunde hat vor Installation der Software bzw. vor dem käuflichen Erwerb überprüft, dass die Spezifikation der Software seinen Wünschen und Bedürfnissen entspricht. Ihm sind die wesentlichen Funktionsmerkmale und -bedingungen der Software gemäß Absatz (4) dieses Paragrafen bekannt.
+(6) Installations- und Konfigurationsleistungen sind nicht Gegenstand dieser Vereinbarung. Die zum Download der Software notwendige Telekommunikationsverbindung (Internetzugang) ist ebenfalls nicht Gegenstand dieser Vereinbarung. Der Kunde trägt die alleinige Verantwortung für die Funktionsfähigkeit seines Internetzugangs einschließlich der Übertragungswege sowie seines eigenen Computers (erforderliche Hard- und Software). Der Kunde ist dafür verantwortlich, die Systemumgebung entsprechend den in Anlage 2 bezeichneten Anforderungen bereitzustellen.
+
+§ 3 Rechteeinräumung
+(1) Die Software ist rechtlich geschützt. Das Urheberrecht, Patentrechte, Markenrechte und alle sonstigen Leistungsschutzrechte an der Software sowie an sonstigen Gegenständen, die der Lizenzgeber dem Kunden im Rahmen der Vertragsanbahnung und -durchführung überlässt oder zugänglich macht, stehen im Verhältnis der Vertragspartner ausschließlich dem Lizenzgeber zu. Soweit die Rechte Dritten zustehen, verfügt der Lizenzgeber über entsprechende Verwertungsrechte.
+
+
+(2) - entfällt 
+
+(3) Der Kunde erhält mit vollständiger Bezahlung des Entgelts gemäß § 6 Absatz dieser Vereinbarung ein nicht ausschließliches, zeitlich auf die Laufzeit der Lizenzvereinbarung beschränktes, nicht übertragbares und nicht unterlizenzierbares Recht zur Nutzung der Vertragssoftware im in diesem Vertrag für die Software eingeräumten Umfang.
+(4) Die Software darf in uneingeschränkter Anzahl natürlicher Personen gleichzeitig genutzt werden. Die zulässige Nutzung umfasst die Installation der Software, das Laden in den Arbeitsspeicher sowie den bestimmungsgemäßen Gebrauch durch den Kunden. In keinem Fall hat der Kunde das Recht, die erworbene Vertragssoftware zu vermieten, oder in sonstiger Weise Unterlizenzen an der Vertragssoftware zu erteilen, sie drahtgebunden oder drahtlos öffentlich wiederzugeben oder zugänglich zu machen oder sie Dritten entgeltlich oder unentgeltlich zur Verfügung zu stellen, z.B. im Wege des “Application Service Providing“, als „Software as a Service“, durch Outsourcing oder Rechenzentrumstätigkeiten. Absatz (8) dieses Paragrafen bleibt unberührt.
+(5) Der Kunde ist nur berechtigt, mit der Software eigene Daten selbst im eigenen Betrieb/in seinen eigenen Betrieben für eigene Zwecke zu verarbeiten. Alle Datenverarbeitungsgeräte (z.B. Festplatten und Zentraleinheiten), auf die die Software ganz oder teilweise, kurzzeitig oder auf Dauer kopiert oder übernommen werden, müssen in seinem unmittelbaren Besitz stehen. Weitere vertragliche Nutzungsregeln sind technisch einzurichten und praktisch einzuhalten.
+(6) Der Kunde ist berechtigt, eine Sicherungskopie zu erstellen, wenn dies zur Sicherung der künftigen Nutzung erforderlich ist. Der Kunde wird auf der erstellten Sicherungskopie den Vermerk „Sicherungskopie“ sowie einen Urheberrechtsvermerk des Herstellers sichtbar anbringen.
+(7) Der Kunde ist, außer in den Fällen der §§ 69d; 69e UrhG, nicht berechtigt, die Software zu dekompilieren, zu disassemblieren, zu bearbeiten, zu übersetzen, zu vervielfältigen (z.B. durch kopieren oder ausdrucken des Programmcodes) oder zurück zu entwickeln („reverseengineering“), auch nicht teilweise oder vorübergehend, gleich welcher Art und mit welchen Mitteln. Soweit der Kunde zur Herstellung der Interoperabilität der Software mit anderen Computerprogrammen oder in anderen Fällen gesetzlich zur Dekompilierung der Software berechtigt ist, erklärt sich der Lizenzgeber bereit, nach eigener Wahl entweder die erforderlichen Informationen über den Quellcode der Software zur Verfügung zu stellen oder die erforderlichen Änderungen der Software gegen angemessenes Entgelt selbst vorzunehmen. Änderungen, zu denen nach Treu und Glauben die Zustimmung nicht verweigert werden kann (§ 39 Abs. 2 UrhG), sind statthaft.
+(8) Der Kunde ist berechtigt, die lizenzierte Kopie der Vertragssoftware einem Dritten unter Übergabe der Benutzerdokumentation dauerhaft zu überlassen. In diesem Fall wird der Kunde die Nutzung des Programms vollständig aufgeben, sämtliche installierten Kopien des Programms von seinen Rechnern entfernen und sämtliche auf anderen Datenträgern befindlichen Kopien löschen oder dem Lizenzgeber übergeben, sofern er nicht gesetzlich zu einer längeren Aufbewahrung verpflichtet ist. Die vollständige Durchführung der genannten Maßnahmen wird der Kunde dem Lizenzgeber unaufgefordert schriftlich vor Überlassung an einen Dritten anzeigen und dem Lizenzgeber gegebenenfalls die Gründe für eine längere Aufbewahrung darlegen. Der Lizenzgeber wird gegenüber dem Kunden im Gegenzug sein Einverständnis mit der Überlassung der Software an den Dritten erklären, soweit nicht gewichtige Gründe für die Versagung des Einverständnisses (insbesondere Konkurrenzschutz) vorliegen. Der Kunde verpflichtet sich, mit dem Dritten ausdrücklich die Beachtung des Umfangs der Rechtseinräumung gemäß dieser Vereinbarung zu vereinbaren. 
+(9) Dem Lizenzgeber steht für den Fall, dass der Kunde mit der Software nach Absatz (8) dieses Paragrafen verfahren möchte, ein Sonderkündigungsrecht der Lizenz entsprechend § 4 Absatz (3) zu. Davon unbeschadet steht es dem Lizenzgeber frei, mit dem von dem Kunden benannten Dritten einen neuen Lizenzvertrag zur Gewährung der Nutzungsrechte an der Software abzuschließen oder den Vertrag des Kunden mit dem Dritten unter Weitergeltung der in dieser Vereinbarung nebst Anlagen getroffenen Bedingungen fortzuführen. Der Lizenzgeber wird von seinem Wahlrecht bzw. Sonderkündigungsrecht spätestens zwei Wochen nach Eingang der Anzeige des Kunden gemäß Absatz (8) schriftlich gegenüber dem Kunden und dem benannten Dritten Gebrauch machen. Der Kunde darf Rechte und Pflichten aus oder im Zusammenhang mit der Lizenz zur erweiterten Nutzung der Software nur nach schriftlicher Zustimmung des Lizenzgebers auf Dritte übertragen.
+(10) Nutzt der Kunde die Software in einem Umfang, der die eingeräumten Nutzungsrechte qualitativ (im Hinblick auf die Art der gestatteten Nutzung) überschreitet, so wird er unverzüglich die zur erlaubten Nutzung notwendigen Nutzungsrechte erwerben. Unterlässt er dies, so wird der Lizenzgeber die ihm zustehenden Rechte geltend machen. Sämtliche im Rahmen dieser Vereinbarung nicht dauerhaft erteilten Nutzungsrechte werden im Fall des Verstoßes gegen die vorstehenden Bestimmungen sofort unwirksam und fallen automatisch an den Lizenzgeber zurück. Der Kunde hat in diesem Fall die Nutzung der Software unverzüglich einzustellen. 
+(11) Urhebervermerke, Seriennummern sowie sonstige der Programmidentifikation dienende Merkmale dürfen nicht von der Software entfernt, verändert oder in irgendeiner Art unkenntlich gemacht werden.
+(12) Vertragsgegenstände, Unterlagen, Vorschläge, Testprogramme usw. des Lizenzgebers, die dem Kunden vor oder nach Anerkennung der Vereinbarung zugänglich werden, gelten als geistiges Eigentum und als Geschäfts- und Betriebsgeheimnis des Lizenzgebers. Sie dürfen ohne schriftliche Gestattung des Lizenzgebers nicht – gleich in welcher Weise – genutzt werden und unterliegen der Geheimhaltung nach § 12 dieser Vereinbarung.
+
+§ 4 Beginn und Ende der Rechte des Kunden
+(1) Die Rechte nach § 3 dieses Vertrages gehen erst mit vollständiger Bezahlung der Lizenzgebühr auf den Kunden über. Zuvor hat er nur ein vorläufiges, nur schuldrechtliches und nach Absatz (3) dieses Paragrafen widerrufbares Nutzungsrecht hinsichtlich der Software.
+(2) Der Vertrag über die Lizenz zur Nutzung der Software wird auf unbestimmte Zeit geschlossen. 
+(3) Beide Parteien können die Vereinbarung aus wichtigem Grund ohne Einhaltung einer Frist kündigen. Ein wichtiger Grund liegt insbesondere vor, wenn dem Lizenzgeber das weitere Festhalten an der Vereinbarung nicht zuzumuten ist, z.B. wenn der Kunde die Lizenzgebühr nicht und/oder nicht rechtzeitig zahlt oder in erheblicher Weise gegen die ihm nach §§ 3; 11-14 dieser Vereinbarung eingeräumten Rechte und Pflichten verstößt und den Verstoß auf eine Abmahnung des Lizenzgebers hin nicht innerhalb einer angemessenen Frist abstellt. Sämtliche in diesem Zusammenhang ergehenden Erklärungen bedürfen der Schriftform. 
+(4) Wenn die Rechte nach § 3 dieser Vereinbarung nicht entstehen oder wenn sie enden, kann der Lizenzgeber vom Kunden die Rückgabe der überlassenen Gegenstände verlangen oder die schriftliche Versicherung, dass sie vernichtet sind, außerdem die Löschung oder Vernichtung aller Kopien der Gegenstände und die schriftliche Versicherung, dass dies geschehen ist. Im Fall der Kündigung der Lizenz über die Nutzung der Software hat der Kunde die Nutzung der Software zum in der Kündigung angegeben Zeitpunkt aufzugeben. 
+
+
+
+§ 5 Leistungszeit, Verzögerungen, Leistungsort
+(1) Angaben zu Liefer- und Leistungszeitpunkten sind unverbindlich, es sei denn, sie sind seitens des Lizenzgebers schriftlich als verbindlich bezeichnet. Der Lizenzgeber kann Teilleistungen erbringen, soweit die gelieferten Teile für den Kunden sinnvoll nutzbar sind.
+(2) Liefer- und Leistungsfristen verlängern sich um den Zeitraum, in welchem sich der Kunde in Zahlungsverzug aus der Vereinbarung befindet und um den Zeitraum, in dem der Lizenzgeber durch Umstände, die er nicht zu vertreten hat, an der Lieferung oder Leistung gehindert ist sowie um eine angemessene Anlaufzeit nach Ende des Hinderungsgrundes. Zu diesen Umständen zählen auch höhere Gewalt (z.B. Krieg, Streiks, Unruhen, Enteignungen, kardinale Rechtsänderungen, Sturm, Überschwemmungen, und sonstige Naturkatastrophen sowie sonstige vom Anbieter nicht zu vertretende Umstände, insbesondere Wassereinbrüche, Stromausfälle und Unterbrechungen oder Zerstörung datenführender Leitungen) und Arbeitskampf. Fristen gelten auch um den Zeitraum als verlängert, in welchem der Kunde vertragswidrig eine Mitwirkungsleistung nicht erbringt, z.B. eine Information nicht bereitstellt, einen Zugang nicht schafft, eine Beistellung nicht liefert oder Mitarbeiter nicht zur Verfügung stellt.
+(3) Vereinbaren die Vertragspartner nachträglich andere oder zusätzliche Leistungen, die sich auf vereinbarte Fristen auswirken, so verlängern sich diese Fristen um einen angemessenen Zeitraum.
+(4) Mahnungen und Fristsetzungen des Kunden bedürfen zu ihrer Wirksamkeit der Schriftform. Eine Nachfrist muss angemessen sein. Eine Frist von weniger als zwei Wochen ist nur bei besonderer Eilbedürftigkeit angemessen.
+
+
+
+§ 6 Entgelt, Fälligkeit und Verzug
+(1) - entfällt - 
+(2) Die Lizenz für die Nutzung der Software ist kostenpflichtig. 
+(3) Für jede über das EAP-BoniGateway eingeholte Auskunft (Transaktion) erhebt der Lizenzgeber eine Transaktionsgebühr in Höhe von 0,05 EUR zzgl. ges. MwSt. Der monatliche Mindestumsatz der Transaktionsgebühr beträgt 7,50 €. Die Abrechnung erfolgt jeweils halbjährlich. 
+
+
+§ 7 Sachmängel
+(1) Die Software hat die vereinbarte Beschaffenheit und eignet sich für die vertraglich vorausgesetzte, bei fehlender Vereinbarung für die gewöhnliche Verwendung. Die Software genügt dem Kriterium praktischer Tauglichkeit und hat die bei Software dieser Art übliche Qualität; sie ist jedoch nicht fehlerfrei. Dem Kunden steht keine Sachmängelgewährleistung für Mängel zu, die darauf beruhen, dass die Vertragssoftware in einer Hardware- und Softwareumgebung eingesetzt wird, die den im in der Anlage genannten Anforderungen nicht gerecht wird oder die auf Änderungen, Fehlbedienung oder Modifikationen beruhen, die der Kunde an der Software vorgenommen hat, ohne hierzu kraft Gesetzes, dieser Vereinbarung oder aufgrund einer vorherigen schriftlichen Zustimmung des Lizenzgebers berechtigt zu sein. Mängelansprüche bestehen nicht bei einer unerheblichen Abweichung von der vereinbarten oder vorausgesetzten Beschaffenheit und/oder bei nur unerheblicher Beeinträchtigung der Gebrauchstauglichkeit. 
+(2) Der Kunde hat die Software unverzüglich nach Erhalt auf offensichtliche Mängel zu überprüfen und diese bei Vorliegen dem Lizenzgeber unverzüglich schriftlich unter genauer Bezeichnung des Mangels mitzuteilen, ansonsten ist eine Gewährleistung für diese Mängel ausgeschlossen. Entsprechendes gilt, wenn sich später ein solcher Mangel zeigt. Der Kunde testet gründlich jedes Modul auf Verwendbarkeit in der konkreten Situation, bevor er mit der produktiven Nutzung beginnt. § 377 HGB findet Anwendung.
+(3) Im Fall eines Sachmangels ist der Lizenzgeber zunächst zur Nacherfüllung berechtigt, d.h. nach eigener Wahl zur Beseitigung des Mangels („Nachbesserung“) oder Ersatzlieferung. Im Rahmen der Ersatzlieferung wird der Kunde gegebenenfalls einen neuen gleichwertigen Stand oder vorhergehenden gleichwertigen der Software übernehmen, der den Mangel nicht enthält, es sei denn, dies führt zu unzumutbaren Beeinträchtigungen. 
+(4) Der Lizenzgeber ist berechtigt, die Gewährleistung in den Räumlichkeiten des Kunden zu erbringen. Der Lizenzgeber genügt seiner Pflicht zur Nachbesserung auch, indem er mit einer automatischen Installationsroutine versehene Updates auf seiner Homepage zum Download bereitstellt und dem Kunden telefonischen Support zur Lösung etwa auftretender Installationsprobleme anbietet.
+(5) Der Lizenzgeber kann Mehrkosten daraus verlangen, dass die Software verändert, außerhalb der vorgegebenen Umgebung eingesetzt oder falsch bedient wurde. Er kann Aufwendungsersatz verlangen, wenn kein Mangel gefunden wird und der Kunde die Mangelrüge nicht ohne Fahrlässigkeit erhoben hatte. Die Beweislast liegt bei dem Kunden. § 254 BGB gilt entsprechend.
+(6) Das Recht des Kunden, im Falle des zweimaligen Fehlschlagens der Nachbesserung oder Ersatzlieferung nach seiner Wahl den Kaufpreis zu mindern oder von der Vereinbarung zurück zu treten, bleibt unberührt. Ein Rücktrittsrecht besteht nicht bei unerheblichen Mängeln. Macht der Kunde Schadensersatz oder Ersatz vergeblicher Aufwendungen geltend, haftet der Lizenzgeber nach § 9 dieser Vereinbarung. Die Ansprüche des Kunden verjähren nach § 10 dieser Vereinbarung.
+
+§ 8 Rechtsmängel
+(1) Die von dem Lizenzgeber gelieferte bzw. überlassene Software ist frei von Rechten Dritter, die einer vertragsgemäßen Nutzung entgegenstehen. Bei Rechtsmängeln wird der Lizenzgeber dem Kunden nach eigener Wahl eine rechtlich einwandfreie Nutzungsmöglichkeit an der Software verschaffen oder diese so abändern, dass keine Rechte Dritter mehr verletzt werden.
+(2) Der Kunde unterrichtet den Lizenzgeber unverzüglich schriftlich, falls Dritte Schutzrechte (z.B. Urheber- oder Patentrechte) an der Software geltend machen. Der Kunde ermächtigt den Lizenzgeber, die Auseinandersetzung mit dem Dritten allein zu führen. Solange der Lizenzgeber von dieser Ermächtigung Gebrauch macht, darf der Kunde die Ansprüche des Dritten nicht ohne Zustimmung des Lizenzgebers anerkennen; der Lizenzgeber wehrt die Ansprüche des Dritten auf eigene Kosten ab und stellt den Kunden von allen mit der Abwehr dieser Ansprüche verbundenen Kosten frei, soweit diese nicht auf pflichtwidrigem Verhalten des Kunden (z.B. der vertragswidrigen Nutzung der Software) beruhen.
+(3) § 7 Absatz (3), (5) und (6) dieses Vertrages gelten entsprechend.
+
+§ 9 Haftung
+(1) Der Lizenzgeber haftet unbeschränkt
+- bei Vorsatz;
+- bei grob fahrlässiger Verletzung einer Pflicht, die wesentlich für die Erreichung des Vertragszwecks ist und auf deren Erfüllung die Parteien daher vertrauen (Kardinalpflicht);
+- für die Verletzung von Leben, Leib oder Gesundheit;
+- nach den Vorschriften des Produkthaftungsgesetzes sowie
+- im Umfang einer vom Lizenzgeber übernommenen Garantie.
+(2) Bei fahrlässiger Verletzung einer Kardinalspflicht, sowie bei grob fahrlässiger Verletzung einer Pflicht, die keine Kardinalspflicht darstellt, ist die Haftung des Lizenzgebers der Höhe nach begrenzt auf den Schaden, der nach der Art des fraglichen Geschäfts vorhersehbar und typisch ist.
+(3) Soweit eine Haftung nach den Absätzen (1) und/oder (2) dieses Paragrafen besteht, ist die Haftung für Datenverluste auf den Wiederherstellungsaufwand beschränkt, der bei Durchführung ordnungsgemäßer und gefahrengerechter Datensicherungsmaßnahmen gem. § 11 Absatz (1) dieser Vereinbarung angefallen wäre. 
+(4) Eine weitergehende Haftung des Lizenzgebers – gleich aus welchem Rechtsgrund – ist ausgeschlossen. Insbesondere haftet der Lizenzgeber nicht für entgangenen Gewinn, ausgebliebene Einsparungen, Schäden aus Ansprüchen Dritter oder für sonstige mittelbare oder unmittelbare Folgeschäden. 
+(5) Die vorstehende Haftungsbeschränkung gilt auch für die persönliche Haftung der Mitarbeiter, Vertreter und Organe des Lizenzgebers.
+
+§ 10 Verjährung
+(1) Die Verjährungsfrist beträgt
+a) für Ansprüche auf Rückzahlung geleisteter Lizenzgebühren aus Rücktritt oder Minderung ein Jahr ab Ablieferung der Software, jedoch für ordnungsgemäß gerügte Mängel nicht weniger als drei Monate ab Abgabe der wirksamen Rücktritts- oder Minderungserklärung;
+b) bei anderen Ansprüchen aus Sachmängeln ein Jahr;
+c) bei Ansprüchen aus Rechtsmängeln zwei Jahre, wenn der Rechtsmangel nicht in einem Recht eines Dritten liegt, auf Grund dessen der Dritte die in § 2 Absatz (2) dieses Vertrages genannten Gegenstände herausverlangen oder die Unterlassung ihrer Nutzung verlangen kann;
+d) bei nicht auf Sach- oder Rechtsmängeln beruhenden Ansprüchen auf Schadensersatz oder Ersatz vergeblicher Aufwendungen zwei Jahre; die Frist beginnt mit dem Zeitpunkt, in dem der Kunde von den anspruchsbegründenden Umständen Kenntnis erlangt hat oder ohne grobe Fahrlässigkeit erlangen musste.
+e) Die Verjährung tritt spätestens mit Ablauf der in § 199 BGB bestimmten Höchstfristen ein.
+(2) Bei Schadens- und Aufwendungsersatz aus Vorsatz, grober Fahrlässigkeit, Garantie, Arglist und bei Verletzung von Leben, Körper und Gesundheit sowie bei Ansprüchen aus dem Produkthaftungsgesetz gelten jedoch stets die gesetzlichen Verjährungsfristen.
+(3) Die Verjährung beginnt im Falle der Überlassung auf einem Datenträger mit der Ablieferung der Software, im Falle der Überlassung mittels Download aus dem Internet nach Mitteilung und Freischaltung der Zugangsdaten für den Downloadbereich.
+
+§ 11 Sicherungsmaßnahmen, Audit-Recht
+(1) Der Kunde wird die Software sowie die jeweils zugeordneten Nutzungs- und Zugangsberechtigungen, insbesondere die Zugangsdaten für die Datenbanken des „EAP-BoniGateway“ vor dem Zugriff durch Dritte sichern und nicht an unberechtigte Nutzer weiterzugeben. Insbesondere sind sämtliche berechtigterweise gefertigten Kopien der Software sowie die Zugangsdaten an einem geschützten Ort zu verwahren. Der Kunde ist insbesondere verpflichtet, seine Daten in angemessenen Abständen, mindestens täglich, zu sichern, und seine Systeme durch angemessene, vorbeugende, dem Stand der Technik entsprechende Maßnahmen und regelmäßige Tests gegen Viren, sonstige Schadsoftware und den unberechtigten Zugriff Dritter zu sichern.
+(2) entfällt
+(3) Hat der Kunde Grund zu der Annahme, dass ein unbefugter Betriebsangehöriger oder ein Dritter Zugang zu geschützten Daten erhalten hat, hat er dies dem Lizenzgeber unverzüglich anzuzeigen. Der Lizenzgeber sperrt in diesem Fall den Zugang des Kunden bzw. des einzelnen Nutzers, bis dem Kunden bzw. dem Nutzer neue Zugangsdaten von dem Lizenzgeber mitgeteilt wurden. Der Lizenzgeber wird dem Kunden neue Zugangsdaten im Rahmen des Zumutbaren schnellstmöglich zur Verfügung stellen.
+(4) Der Kunde ermöglicht dem Lizenzgeber auf dessen Verlangen die Überprüfung des ordnungsgemäßen Einsatzes der Software, insbesondere daraufhin, ob der Kunde die Software qualitativ und quantitativ im Rahmen der von ihm erworbenen Lizenz nutzt und die Vorschriften des Bundesdatenschutzgesetzes einhält. Hierzu erteilt der Kunde dem Lizenzgeber Auskunft, gewährt Einsicht in relevante Dokumente und Unterlagen und ermöglicht die Überprüfung der eingesetzten Hardware- und Softwareumgebung durch den Lizenzgeber oder eine vom Lizenzgeber benannte und für den Käufer akzeptable Wirtschaftsprüfungsgesellschaft oder Fachfirma. Der Lizenzgeber oder durch ihn zur Verschwiegenheit verpflichtete Dritte ist zur Durchführung derartiger Prüfungen in den Räumen des Kunden zu dessen regelmäßigen Geschäftszeiten berechtigt. Der Lizenzgeber wird darauf achten, dass der Geschäftsbetrieb des Kunden durch seine Tätigkeit vor Ort so wenig wie möglich gestört wird. Ergibt die Überprüfung eine nicht-vertragsgemäße Nutzung, so trägt der Käufer die Kosten der Überprüfung, ansonsten trägt der Lizenzgeber die Kosten.
+
+§ 12 Vertraulichkeit
+(1) „Vertrauliche Informationen“ sind alle Informationen, Gegenstände, Unterlagen und Software der jeweils anderen Partei, die als vertraulich gekennzeichnet, aus den Umständen heraus als vertraulich anzusehen, rechtlich geschützt sind oder Geschäfts- oder Betriebsgeheimnisse enthalten (insbesondere Informationen über betriebliche Abläufe, Geschäftsbeziehungen und Know-how). 
+(2) Die Parteien vereinbaren, über vertrauliche Informationen – auch über das Vertragsende hinaus – Stillschweigen zu wahren.
+(3) Von dieser Verpflichtung ausgenommen sind solche vertraulichen Informationen,
+a) die dem Empfänger bei Zustimmung dieser Vereinbarung nachweislich bereits bekannt waren oder danach von dritter Seite bekannt werden, ohne dass dadurch eine Vertraulichkeitsvereinbarung, gesetzliche Vorschriften oder behördliche Anordnungen verletzt werden;
+b) die bei Zustimmung dieser Vereinbarung öffentlich bekannt sind oder danach öffentlich bekannt gemacht werden, soweit dies nicht auf einer Verletzung dieser Vereinbarung beruht;
+c) die aufgrund gesetzlicher Verpflichtungen oder auf Anordnung eines Gerichts oder einer Behörde offen gelegt werden müssen. Soweit zulässig und möglich, wird der zur Offenlegung verpflichtete Empfänger die andere Partei vorab unterrichten und ihr Gelegenheit geben, gegen die Offenlegung vorzugehen.
+(4) Die Parteien werden nur solchen Beratern Zugang zu vertraulichen Informationen gewähren, die dem Berufsgeheimnis unterliegen oder denen zuvor den Geheimhaltungsverpflichtungen dieser Vereinbarung entsprechende Verpflichtungen auferlegt worden sind. Des Weiteren werden die Parteien nur denjenigen Mitarbeitern vertrauliche Informationen offen legen, die diese für die Durchführung dieser Vereinbarung kennen müssen, und diese Mitarbeiter auch für die Zeit nach ihrem Ausscheiden in arbeitsrechtlich zulässigem Umfang zur Geheimhaltung verpflichten.
+(5) Jeder schuldhafte Verstoß gegen die vorstehenden Regelungen dieses Paragrafen zieht eine Vertragsstrafe in Höhe von 5001,00 EUR nach sich. Weitergehende Ansprüche der verletzten Partei bleiben davon unberührt.
+(6) Der Lizenzgeber verarbeitet die zur Geschäftsabwicklung erforderlichen Daten des Kunden unter Beachtung der datenschutzrechtlichen Vorschriften. Der Lizenzgeber darf den Kunden nach erfolgreichem Abschluss der Leistungen als Referenzkunden benennen.
+§ 13 Datenschutz
+(1) Die Nutzung der Software ermöglicht und erfordert die Erhebung, Verarbeitung und Nutzung personenbezogener Daten. Der Kunde sichert zu, sämtliche einschlägigen Bestimmungen der Datenschutzgrundverordnung (DS-GVO) einzuhalten. Soweit der Kunde im Anwendungsbereich der DS-GVO Bonitätsdaten über eine natürliche Person erhebt, verarbeitet oder nutzt, gilt der Kunde als verantwortliche Stelle und ist zur Einhaltung des Datenschutzes und der Datensicherheit verpflichtet. 
+(2) Der Kunde garantiert, dass er über die zum Erheben, Verarbeiten und Nutzen personenbezogener Daten zwecks Bonitätsprüfung erforderliche Einwilligung des Betroffenen oder über ein ansonsten nach Art. 6 DS-GVO ohne eine Einwilligung des Betroffenen erforderliches berechtigtes Interesse verfügt.
+(3) entfällt
+
+
+(4) Soweit über die in § 11 dieser Vereinbarung vorgeschriebenen Sicherungsmaßnahmen innerbetriebliche Maßnahmen zur Datensicherung und zum Datenschutz erforderlich sind, trifft der Kunde diese Maßnahmen ebenfalls. Insbesondere trifft der Kunde technische und organisatorische Maßnahmen, die je nach der Art der zu schützenden personenbezogenen Daten oder Datenkategorien geeignet sind,
+a) Unbefugten den Zutritt zu Datenverarbeitungsanlagen, mit denen personenbezogene Daten verarbeitet oder genutzt werden, zu verwehren (Zutrittskontrolle),
+b) zu verhindern, dass Datenverarbeitungssysteme von Unbefugten genutzt werden können (Zugangskontrolle),
+c) zu gewährleisten, dass die zur Benutzung eines Datenverarbeitungssystems Berechtigten ausschließlich auf die ihrer Zugriffsberechtigung unterliegenden Daten zugreifen können, und dass personenbezogene Daten bei der Verarbeitung, Nutzung und nach der Speicherung nicht unbefugt gelesen, kopiert, verändert oder entfernt werden können (Zugriffskontrolle),
+d) zu gewährleisten, dass personenbezogene Daten bei der elektronischen Übertragung oder während ihres Transports oder ihrer Speicherung auf Datenträger nicht unbefugt gelesen, kopiert, verändert oder entfernt werden können, und dass überprüft und festgestellt werden kann, an welche Stellen eine Übermittlung personenbezogener Daten durch Einrichtungen zur Datenübertragung vorgesehen ist (Weitergabekontrolle),
+e) zu gewährleisten, dass nachträglich überprüft und festgestellt werden kann, ob und von wem personenbezogene Daten in Datenverarbeitungssysteme eingegeben, verändert oder entfernt worden sind (Eingabekontrolle),
+f) zu gewährleisten, dass personenbezogene Daten, die im Auftrag verarbeitet werden, nur entsprechend den Weisungen des Auftraggebers verarbeitet werden können (Auftragskontrolle),
+g) zu gewährleisten, dass personenbezogene Daten gegen zufällige Zerstörung oder Verlust geschützt sind (Verfügbarkeitskontrolle),
+h) zu gewährleisten, dass zu unterschiedlichen Zwecken erhobene Daten getrennt verarbeitet werden können.
+(5) Die Verpflichtung auf das Datengeheimnis gilt für alle, bei der Datenverarbeitung beschäftigten Personen (Art. 29 DS-GVO).
+(6) Lässt der Kunde personenbezogene Daten im Auftrag durch andere Stellen im Einklang mit § 3 dieser Vereinbarung erheben, verarbeiten oder nutzen, ist er für die Einhaltung der Vorschriften der DS-GVO, anderer Vorschriften über den Datenschutz sowie der ihm nach dieser Vereinbarung obliegenden Datenschutz- und Sicherungsmaßnahmen verantwortlich.
+(7) Werden dem Lizenzgeber Tatsachen bekannt, die erkennen lassen, dass der Kunde der DS-GVO unterliegende Informationen, insbesondere bei Auskunfteien eingeholte Daten, nicht zu den nach der DS-GVO zulässigen Zwecken verwendet oder nutzt bzw. seinen Verpflichtungen aus § 18 der Verordnung über das Schuldnerverzeichnis (SchuVVO) nicht nachkommt, ist der Lizenzgeber zur außerordentlichen Kündigung nach § 4 Absatz (3) berechtigt. Dies gilt auch, wenn dem Lizenzgeber Verstöße des Kunden gegen diesen auf Grundlage mit Dritten geschlossener Verträge auferlegter Datenschutzbestimmungen bekannt werden. 
+(8) Der Lizenzgeber ist unbeschadet der weiteren Bestimmungen dieses Vertrages berechtigt, Teilnehmer- und Nutzungsdaten zu speichern und zu Dokumentations- und Abrechnungszwecken unter Berücksichtigung der DS-GVO maschinell zu verarbeiten.
+(9) entfällt
+
+§ 14 Weitere Pflichten und Obliegenheiten des Kunden
+(1) Der Kunde beachtet alle gewerblichen Schutz- und Urheberrechte, insbesondere bei der Übernahme von Texten und Daten Dritter auf die Server des Lizenzgebers oder mit diesem vertraglich verbundener Unternehmen.
+(2) Der Kunde wird die Software nicht missbräuchlich nutzen oder nutzen lassen, insbesondere keine Informationsangebote mit rechts- oder sittenwidrigen Inhalten übermitteln oder auf solche Informationen hinweisen, die der Volksverhetzung dienen, zu Straftaten anleiten oder Gewalt verherrlichen oder verharmlosen, sexuell anstößig bzw. pornographisch sind, geeignet sind, Kinder oder Jugendliche sittlich schwer zu gefährden oder in ihrem Wohl zu beeinträchtigen oder das Ansehen des Anbieters schädigen können;
+(3) Der Kunde wird nicht den Versuch unternehmen, selbst oder durch nicht autorisierte Dritte Informationen oder Daten unbefugt abzurufen oder in Programme, die vom Lizenzgeber betrieben und/oder bereitgestellt werden, einzugreifen oder eingreifen zu lassen oder in Datennetze des Lizenzgebers unbefugt einzudringen;
+(4) Der Kunde wird den möglichen Austausch von elektronischen Nachrichten nicht missbräuchlich für den unaufgeforderten Versand von Nachrichten oder Informationen an Dritte zu Werbezwecken (Spamming) oder sonstigen unlauteren oder gesetzeswidrigen Zwecken nutzen;
+(5) Der Kunde verpflichtet seine Mitarbeiter und sonstige Beauftragte, ihrerseits die für die Nutzung der Software und des „EAP-BoniGateway“ in dieser Vereinbarung aufgeführten Bestimmungen einzuhalten. Dies gilt insbesondere für den Umgang mit Passwörtern und Benutzer- bzw. Datenbank-Kennungen.
+(6) Der Kunde stellt den Lizenzgeber von sämtlichen Ansprüchen Dritter sowie eigenen Rechtsverfolgungskosten und sonstigen diesbezüglichen Kosten und Aufwendungen frei, die auf einer rechtswidrigen Verwendung der Software durch den Kunden beruhen oder mit dessen Billigung erfolgen oder die sich insbesondere aus datenschutzrechtlichen, urheberrechtlichen oder sonstigen rechtlichen Streitigkeiten ergeben, die mit der Nutzung der Software verbunden sind. Erkennt der Kunde oder muss er erkennen, dass ein solcher Verstoß droht, hat der den Lizenzgeber unverzügliche zu unterrichten.
+
+§ 15 Rechte des Lizenzgebers
+(1) Der Lizenzgeber behält sich das Recht vor, den Zugang zu den von ihm betriebenen Datenbanken aus Wartungs- und Datensicherungsgründen vorübergehend einzuschränken. Derartige Einschränkungen werden dem Kunden von dem Lizenzgeber mit einer Frist von 3 Werktagen im Vorfeld der Maßnahme angekündigt. Die Pflicht zur Ankündigung entfällt, wenn der Grund für die durchzuführende Wartungsmaßnahmen kurzfristiger eintritt und die Maßnahme zur Verhinderung eines Ausfalls der Funktion oder der Erreichbarkeit der von dem Lizenzgeber betriebenen Datenbanken notwendig ist. Derartige Einschränkungen begründen keine Ansprüche des Kunden.
+(2) Der Lizenzgeber hat keinen Einfluss auf die Erreichbarkeit der Datenbanken der Wirtschaftsauskunfteien. Weder hat der Lizenzgeber Einfluss auf die Ermittlung und/oder die Zusammensetzung der Datensätze (insbesondere deren Richtigkeit und Aktualität), noch ist der Lizenzgeber technisch und/oder rechtlich in der Lage, die Qualität der Datensätze zu überprüfen. Ebenso hat der Lizenzgeber keinen Einfluss auf die Funktionsfähigkeit der technischen Einrichtungen des Kunden sowie die ordnungsgemäße Funktion der bei dem Kunden verwendeten Programme.
+(3)Die Identifikation des Nutzers an dem „EAP-BoniGateway“ für das in der Software enthaltene Abruf- und Abrechnungsverfahren erfolgt über individuelle Datenbank-Kennungen. Der Lizenzgeber ist berechtigt, dem Kunden eventuell anfallende Kosten wegen missbräuchlicher Nutzung der Datenbank-Kennungen zu berechnen.
+(4) Der Lizenzgeber ist berechtigt, Datenbank-Kennungen jederzeit zu ändern. Der Lizenzgeber behält sich seinerseits vor, die Zugangspasswörter zur Software in regelmäßigen Abständen auszuwechseln. Im Fall der Änderung der Datenbank-Kennungen und/oder Zugangspasswörter durch den Lizenzgeber stellt der Lizenzgeber dem Kunden die jeweils neue Datenbank-Kennung und/oder die jeweils neuen Zugangspasswörter ohne schuldhaftes Zögern zur Verfügung, es sei denn, der Lizenzgeber ist aufgrund dieses Vertrages zu der Zurverfügungstellung nicht länger verpflichtet, insbesondere nach außerordentlicher Kündigung. 
+(5) Der Lizenzgeber ist zur selbstständigen Aufzeichnung des Kunden, die unter Verwendung der Software von dem Kunden vorgenommen werden, berechtigt. Diese Aufzeichnungen werden von dem Lizenzgeber nur zur Datenschutzkontrolle, insbesondere zur Kontrolle der Zulässigkeit der vom Kunden vorgenommenen Abrufe, zur Sicherstellung eines ordnungsgemäßen Betriebes der Datenverarbeitungsanlage, zur Erstellung von gegenüber dem Kunden vorzunehmenden Abrechnungen und im Übrigen in gesetzlich gestattetem Umfang verwendet.
+§ 16 Sonstiges
+(1) Der Kunde darf Ansprüche gegen den Lizenzgeber nur nach schriftlicher Zustimmung des Lizenzgebers auf Dritte übertragen. 
+(2) Der Kunde darf gegenüber dem Lizenzgeber nur mit unbestrittenen oder rechtskräftig festgestellten Forderungen aufrechnen.
+(3) Änderungen und Ergänzungen dieses Vertrags bedürfen der Schriftform. Dies gilt auch für die Änderung oder Aufhebung dieser Klausel. Elektronische Dokumente in Textform erfüllen das Schriftformerfordernis nicht, soweit vorstehend nicht ausdrücklich Ausnahmen für bestimmte Erklärungen vereinbart wurden.
+(4) Allgemeine Geschäftsbedingungen des Kunden finden keine Anwendung. Dies gilt auch dann, wenn der Lizenzgeber den Allgemeinen Geschäftsbedingungen des Kunden nicht ausdrücklich widersprochen hat. Auch wenn beim Abschluss gleichartiger Verträge hierauf nicht nochmals hingewiesen wird, gelten ausschließlich die Allgemeinen Vertragsbedingungen des Lizenzgebers in ihrer bei Abgabe der Erklärung des Kunden unter www.eaponline.de abrufbaren Fassung, es sei denn, die Vertragspartner vereinbaren schriftlich etwas anderes. Die Allgemeinen Geschäftsbedingungen des Lizenzgebers gelten neben dem vorliegenden Vertrag ergänzend. Soweit Abweichungen bestehen, haben die in diesem Vertrag getroffenen Regelungen vorrangige Gültigkeit.
+(5) Die Parteien sind sich darüber bewusst, dass die Software Export- und Importbeschränkungen unterliegen kann. Insbesondere können Genehmigungspflichten bestehen bzw. kann die Nutzung der Software oder damit verbundener Technologien im Ausland Beschränkungen unterliegen. Der Käufer wird die anwendbaren Export- und Importkontrollvorschriften der Bundesrepublik Deutschland, der Europäischen Union und der Vereinigten Staaten von Amerika, sowie alle anderen einschlägigen Vorschriften einhalten. Die Vertragserfüllung des Lizenzgebers steht unter dem Vorbehalt, dass der Erfüllung keine Hindernisse aufgrund von nationalen und internationalen Vorschriften des Export- und Importrechts sowie keine sonstigen gesetzlichen Vorschriften entgegenstehen.
+(6) Auf diesen Vertrag ist allein das Recht der Bundesrepublik Deutschland unter Ausschluss des Übereinkommens der Vereinten Nationen über Verträge über den internationalen Warenverkauf vom 11.4.1980 (UN-Kaufrecht) anzuwenden.
+(7) Erfüllungsort sämtlicher Verpflichtungen aus und im Zusammenhang mit diesem Vertrag ist Bell in Rheinland-Pfalz, Deutschland. Für alle Streitigkeiten aus oder in Zusammenhang mit dieser Vereinbarung einschließlich der Wirksamkeit der Vereinbarung ist ausschließlicher Gerichtsstand Köln, soweit gesetzlich zulässig. Dem Lizenzgeber bleibt vorbehalten, den Kunden auch an dessen Geschäftssitz klageweise in Anspruch zu nehmen.
+(8) Die Vertragspartner vereinbaren, bei allen Meinungsverschiedenheiten aus oder im Zusammenhang mit dieser Vereinbarung, Erweiterungen der Vereinbarung oder -ergänzungen, die sie nicht untereinander bereinigen können, vor Inanspruchnahme des ordentlichen Rechtswegs gem. Absatz (7) die Schlichtungsstelle der Deutschen Gesellschaft für Recht und Informatik (www.dgri.de), anzurufen, um den Streit nach deren dann gültiger Schlichtungsordnung in der zum Zeitpunkt der Einleitung eines Schlichtungsverfahrens gültigen Fassung ganz oder teilweise, vorläufig oder endgültig zu bereinigen. Die Verjährung für alle Ansprüche aus dem streitigen Lebenssachverhalt ist ab dem Schlichtungsantrag bis zum Ende des Schlichtungsverfahrens gehemmt; § 203 BGB gilt entsprechend.
+(9) Sollten einzelne Bestimmungen dieser Vereinbarung unwirksam sein, berührt dies die Gültigkeit der übrigen Bestimmungen nicht. Die Vertragsparteien werden sich bemühen, anstelle der unwirksamen Bestimmung eine wirksame zu finden, die dem wirtschaftlichen Bedeutungsgehalt der unwirksamen Bestimmung am ehesten nahe kommt.
+(10) Sämtliche in dieser Vereinbarung genannten Anlagen sind verpflichtender Vertragsbestandteil.
+§ 17 Nutzungsberechtigung
+
+Die nachstehenden Bedingungen regeln ergänzend zu § 3 dieser Vereinbarung den Inhalt und Umfang der Nutzungsberechtigung an dem vorstehend in diesem Lizenzschein ausgewiesenen Software-Produkt.  
+
+(1) Der Erwerb einer Lizenz an der Software berechtigt den Kunden zur Nutzung der Software nach § 3 der Vereinbarung. 
+(2) Durch die Nutzung der Software im Umfang der gewährten Nutzungsrechte unter Einhaltung der Nutzungsbedingungen können dem Kunden weitere Kosten entstehen, auf deren Entstehung und Höhe der Lizenzgeber keinen Einfluss hat. 
+(3)Die Lizenz ermöglicht dem Kunden unter Verwendung der Software eine automatisierte  Zahlungsverbuchung in shopware der über FinTS / HBCI abgerufenen Kontoumsätze, die unmittelbare Beauftragung des Lizenzgebers mit der Durchführung von Mahnwesen und Inkasso. Durch entsprechende Beauftragung entstehende Entgelte rechnet der Lizenzgeber auf der Grundlage der anhängenden Rahmenvereinbarung ab. Der Kunde ermächtigt den Lizenzgeber zu diesem Zweck, die aus der Software „shopware“ des Kunden gelesenen Daten ganz oder teilweise an den Lizenzgeber zur Beauftragung und Durchführung des Mahnwesens (Versand von Zahlungserinnerungen und Mahnungen) sowie des Inkasso zu übertragen.
+(4) Der Kunde ist berechtigt, mittels der Software erteilte, laufende Inkassomandate online bei dem Lizenzgeber einzusehen. Der Lizenzgeber ermöglicht dass die Daten online zur Verfügung gestellt werden. 
+(5) Die Software greift zu diesem Zweck auf die in der Software „shopware“ bei dem Kunden gespeicherten Daten, insbesondere die dortigen Kundendaten, lesend und schreibend zu Verarbeitungs- und Übermittlungszwecken zu. Die Software kommuniziert mit und speichert aus der Software „shopware“ gelesene Daten auf den Servern des Lizenzgebers. 
+(6) Der Kunde erteilt mit Beginn der Nutzung der Software seine ausdrückliche Zustimmung zu der Übertragung, Speicherung und Verarbeitung seiner Daten durch die Software auf Servern des Lizenzgebers. Insbesondere erteilt der Kunde seine Zustimmung zur Übertragung personenbezogener Daten (Name, Vorname, Anschrift, Geburtsdatum, Geschlecht, Rechnungsinformationen und/oder Bonitätsdaten) an den Lizenzgeber und zurück unter Beachtung von § 13 des Vertrages. 
+(7) Die Zustimmung nach Absatz (4) dieses Paragrafen ist widerruflich. Der Widerruf der Zustimmung bedarf der Textform. Macht der Kunde von seinem Recht zum Widerruf Gebrauch, hat er die Nutzung der Software unverzüglich einzustellen. Der Widerruf führt nicht zum Entfallen der bis zum Zeitpunkt des Widerrufs angefallenen Entgelte für mittels der Software erteilter Aufträge. Dies gilt sowohl für Entgelte, die im Zusammenhang mit der Beauftragung des Lizenzgebers zur Erbringung weiterer Dienste entstanden sind, als auch solche Entgelte, die auf der Grundlage von mittels der Software mit Dritten (insbesondere Schufa, Creditsafe, Deutsche Post) geschlossenen Verträgen beansprucht werden können.
+(8) Der Kunde ist berechtigt, von dem Lizenzgeber in unregelmäßigen Abständen bereitgestellte kostenfreie Updates und Upgrades für die Hauptversion der Software zu nutzen. 
+(9) Der Kunde erhält über die Software einen Anschluss an die von dem Lizenzgeber betriebene Datenbankanwendung „EAP-BoniGateway“. 
+(10)Für die Nutzung der „EAP-BoniGateway“ - Schnittstelle zur SCHUFA muss der Kunde einen separaten Vertrag unmittelbar mit der SCHUFA Holding AG, Kormoranweg 5, 65201 Wiesbaden („SCHUFA“)  abschließen, durch den dem Kunden weitere Kosten entstehen können (z.B. Mindestumsatz der SCHUFA). Der Lizenzgeber hat keinen Einfluss auf die Vertragskonditionen der SCHUFA. Die SCHUFA rechnet die aufgrund separater Verträge mit dem Kunden geschuldeten Beträge zu den in diesen Verträgen vereinbarten Bedingungen unmittelbar gegenüber dem Kunden ohne Zutun oder Möglichkeit der Einflussnahme gegenüber dem Kunden ab. Die Software ermöglicht lediglich den Abschluss des jeweiligen Vertrages mit der SCHUFA. 
+(11)Für die Nutzung der „EAP-BoniGateway“ - Schnittstelle zur Deutschen Post muss der Kunde einen separaten Vertrag unmittelbar mit der Deutsche Post AG, Charles-de-Gaulle-Straße 20, 53113 Bonn  („POST“) abschließen, durch den dem Kunden weitere Kosten entstehen können (z.B. Mindestumsatz der Deutschen Post). Der Lizenzgeber hat keinen Einfluss auf die Vertragskonditionen der Deutschen Post. Die Deutschen Post rechnet die aufgrund separater Verträge mit dem Kunden geschuldeten Beträge zu den in diesen Verträgen vereinbarten Bedingungen unmittelbar gegenüber dem Kunden ohne Zutun oder Möglichkeit der Einflussnahme gegenüber dem Kunden ab. Die Software ermöglicht lediglich den Abschluss des jeweiligen Vertrages mit der Deutschen Post.
+(12) Die V.O.P ist nicht involviert in die Ermittlung, Zusammenstellung und unterschiedlichen Quellen (z.B. Schuldnerverzeichnisse der Amtsgerichte). Weder hat V.O.P Einfluss auf die Zusammensetzung der Datensätze, noch ist V.O.P technisch und/oder rechtlich in der Lage, die Qualität der Datensätze zu überprüfen. Die Auskunfteien/Anbieter bemühen sich in besonderem Maße um Aktualität. Gleichwohl kann nicht ausgeschlossen werden, dass bonitätsrelevante Angaben im Zeitpunkt des Abrufs des Datensatzes durch den Auftraggeber noch nicht verarbeitet sind. In dieser Datenbank können insbesondere Angaben über den Namen, die Firmierung, die Anschrift, den Familienstand, die berufliche Tätigkeit, die Vermögensverhältnisse, sowie Hinweise zum Zahlungsverhalten und etwaige Verbindlichkeiten von natürlichen und juristischen Personen gespeichert sein. 
+
+(13)V.O.P übernimmt keine Gewährleistung für die Funktionsfähigkeit der technischen Einrichtungen, der Erreichbarkeit der Datenbanken der SCHUFA Holding AG und der Deutsche Post AG sowie der Software. Jegliche Haftung wird ausgeschlossen. V.O.P ist jederzeit berechtigt, seine Dienste einzustellen. Der Haftungsausschluss bezieht sich grundsätzlich auch auf Erfüllungsgehilfen.
+
+(14)Die Datenbanken sind grundsätzlich für einen Zugriff rund um die Uhr ausgelegt. Gleichwohl kann V.O.P die ständige Erreichbarkeit nicht garantieren und behält sich das Recht vor, die Zugangsmöglichkeit aus Wartungs- und Datensicherungsgründen vorübergehend einzuschränken. Solche Einschränkungen begründen ebenso wie unvorhergesehene Ausfallzeiten keine Erstattungsansprüche des Nutzers. 
+
+(15)Anlass und Zweck des Abrufverfahrens ist es, dem Nutzer den für eine zügige Kreditentscheidung notwendigen schnellstmöglichen Zugriff auf die Auskunftsdatensätze zur Bonitätsprüfung zu ermöglichen, die Identität zu bestätigen oder das Alter zu verifizieren.
+
+ (16)Einen bestehenden Vertrag mit der SCHUFA vorausgesetzt, ist der Kunde berechtigt mit der Software die Bonitätsprüfung mit den SCHUFA Bonitätsprodukten SCHUFA-Auskunft(B2C), SCHUFA-B2B-Vollauskunft, SCHUFA-B2B-Kompaktauskunft, SCHUFA-B2B-Kurzauskunft, SCHUFA-B2B-Kurzauskunft-direkt, SCHUFA-Score, durchzuführen.
+(17)Einen bestehenden Vertrag mit SCHUFA vorausgesetzt, ist der Kunde berechtigt mit der Software die Identitätsprüfung und Altersverifikation durch Abfrage der SCHUFA Produkten,  SCHUFA-IdentitätsCheck Premium und SCHUFA-IdentitätsCheck Jugendschutz durchzuführen.
+(18)Der Kunde ist berechtigt über EAP-BoniGateway die Abfrage der SCHUFA-DeviceSecure Auskunft zur Unterstützung der Betrugsprävention durch Risikobewertung von Endgeräten durchzuführen. Für die Einholung von SCHUFA-DeviceSecure Auskünften ist kein separater Vertrag mit der SCHUFA Holding AG erforderlich, es gelten die Bedingungen der Anlage i (DeviceSecure) zu diesem Vertrag. 
+(19)Einen bestehenden Vertrag mit der POST vorausgesetzt, ist der Kunde berechtigt mit der Software die Identitätsprüfung und Altersverifikation durch Abfrage des POSTID Portal durchzuführen.
+ (20)Der Kunde ermächtigt den Lizenzgeber zu diesem Zweck, die aus der Software "shopware" des Kunden gelesenen Daten ganz oder teilweise an die SCHUFA bzw. POST zur Einholung der Auskünfte zu übertragen. 
+ (21)Die Kosten der jeweiligen Auskünfte werden im Verlauf des manuellen Abrufverfahrens dem Nutzer angezeigt und müssen von diesem bestätigt werden bzw. werden bei automatisierten Verfahren gesondert vereinbart.
+(22)V.O.P erteilt dem Nutzer jeweils monatlich Abrechnung über durch entsprechende Beauftragung entstehende Entgelte, sofern diese nicht unmittelbar durch SCHUFA bzw. POST auf der Grundlage des jeweils separat mit dem Kunden abzuschließenden Vertrages abgerechnet werden.
+(23) Im Rahmen des Gegenseitigkeitsprinzip ist der Nutzer verpflichtet, Informationen zu negativen Zahlungsverhalten und Kaufabschlüssen,  an die Auskunfteien zu melden.
+(24) Im Rahmen der Zusammenarbeit im Forderungsmanagement übernimmt V.O.P die in (21) dieser Vereinbarung  aufgeführten Verpflichtungen.
+(25)Für die Einholung von SCHUFA-Auskünften gelten ausdrücklich die Allgemeinen Geschäftsbedingungen der SCHUFA Holding AG. Für die Einholung von Identifizierungsleistungen über das POSTID Portal gelten ausdrücklich die Allgemeinen Geschäftsbedingungen der Deutsche POST AG.
+(26) Der Widerruft einer nach Art. 2 Absatz (6) erteilten Zustimmung des Kunden gem. Art. 2 Absatz (7) begründet für den Lizenzgeber einen wichtigem Grund zur außerordentlichen Kündigung nach § 4 Absatz 3.
+
+
+
+
+
+
+Produktbeschreibung
+(Anlage 1)
+Die Software ermöglicht nach erfolgtem Umsatzabruf der Bankkonten einen automatisierten Zahlungsabgleich und Verbuchung der Umsätze in shopware. Weiter ermöglicht die Software die Verwaltung der als unbezahlt markierten Rechnungen aus shopware. Filter generieren Vorschlagslisten (Zahlungserinnerung, Mahnung, Inkasso) für eine Forderungsbearbeitung. Hierbei unterstützt EAP-DebitConnect (shopware Edition) durch Synchronisierung aller Ereignisse wie Zahlungen, Gutschriften sowie Adressänderungen. Zahlungserinnerungen können per E-Mail bzw. zusätzlich zur E-Mail auch postalisch beauftragt werden. Sofern zur Versendung einer Zahlungserinnerung die Standardvorlage nicht verwendet  werden soll, gibt es die Möglichkeit eine individuelle Vorlage mit beispielsweise eigenem Firmenlogo zu erstellen. Zur Mahnung oder zum Inkasso vorgeschlagene Rechnungen können der V.O.P zur Bearbeitung übertragen werden. Hierbei werden alle relevanten und aktuellen Daten aus shopware an V.O.P übermittelt. Ebenso werden Statusbenachrichtigungen zurück übermittelt. Die Echtzeit Mandatseinsicht gibt den Überblick über den aktuellen Bearbeitungsstand der Inkasso Forderungen. Hierzu zählen ein Fortschrittsbalken, die Darstellung des Forderungskontos, Informationen zur Titulierung, ein chronologischer Aktenlebenslauf und Dokumenteneinsicht. 
+Die Software ermöglicht durch die Funktionen Firmenauskunft und Bonitätsprüfung zusätzliche Abrufverfahren um den Kunden den für eine zügige Kreditentscheidung notwendigen schnellstmöglichen Zugriff auf Auskunftsdatensätze zur Bonitätsprüfung zu ermöglichen. Die Abwicklung der Abrufverfahren werden durch das EAP-BoniGateway, einer online-Datenbankanwendung, durchgeführt. Hierzu wird im EAP-BoniGateway ein Nutzerkonto eingerichtet welches Bestandteil der EAP-DebitConnect (shopware Edition) Version ist.
+
+
+
+
+Systemanforderungen
+Es werden die shopware Versionen 5.1.* -  5.3.* unterstützt
+PHP Version 5.6 oder höher
+FinTS / HBCI fähige Bankkonten für den Umsatzabruf und Zahlungsabgleich
+EAP-DebitConnect (shopware Edition) Arbeitsplätze benötigen einen Internetbrowser für den Zugriff auf das shopware Backend.
+Eine Internetverbindung  ist Voraussetzung für den Betrieb von EAP-DebitConnect (shopware Edition). Hierdurch können Gebühren entstehen, die Ihr Internet Service Provider für Nutzung und Datentransfer berechnet.
+Für die Installation und den Betrieb von EAP-DebitConnect (shopware Edition) benötigen Sie Administrationsrechte für shopware. Bei der Installation werden für den Betrieb von EAP-DebitConnect (shopware Edition) benötigte Tabellen in Ihrer Datenbank angelegt. 
+Bevor Sie mit EAP-DebitConnect (shopware Edition) produktiv arbeiten können ist es erforderlich, Ihre Firma/Firmen (Onlineshops) zu registrieren. Die Registrierung können Sie im Menü „Einstellungen“ -> „Registrierung“ vornehmen.
+
+Öffnen und Lesen Sie die AGB’s damit das Bestätigungsfeld aktiviert werden kann. Nach Bestätigung der AGB’s klicken Sie auf den Button „Registrierung“. Sie erhalten binnen weniger Minuten an die in den Benutzereinstellungen hinterlegte E-Mail Adresse eine Bestätigungsmail mit einem persönlichen Aktivierungscode. Geben Sie diesen Aktivierungscode in das dafür vorgesehene Feld ein. 
+Nach erfolgreicher Aktivierung ist EAP-DebitConnect (shopware Edition) im Produktiveinsatz und Sie können nun Zahlungen verbuchen, Zahlungserinnerungen/ Mahnungen und Inkasso beauftragen.
+
+
+
+Komponenten
+V.O.P GmbH & Co. KG uses fints-hbci-php (http://fints-hbci-php.markus-schindler.de) under the following license:
+
+MIT License
+
+Copyright (c) 2016 Markus Schindler <mail@markus-schindler.de>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+V.O.P GmbH & Co. KG uses TinyMCE (https://www.tinymce.com) under the following license:
+LGPL License
+Copyright (c) Ephox Corporation
+
+
+Rahmenvereinbarung V 1.04
+(Anlage 2)
+Auf der Grundlage der nachstehend aufgeführten Bedingungen schließen wir mit der V.O.P GmbH & Co. KG folgende Rahmenvereinbarung:
+Die Firma V.O.P GmbH & Co. KG - im Folgenden: V.O.P - führt als behördlich genehmigtes Inkassounternehmen für uns - im Folgenden AG - das außergerichtliche Forderungsinkasso sowie auf Wunsch den Versand von Zahlungserinnerungen und/oder Mahnungen auf der Grundlage nachstehender Bedingungen  durch:
+Auf Wunsch beauftragt der AG V.O.P mit dem Versand seiner Rechnungen und/oder Zahlungserinnerungen innerhalb Deutschlands. Bei Beauftragung seine Zahlungserinnerung versendet V.O.P dem jeweils zahlungssäumigen Kunden eine Kopie der maßgeblichen Rechnung nebst Zahlungsaufforderung in Form eines Anschreibens, mittels welchem der zahlungssäumige Kunde zur Zahlung der Forderung auf das vom AG angegebene Konto aufgefordert wird.
+Je versandter Rechnung oder Zahlungserinnerung schuldet der AG V.O.P die Zahlung eines Grundpreises in Höhe von 0,70 € zzgl. ges. MwSt. Hierin inbegriffen sind die Versandt- und Druckkosten einer Rechnungsseite. Jede weitere Rechnungsseite kostet 0,09 € zzgl. ges. MwSt. V.O.P behält sich Anpassungen der Preise vor. Diese werden einen Monat vor Inkrafttreten bekannt gegeben.
+Sollten Zahlungen auf versandte Zahlungserinnerungen ausbleiben, hat der AG die Möglichkeit V.O.P mit der Erstellung und dem Versand einer kaufmännischen Mahnung innerhalb Deutschlands zu beauftragen. V.O.P erhebt gegenüber dem zahlungssäumigen Kunden Mahngebühren i.H.v. 7,50 EUR, welche sie nach Zahlung durch den säumigen Kunden einbehält. Dem AG selbst werden für den Versand der kaufmännischen Mahnungen keine Gebühren in Rechnung gestellt. Bleiben fristgerechte Zahlungen des säumigen Kunden auf die versandte kaufmännische Mahnung aus, übernimmt V.O.P die Forderungen automatisch ins Inkasso, welches auf folgender Grundlage ausgeführt wird.
+Der AG beauftragt V.O.P, die bei Auftragserteilung bezeichnete(n) Forderung(en) einschließlich Nebenforderungen, Zinsen und Kosten, in seinem Namen innerhalb Deutschlands einzuziehen. Er bevollmächtigt V.O.P, hierzu nach eigenem pflichtgemäßem Ermessen geeignet erscheinende und im Rahmen des Rechtsdienstleistungsgesetzes zulässige außergerichtliche Maßnahmen in seinem Namen durchzuführen und Raten-, Teilzahlungs- sowie Stundungsvereinbarungen mit dem Schuldner abzuschließen. 
+Der AG verpflichtet sich, sich während der Dauer des Inkassoauftrages jeglicher Maßnahmen gegenüber dem Schuldner zu enthalten, gegen diesen weder selbst noch durch Dritte vorzugehen, nicht unmittelbar mit ihm zu korrespondieren oder zu verhandeln, sondern ihn an V.O.P zu verweisen. Von Leistungen oder sonstigen für die zum Inkasso gegebene Forderung oder ihre Nebenforderungen relevanten Umständen hat er V.O.P unverzüglich zu unterrichten.
+V.O.P erbringt im Rahmen des vorgerichtlichen Inkassos insbesondere die EDV-gestützte Forderungskontenführung, schriftliche, ggf. telefonische und / oder persönliche Vorort-Mahnungen nach eigenem pflichtgemäßem Ermessen, die Durchführung von Personen-, Anschriften-, Firmen und Bonitätsermittlungen, soweit erforderlich, Verhandlung und Abschluss von Raten- und Teilzahlungsvereinbarungen. 
+Haben außergerichtliche Maßnahmen nach Einschätzung von V.O.P keine Aussicht auf Erfolg, werden alle Vorgänge, in welchen V.O.P die gerichtliche Titulierung für sinnvoll erachtet, ins gerichtliche Verfahren, durchgeführt durch einen Rechtsanwalt, gebracht. Das Kostenrisiko hierfür trägt V.O.P. Der AG befreit V.O.P und den beauftragten Anwalt von ihren jeweiligen Verschwiegenheitspflichten. Die übrigen Vorgänge stellt V.O.P gegenüber dem AG kostenfrei ein.
+V.O.P erhebt folgende Inkassokosten gegenüber dem Schuldner:
+Für die Bearbeitung des Mandats eine 1,3 Gebühr analog Nr. 2300 VV Rechtsanwaltsvergütungsgesetz (im Folgenden: RVG), für den Abschluss einer Teil- / oder Ratenzahlungsvereinbarung eine 1,5 Einigungsgebühr analog 1000 VV RVG aus dem Hauptforderungswert zuzüglich pauschalen Entgeltes für Post- und Telekommunikationsdienstleistungen analog Nr. 7002 VV RVG, Kosten für Auskünfte aus Datenbanken, sämtliche der vorgenannten Gebühren und Kosten zuzüglich Mehrwertsteuer in jeweiliger gesetzlicher Höhe, Kosten für Auskünfte aus öffentlichen Registern in Höhe der erbrachten Aufwendungen. Zahlungen vom/ für den Schuldner werden gemäß §§ 366, 367 BGB zunächst auf Kosten, alsdann auf Zinsen und zuletzt auf die übergebene Hauptforderung verrechnet. Wenn die vorgenannten Inkassokosten beim Schuldner nicht beigetrieben werden können, tritt der AG seinen Erstattungsanspruch bereits mit Auftragserteilung an V.O.P an Erfüllung statt ab, aufgrund dessen hat der AG selbst keine Zahlungen zu leisten.
+
+Nach Titulierung ist V.O.P berechtigt, auf eigenes Kostenrisiko, geeignet erscheinende Zwangsvollstreckungsmaßnahmen einzuleiten oder durch einen im Namen des AG zu beauftragenden Rechtsanwalt einleiten zu lassen.
+Einnahmen auf Zinsen und Mahnkosten verbleiben V.O.P als Erfolgshonorar, die sie zzgl. Mehrwertsteuer in die Schlussabrechnung einstellt. Bei Realisierung des Mandates erhält der AG eine Abrechnung. Der AG verzichtet aus Gründen der Wirtschaftlichkeit auf die Durchsetzung eventueller Restforderungen bis 10,00 €.
+Allgemeine Regelungen:
+V.O.P haftet dem AG für vorsätzliches oder grob fahrlässiges Verhalten seines gesetzlichen Vertreters oder seiner Erfüllungsgehilfen. Die Haftung für einfache Fahrlässigkeit ist ausgeschlossen. 
+Für die Verjährung von Forderungen haftet V.O.P nur, wenn der Inkassoauftrag mindestens drei Monate vor Eintritt der Verjährung erteilt worden ist oder der AG bei Auftragserteilung ausdrücklich auf eine drohende Verjährung hingewiesen und V.O.P die zur Verjährungskontrolle notwendigen Informationen und Unterlagen übergeben hat. V.O.P ist nicht verpflichtet, die Verjährung von Zins- und Vollstreckungskostenersatzansprüchen zu verhindern. Eine Haftung von V.O.P wird insoweit ausgeschlossen.
+V.O.P haftet nicht für den Verlust vom AG überlassener Originalunterlagen.
+Schadensersatzansprüche des AG gegen V.O.P, aus welchem Rechtsgrund auch immer, verjähren innerhalb eines Jahres ab Kenntnis von Schaden und Schädiger. 
+Jede Haftung von V.O.P wird auf einen Höchstbetrag von 250.000,00 € pro Haftungsfall, maximal 1.000.000,00 € pro Kalenderjahr begrenzt. 
+Die Herausgabe von Handakten kann nicht verlangt werden.
+Die Verpflichtung von V.O.P zur Aufbewahrung von Handakten und ihr überlassener Unterlagen endet 12 Monate nach Beendigung des Auftrages oder Erteilung der Schlussabrechnung an den AG.
+Der AG willigt ein, dass V.O.P im Rahmen des Inkassomandates zugehörige Daten und Unterlagen EDV- mäßig speichert, verarbeitet, für die Erteilung von Wirtschaftsauskünften nutzt und übermittelt und, soweit für Auskünfte erforderlich, die Identität des AG und sein berechtigtes Interesse offenlegt. V.O.P wird die im Rahmen des Forderungsinkassos EDV- mäßig gespeicherten Daten und Unterlagen nach den Grundsätzen einer ordnungsgemäßen Datensicherung und den Bestimmungen der DS-GVO verarbeiten. Die mit dem Forderungseinzug befassten Mitarbeiter von V.O.P sind auf das Datengeheimnis gemäß DS-GVO verpflichtet.
+Der AG verpflichtet sich, über Informationen, die er von V.O.P im Rahmen des Inkassomandates insbesondere über den Schuldner erhält, Stillschweigen zu wahren und diese nicht an Dritte weiterzugeben.
+Erfüllungsort und -nach Wahl von V.O.P- Gerichtsstand für sämtliche Streitigkeiten aus dieser Vereinbarung ist Mayen bzw. bei landgerichtlicher Zuständigkeit Koblenz.
+Es gilt das Recht der Bundesrepublik Deutschland. 
+Alle Vereinbarungen bedürfen der Schriftform. Dies gilt auch für die Änderung oder Aufhebung dieser Schriftformklausel. Mündliche Vereinbarungen sind nur wirksam, wenn sie von V.O.P schriftlich bestätigt wurden. 
+Sollte eine Bestimmung dieser Geschäftsbedingungen unwirksam sein oder werden, so berührt dies die Wirksamkeit der übrigen Bestimmungen nicht. Für diesen Fall verpflichten sich die Parteien, anstelle der unwirksamen Bestimmung(en) eine Vereinbarung zu treffen, die deren wirtschaftlichen Ziel am nächsten kommt.
+Bell, den 25.05.2018 
+Version 1.04
+
+
+
+vi
+
+
+1
+
+
+i
+
+

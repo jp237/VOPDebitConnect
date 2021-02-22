@@ -1,0 +1,3 @@
+delete from dc_gatewaymeta where art LIKE '%postident%';
+INSERT INTO `dc_gatewaymeta` (`id`, `shopID`, `art`, `datavalue`, `nType`, `comment`) VALUES (NULL, '0', 'eap_adressvalidation_descriptiontext', 'Aufgrund der Adressvalidierung wurde eine Alternative Adresse festgestellt. Sie können nun die Daten übernehmen, oder mit Ihrer Eingabe fortfahren.', '1', 'Hinweistext Postdirekt ');
+INSERT INTO `dc_gatewaymeta` (`id`, `shopID`, `art`, `datavalue`, `nType`, `comment`) VALUES (NULL, '0', 'eap_validation_headline', 'Alternative Adressen gefunden', '1', 'Überschrift Modalbox Postdirekt');

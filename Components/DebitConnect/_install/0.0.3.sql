@@ -1,0 +1,1 @@
+ALTER TABLE `dc_Umsatz` ADD COLUMN `cronDate` DATETIME NOT NULL ;

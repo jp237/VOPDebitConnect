@@ -1,0 +1,2 @@
+ CREATE TABLE `dc_RechDoc` ( `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY , `kLaufNr` INT NOT NULL , `bDocument` MEDIUMBLOB NOT NULL) ENGINE = MYISAM ;
+ insert into dc_RechDoc (kLaufNr,bDocument) SELECT kLaufNr , bDocument from dc_Rechnung;

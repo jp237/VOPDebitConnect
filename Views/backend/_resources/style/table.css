@@ -1,0 +1,54 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+
+.auftragtable {
+border:0px !important;
+border-collapse: inherit !important;
+}
+.auftragtable a {
+color:#fff;
+}
+
+.auftragtable thead tr th {
+  font-size: 16px !important;
+  color: #FFF  !important;
+  background: #333 !important;
+  padding:10px !Important;
+  text-align: left !important;;
+
+}
+.auftragtable  tbody td  {
+	background-color:#fff !Important;
+	border:0px !important;
+}
+.auftragtable tbody tr {
+border:0px !important;
+}
+
+.auftragtable input[type="text"] {
+border:1px solid grey ;
+}
+.auftragtable select {
+border:1px solid grey ;
+}
+.auftragtable {
+font:Tahoma, Geneva, sans-serif !important;
+}
+
+input:required:valid{
+
+border:1px solid green;
+}
+
+input:required:invalid{
+border:1px solid red ;
+}
+select:required:valid{
+border:1px solid green ;
+}
+select:required:invalid{
+
+border:1px solid red;
+}

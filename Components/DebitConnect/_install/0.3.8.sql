@@ -1,0 +1,10 @@
+ALTER TABLE dc_AuftragDetail RENAME dc_auftragdetail;
+ALTER TABLE dc_dtaCreateLog RENAME dc_dtacreatelog;
+ALTER TABLE dc_gatewayLog RENAME dc_gatewaylog;
+ALTER TABLE dc_hbciProfiles RENAME dc_hbciprofiles;
+ALTER TABLE dc_Mahnstop RENAME dc_mahnstop;
+ALTER TABLE dc_RechDoc RENAME dc_rechdoc;
+ALTER TABLE dc_Rechnung RENAME dc_rechnung;
+ALTER TABLE dc_RechPos RENAME dc_rechpos;
+ALTER TABLE dc_tZahlung RENAME dc_tzahlung;
+ALTER TABLE dc_Umsatz RENAME dc_umsatz;

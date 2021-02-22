@@ -1,0 +1,1 @@
+<input class='btn btn-danger' type="submit" name="sendPapierkorb" value='Papierkorb' />
