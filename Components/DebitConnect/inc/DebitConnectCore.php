@@ -500,6 +500,7 @@ class DebitConnectCore
 
     public function getSyncList($cronJob = false, $cronjobLimit = 50)
     {
+        /** ..*/
         $syncQuery = 'SELECT dc_auftrag.pkOrder as pkOrderAuftrag ,dc_firma.vopUser,dc_firma.vopToken,IFNULL(statustab.id,0) as statuscount ,statustab.*,dc_auftrag.* ,s_order.cleared as paymentState
 		from dc_auftrag inner join dc_firma on dc_auftrag.subshopID = dc_firma.shopID and dc_firma.activated = 1 
 		    LEFT JOIN s_order on s_order.id = dc_auftrag.pkOrder left outer join dc_status statustab on statustab.pkOrder = dc_auftrag.pkOrder where ( VOPStatus = 55 OR  VOPStatus = 59 OR  VOPStatus = 95 OR  VOPStatus = 99 ) ';
