@@ -16,6 +16,9 @@
  */
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
+
+include_once __DIR__."/../../../fix/psr7.php";
+
 include __DIR__ . '/listView.php';
 include __DIR__ . '/cronjob.php';
 require __DIR__ . '/shopware.php';
@@ -28,6 +31,8 @@ require __DIR__ . '/createDTA.php';
 require __DIR__ . '/BoniGateway.php';
 require __DIR__ . '/VopLogger.php';
 require __DIR__ . '/finAPI.php';
+
+
 
 class DebitConnectCore
 {
@@ -399,31 +404,47 @@ class DebitConnectCore
         if (DC()->settings->currentSetting->shopwareapibenutzen == 0) {
             return false;
         }
-        $auftragpos = $this->dataTypes->getAuftragPosQuery($pkOrder);
-        $soap = $this->API->mahnwesen();
-        if ($auftragpos['checksum'] >= 1) {
-            $document = $auftragpos['document'] ? 'True' : 'False';
-            $user = $this->settings->registration['vopUser'];
-            $token = md5($this->settings->registration['vopToken']);
-            $res = $soap->newMahnung($user, $token, $auftragpos['csv'], $auftragpos['checksum'], $pkOrder, $document);
-            if ($res->status == 'ValidOrder' || $res->status == 'Duplicate') {
+
+        if (DC()->settings->currentSetting->shopwareapibenutzen == 0) {
+            return false;
+        }
+
+        $order = $this->dataTypes->createApiOrderItem($pkOrder,"Mahnservice");
+        $token  =  $this->getToken();
+        if($token != null){
+            $api = new \VOP\Rest\Api\DebitconnectorderApi(new \GuzzleHttp\Client(),self::getConfigWithToken($token));
+            $res = $api->debitconnectOrderNewOrderPost($order);
+            if($res->getSuccess() === true){
                 if ($this->setVOPAuftrag(55, $pkOrder)) {
                     $this->setVOPAuftragDetail($pkOrder);
-                    $this->Log('Mahnung', 'Mahnung versendet', 0, (int)$pkOrder);
-                    $this->BoniGatewayBlackListe($pkOrder, 1, true);
-                    $this->dataTypes->changeOrder($pkOrder, null, $this->settings->currentSetting->statusMA, 0);
-
+                    $this->Log('Mahnung', 'Mahnungsauftrag', 0, (int)$pkOrder);
+                    $this->BoniGatewayBlackListe($pkOrder, 2, true);
+                    $this->dataTypes->changeOrder($pkOrder, null, $this->settings->currentSetting->statusIN, 0);
                     return true;
                 }
-            } else {
-                $this->Log('Upload', 'Error : ' . $res->ErrorMsg, 10);
-                $this->View('ERROR_MSG', 'Fehler bei der Datenübertragung');
             }
-        } else {
-            $this->Log('Upload', 'Missing Data', 10);
         }
     }
 
+
+    public function getSyncRechnungApiItem($pkOrder)
+    {
+        $count = 0;
+        $rechnungen = DC()->db->getSQLResults(' SELECT kLaufnr,dGebucht from dc_rechnung where pkOrder = ' . (int)$pkOrder);
+
+        $elem = [];
+
+
+        if (isset($rechnungen)) {
+            foreach ($rechnungen as $rg) {
+                $item = new \VOP\Rest\Model\BookedInvoice();
+                $item->setInternalId($rg["kLaufnr"]);
+                $item->setBookingDate($rg["gebucht"]);
+                $elem[] = $item;
+            }
+        }
+        return $elem;
+    }
     public function getRechnungSyncXML($pkOrder)
     {
         $count = 0;
@@ -502,7 +523,7 @@ class DebitConnectCore
     {
         /** ..*/
         $syncQuery = 'SELECT dc_auftrag.pkOrder as pkOrderAuftrag ,dc_firma.vopUser,dc_firma.vopToken,IFNULL(statustab.id,0) as statuscount ,statustab.*,dc_auftrag.* ,s_order.cleared as paymentState
-		from dc_auftrag inner join dc_firma on dc_auftrag.subshopID = dc_firma.shopID and dc_firma.activated = 1 
+		,dc_auftrag.subshopID from dc_auftrag inner join dc_firma on dc_auftrag.subshopID = dc_firma.shopID and dc_firma.activated = 1 
 		    LEFT JOIN s_order on s_order.id = dc_auftrag.pkOrder left outer join dc_status statustab on statustab.pkOrder = dc_auftrag.pkOrder where ( VOPStatus = 55 OR  VOPStatus = 59 OR  VOPStatus = 95 OR  VOPStatus = 99 ) ';
         if ($cronJob) {
             $syncQuery .= ' and lastSync < ' . date('Ymd');
@@ -542,65 +563,40 @@ class DebitConnectCore
     public function updateVOPAuftragDetail($cmd, $data, $syncObject)
     {
         $vopCMD = ['new' => 'INSERT', 'update' => 'UPDATE', 'delete' => 'DELETE', 'change' => 'UPDATE'];
-        $soap = $this->API->mahnwesen();
+
         $dateVOP = '00.00.0000 00:00:00';
         try {
             $parsedDate = new DateTime($data['datum']);
             $dateVOP = $parsedDate->format('d.m.Y H:i:s');
         } catch (Exception $e) {
         }
-        // arr = soap.addNewChange(item.user, item.authCode, art.ToString(), rgNr.ToString(), cKorrekturNr.ToString(), dErstellt.ToString(), nZahlungsziel.ToString(), nInkassoStatus.ToString(), cBezahlt.ToString(), cKundenNr.ToString(), cFirma.ToString(), cAnrede.ToString(), cTitel.ToString(), cVorname.ToString(), cName.ToString(), cStrasse.ToString(), cPLZ.ToString(), cOrt.ToString(), cLand.ToString(), cTel.ToString(), cFax.ToString(), cEMail.ToString(), cMobil.ToString(), cZHaenden.ToString(), cGeburtstag.ToString(), nDebitorennr.ToString(), cAdressZusatz.ToString(), cSperre.ToString(), kRechnung.ToString(), betrag.ToString(), action.ToString());
-        $vopParams = [
-            'user' => $syncObject['vopUser'],
-            'pass' => md5($syncObject['vopToken']),
-            'art' => $data['cArt'],
-            'cRechnungsNr' => $syncObject['cRechnungsNr'] ? $syncObject['cRechnungsNr'] : $syncObject['cAuftragsNr'],
-            'cKorrekturNr' => $data['cArt'] == 'Korrektur' ? $data['cNr'] : '',
-            'dErstellt' => $dateVOP,
-            'nZahlungsziel' => '',
-            'nInkassoStatus' => '',
-            'cBezahlt' => '',
-            'cKundenNr' => $syncObject['pkOrderAuftrag'],
-            'cFirma' => '',
-            'cAnrede' => '',
-            'cTitel' => '',
-            'cVorname' => $syncObject['cVorname'],
-            'cName' => $syncObject['cNachname'],
-            'cStrasse' => $syncObject['cStrasse'],
-            'cPLZ' => $syncObject['cPLZ'],
-            'cOrt' => $syncObject['cOrt'],
-            'cLand' => $syncObject['cLand'],
-            'cTel' => '',
-            'cFax' => '',
-            'cEMail' => '',
-            'cMobil' => '',
-            'cZHaenden' => '',
-            'cGeburtstag' => '',
-            'nDebitorennr' => '',
-            'cAdressZusatz' => '',
-            'cSperre' => '',
-            'kRechnung' => $syncObject['pkOrderAuftrag'],
-            'Betrag' => $data['fWert'] > 0 ? '-' . $data['fWert'] : str_replace('-', '', $data['fWert']),
-            'cmd' => $vopCMD[$cmd],
-        ];
-        $res = $soap->addNewChange($vopParams['user'], $vopParams['pass'], $vopParams['art'], $vopParams['cRechnungsNr'], $vopParams['cKorrekturNr'], $vopParams['dErstellt'], $vopParams['nZahlungsziel'], $vopParams['nInkassoStatus'],
-            $vopParams['cBezahlt'], $vopParams['cKundenNr'], $vopParams['cFirma'], $vopParams['cAnrede'], $vopParams['cTitel'], $vopParams['cVorname'], $vopParams['cName'], $vopParams['cStrasse'], $vopParams['cPLZ'], $vopParams['cOrt'],
-            $vopParams['cLand'], $vopParams['cTel'], $vopParams['cFax'], $vopParams['cEMail'], $vopParams['cMobil'], $vopParams['cZHaenden'], $vopParams['cGeburtstag'], $vopParams['nDebitorennr'], $vopParams['cAdressZusatz'], $vopParams['cSperre'], $vopParams['kRechnung'], $vopParams['Betrag'], $vopParams['cmd']);
 
-        if ($res->status != 'ValidEntry') {
-            $logEntry = [
-                'request' => $vopParams,
-                'response' => $res,
-            ];
-            DC()->Log('SyncError', print_r($res, true), 10);
-            if ($this->cronJob != null) {
-                $this->cronJob->Log('AddChange', 'Meldung zu V.O.P fehlgeschlagen', $logEntry, 1, $syncObject['pkOrderAuftrag']);
-            }
+        $token = $this->getToken($syncObject["subshopID"]);
 
+        $api = new \VOP\Rest\Api\DebitconnectsyncApi(new \GuzzleHttp\Client(),self::getConfigWithToken($token));
+
+        $param = new \VOP\Rest\Model\PushSyncInputParameters();
+        $param->setInternalId($syncObject['pkOrderAuftrag']);
+        $syncParam = new \VOP\Rest\Model\SyncData();
+
+        if(in_array($data["cArt"],["Zahlung","Korrektur"])) {
+            $syncParam->setAmount($syncObject["fWert"] * -1);
+        }else{
+            $syncParam->setAmount($syncObject["fWert"] * -1);
+        }
+        $syncParam->setCmd($vopCMD[$cmd]);
+        $syncParam->setDate($dateVOP);
+
+        $syncParam->setType($data['cArt']);
+        $param->setSync($syncParam);
+
+        $res = $api->debitconnectSyncCasePushSyncPost($syncParam);
+        if($res->getSuccess() == false){
             return false;
         }
+
         if ($this->cronJob != null) {
-            $this->cronJob->Log('AddChange', 'Meldung ' . $vopParams['cmd'] . ' ' . $vopParams['cRechnungsNr'] . ' ' . $vopParams['dErstellt'] . ' ' . $vopParams['Betrag'] . ' erfolgreich ', null, 0, $syncObject['pkOrderAuftrag']);
+            $this->cronJob->Log('AddChange', 'Meldung ' . $vopCMD[$cmd]. ' ' . $vopParams['cRechnungsNr'] . ' ' . $vopParams['dErstellt'] . ' ' . $vopParams['Betrag'] . ' erfolgreich ', null, 0, $syncObject['pkOrderAuftrag']);
         }
 
         if ($cmd == 'delete') {
@@ -623,6 +619,8 @@ class DebitConnectCore
 
             return DC()->db->dbInsert('dc_auftragdetail', $newEntry);
         }
+
+        return false;
     }
 
     public function getAuftragSynch($syncObject)
@@ -657,133 +655,141 @@ class DebitConnectCore
         }
         try {
             $syncText = 'Akte in Kürze verfügbar';
-            $token = md5($auftrag['vopToken']);
-            $syncXML = $this->getRechnungSyncXML($auftrag['pkOrderAuftrag']);
-            $res = $soap->SynchRechnung($auftrag['vopUser'], $token, (int)$auftrag['pkOrderAuftrag'], $syncXML);
+           // $token = md5($auftrag['vopToken']);
+          //  $syncXML = $this->getRechnungSyncXML($auftrag['pkOrderAuftrag']);
+            //$res = $soap->SynchRechnung($auftrag['vopUser'], $token, (int)$auftrag['pkOrderAuftrag'], $syncXML);
+            $token= $this->getToken($this->getShopId());
+
+            $api = new \VOP\Rest\Api\DebitconnectsyncApi(new \GuzzleHttp\Client(),self::getConfigWithToken($token));
+            $input = new \VOP\Rest\Model\GetSyncInputParameters();
+            $input->setInternalId($auftrag["pkOrderAuftrag"]);
+            $input->setBookingList($this->getSyncRechnungApiItem($auftrag["pkOrderAuftrag"]));
+
+            $res =  $api->debitconnectSyncCaseGetSyncPost($input);
+
+
             $update = new stdClass();
             $update->lastSync = date('Ymd');
             $this->db->dbUpdate('dc_status', $update, 'pkOrder = ' . (int)$auftrag['pkOrderAuftrag'], false);
 
-            if ($res->Error == 'success') {
                 $syncData = simplexml_load_string(base64_decode($res->synch));
-                if ($syncData->count > 0) {
-                    foreach ($syncData->rechnung as $rgRow) {
+
+                    foreach ($res->getInvoices() as $rg) {
                         try {
-                            $attr = $rgRow->attributes();
-                            $dt = new DateTime($rgRow->dDatum);
+                            $dt = new DateTime($rg->getInvoiceDate());
 
                             $rechnungEntry = new stdClass();
                             $rechnungEntry->pkOrder = $auftrag['pkOrderAuftrag'];
-                            $rechnungEntry->kLaufnr = (string)$attr['kLaufnr'];
-                            $rechnungEntry->nRechJahr = (string)$rgRow->nRechja;
-                            $rechnungEntry->nRechNr = (string)$rgRow->nRechnr;
+                            $rechnungEntry->kLaufnr = $rg->getInternalId();
+                            $rechnungEntry->nRechJahr = $rg->getInvoiceText();
+                            $rechnungEntry->nRechNr = $rg->getInvoiceNumber();
                             $rechnungEntry->dErstellt = $dt->format('Y-m-d');
-                            $rechnungEntry->fUst = (string)$rgRow->fUst;
-                            $rechnungEntry->fSumme = (string)$rgRow->fSumme;
-                            $rechnungEntry->cRechtext = (string)$attr['cRechtext'];
-                            $rechnungEntry->cName1 = (string)$rgRow->cName1;
-                            $rechnungEntry->cName2 = (string)$rgRow->cName2;
-                            $rechnungEntry->cStrasse = (string)$rgRow->cStrasse;
-                            $rechnungEntry->cPLZ = (string)$rgRow->cPLZ;
-                            $rechnungEntry->cOrt = (string)$rgRow->cOrt;
+                            $rechnungEntry->fUst = $rg->getVat();
+                            $rechnungEntry->fSumme =$rg->getAmount();
+                            $rechnungEntry->cRechtext =$rg->getCommentary();
+                            $rechnungEntry->cName1 = $rg->getName();
+                            $rechnungEntry->cName2 = $rg->getName2();
+                            $rechnungEntry->cStrasse = $rg->getStreet();
+                            $rechnungEntry->cPLZ = $rg->getZipcode();
+                            $rechnungEntry->cOrt = $rg->getCity();
 
-                            $rechnungEntry->fZEGL = (string)$rgRow->fZEGL;
-                            $rechnungEntry->fZEVOP = (string)$rgRow->fZEVOP;
-                            $rechnungEntry->fVorschuss = (string)$rgRow->fVorschuss;
-                            $rechnungEntry->fZahlbetrag = (string)$rgRow->fValue;
-                            $rechnungEntry->fAusgezahlt = (string)$rgRow->fAusgezahlt;
-                            $rechnungEntry->cTransaktion = (string)$attr['cTransaktion'];
-                            $rechnungEntry->cKommentar = (string)$rgRow->cKommentar;
-                            $rechnungEntry->cRichtung = (string)$rgRow->cRichtung;
+                            $rechnungEntry->fZEGL = $rg->getPaymentMandant();
+                            $rechnungEntry->fZEVOP = $rg->getPaymentVop();
+                            $rechnungEntry->fVorschuss = $rg->getAdvance();
+                            $rechnungEntry->fZahlbetrag = $rg->getValue();
+                            $rechnungEntry->fAusgezahlt = $rg->getPayed();
+                            $rechnungEntry->cTransaktion = $rg->getTransaction();
+                            $rechnungEntry->cKommentar =$rg->getCommentary();
+                            $rechnungEntry->cRichtung =$rg->getDirection();
                             $rechnungEntry->dGesehen = '0000-00-00';
                             $rechnungEntry->dGebucht = $rechnungEntry->dGesehen;
                             DC()->db->dbInsert('dc_rechnung', $rechnungEntry);
-                            if ($rgRow->blob != null) {
+                            if ($rg->getDocument() != null) {
                                 $RechDoc = new stdClass();
-                                $RechDoc->kLaufNr = $rechnungEntry->kLaufnr;
-                                $RechDoc->bDocument = base64_encode(base64_decode($rgRow->blob));
+                                $RechDoc->kLaufNr = $rg->getInternalId();
+                                $RechDoc->bDocument =$rg->getDocument();
                                 DC()->db->dbInsert('dc_rechdoc', $RechDoc);
                             }
-                            foreach ($rgRow->rechpos as $rechpos) {
+                            foreach ($rg->getBookingPos() as $rechpos) {
                                 $rechposAttr = $rechpos->attributes();
                                 $rechPosEntry = new stdClass();
-                                $rechPosEntry->kLaufnr = $rechnungEntry->kLaufnr;
-                                $rechPosEntry->nZNR = $rechposAttr['nZNR'];
-                                $rechPosEntry->nArtzeile = $rechposAttr['nArtzeile'];
-                                $rechPosEntry->fMingeb = (string)$rechpos->fMingeb;
-                                $rechPosEntry->fMaxgeb = (string)$rechpos->fMaxgeb;
-                                $rechPosEntry->cGebText = (string)$rechpos->cGebtext;
-                                $rechPosEntry->fGebuehr = (string)$rechpos->fGebuehr;
-                                $rechPosEntry->fGebuehr1 = (string)$rechpos->fGebuehr1;
+                                $rechPosEntry->kLaufnr = $rg->getInternalId();
+                                $rechPosEntry->nZNR = $rechpos->getRownumber();
+                                $rechPosEntry->nArtzeile = $rechpos->getType();
+                                $rechPosEntry->fMingeb = $rechpos->getMingeb();
+                                $rechPosEntry->fMaxgeb = $rechpos->getMaxgeb();
+                                $rechPosEntry->cGebText = $rechpos->getGebtext();
+                                $rechPosEntry->fGebuehr = $rechpos->getGebuehr();
+                                $rechPosEntry->fGebuehr1 = $rechpos->getGebuehr1();
                                 DC()->db->dbInsert('dc_rechpos', $rechPosEntry);
                             }
                         } catch (Exception $e) {
                         }
                     }
-                }
-                $status = $syncData->getStatus;
+
+
                 if ($auftrag['statuscount'] == 0) {
                     $insert = new stdClass();
                     $insert->pkOrder = (int)$auftrag['pkOrderAuftrag'];
                     $this->db->dbInsert('dc_status', $insert);
                 }
-                if (isset($status->gsoffen)) {
+
                     $syncText = '';
                     // AKTE NOCH NICHT ANGELEGT CONTINUE LOOP
                     $update = new stdClass();
-                    if ($auftrag['fOffen'] != $status->gsoffen) {
-                        $update->fOffen = number_format((string)$status->gsoffen, 2, '.', '');
+                    if ($auftrag['fOffen'] != $res->getRestamount()) {
+                        $update->fOffen = $res->getRestamount();
                     }
 
-                    if ($auftrag['fGesamt'] != $status->gsgenerell) {
-                        $update->fGesamt = number_format((string)$status->gsgenerell, 2, '.', '');
+                    if ($auftrag['fGesamt'] != $res->getAmount()) {
+                        $update->fGesamt =  $res->getAmount();
                     }
 
-                    if ($auftrag['nMandart'] != $status->art) {
-                        $update->nMandart = $status->art;
+                    if ($auftrag['nMandart'] != $res->getType()) {
+                        $update->nMandart = $res->getType();
                     }
 
-                    if ($auftrag['nTZV'] != $status->tzv) {
-                        $update->nTZV = $status->tzv;
+                    if ($auftrag['nTZV'] != $res->getTitled()) {
+                        $update->nTZV = $res->getTitled();
                     }
 
-                    if ($auftrag['nStatus'] != $status->status) {
-                        $update->nStatus = $status->status;
+                    if ($auftrag['nStatus'] != $res->getState()) {
+                        $update->nStatus =$res->getState();
                     }
 
-                    if ($auftrag['nTituliert'] != $status->titel) {
-                        $update->nTituliert = $status->titel;
+                    if ($auftrag['nTituliert'] != $res->getTitled()) {
+                        $update->nTituliert = $res->getTitled();
                     }
 
-                    if ($auftrag['nErledigt'] != $status->erledigt) {
-                        $update->nErledigt = $status->erledigt;
+                    if ($auftrag['nErledigt'] != $res->getClosed()) {
+                        $update->nErledigt =  $res->getClosed();
                     }
 
-                    if ($auftrag['nAdresse'] != $status->adresse) {
-                        $update->nAdresse = $status->adresse;
-                    }
 
-                    if ($auftrag['lastLea'] != $status->lastLea) {
-                        $update->lastLea = $status->lastLea;
-                        $update->lastLeaBack = $status->lastLea;
+                        $update->nAdresse = 0;
+
+
+                    if ($auftrag['lastLea'] != $res->getLastchange()) {
+                        $update->lastLea = $res->getLastchange();
+                        $update->lastLeaBack = $res->getLastchange();
                     }
-                    if ($auftrag['orderhash'] != md5($status->hash)) {
-                        $update->orderhash = md5($status->hash);
+                    if ($auftrag['orderhash'] != $res->getMappedCaseHash()) {
+                        $update->orderhash = $res->getMappedCaseHash();
                     }
                     $update->lastSync = date('Ymd');
                     $this->db->dbUpdate('dc_status', $update, 'pkOrder = ' . (int)$auftrag['pkOrderAuftrag'], false);
 
                     $newvopstatus = 0;
-                    if ($status->art == 0 && $status->erledigt == 0) {
+                    if ($res->getType() == 0 && $res->getClosed() == 0) {
                         $newvopstatus = 55;
                     }
-                    if ($status->art == 0 && $status->erledigt == 1) {
+                    if ($res->getType() == 0 && $res->getClosed() == 1) {
                         $newvopstatus = 59;
                     }
-                    if ($status->art == 1 && $status->erledigt == 0) {
+                    if ($res->getType() == 1 && $res->getClosed() == 0) {
                         $newvopstatus = 95;
                     }
-                    if ($status->art == 1 && $status->erledigt == 1) {
+                    if ($res->getType() == 1 && $res->getClosed() == 1) {
                         $newvopstatus = 99;
                     }
                     // SETZE SHOPWARE STATUS ZUM INKASSO WENN STATUS != Komplett bezahlt
@@ -795,69 +801,147 @@ class DebitConnectCore
                         }
                     }
 
-                    if ($status->art == 0) {
+                    if ($res->getType() == 0) {
                         $syncText .= 'Mahnung';
                     }
-                    if ($status->art == 1) {
+                    if ($res->getType()  == 1) {
                         $syncText .= 'Inkasso';
                     }
-                    $syncText .= $status->erledigt == 0 ? ' in weiterer Bearbeitung' : ' Erledigt';
-                } // > GSOFFEN
+                    $syncText .= $res->getClosed() == 0 ? ' in weiterer Bearbeitung' : ' Erledigt';
+
                 if ($newvopstatus > 0) {
                     $updateauftrag = new stdClass();
                     $updateauftrag->VOPStatus = $newvopstatus;
                     $this->db->dbUpdate('dc_auftrag', $updateauftrag, 'pkOrder = ' . (int)$auftrag['pkOrderAuftrag'], false);
                 }
-            } else {
-                $ret['soapError'] = $res;
-                $this->Log('Synchronisierung', print_r($ret, true), 10);
-            }
 
             // SYNC KUNDE -> VOP
         } catch (Exception $e) {
+
+
+
             $ret['exception'] = $e->getMessage();
             $ret['error'] = true;
             $this->Log('Synchronisierung', $e->getMessage(), 10);
             $this->View('API_ERROR', $e->getMessage());
-            $syncText = 'Synchronisierungsfehler';
+            $syncText = 'Akte noch nicht angelegt ';
+
         }
 
+
         $ret['syncText'] = $syncText;
-        $ret['belege'] = $belege; // @todo undefined!
+
 
         return $ret;
     }
 
+    public static function isValidToken($shopId){
+
+        $dbToken = self::getTokenFromDataBase($shopId);
+        if($dbToken == null){
+            return false;
+        }
+
+        $token = explode(".",$dbToken);
+        $data = json_decode(base64_decode($token[1]));
+        if($data->exp <= time()){
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+    public static function unsetDatabaseToken($shopId){
+       Shopware()->BackendSession()->vop_oauth[$shopId] = null;
+    }
+    public static function getTokenFromDataBase($shopId){
+
+        $db = Shopware()->BackendSession()->vop_oauth[$shopId];
+
+        if($db == null) return null;
+
+        return $db;
+
+    }
+
+
+    public static function getConfigWithToken($token){
+        return   VOP\Rest\Configuration::getDefaultConfiguration()->setAccessToken($token);
+    }
+
+    public static function setDatabaseToken($token,$shopId){
+
+        $tokenExplode = explode(".",$token);
+        $data = json_decode(base64_decode($tokenExplode[1]));
+        Shopware()->BackendSession()->vop_oauth[$shopId] = $token;
+
+        return $token;
+    }
+
+    public static function getAccessToken($settings,$shopId){
+        try{
+
+
+            if(self::isValidToken($shopId)){
+                return self::getTokenFromDataBase($shopId);
+            }
+
+
+            $credentials = base64_encode($settings["vopUser"].":".$settings["vopToken"]);
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'Authorization'   => "Basic $credentials",
+                ]
+            ]);
+            $api = new \VOP\Rest\Api\OauthApi($client);
+
+
+            $res  =  $api->oauthTokenPost();
+
+
+
+            return self::setDatabaseToken(
+                $res->getAccessToken(),$shopId
+            );
+
+
+
+        }catch(Exception $e){
+
+            self::$exception = $e;
+        }
+
+    }
+
+
+    public function getToken($shopId){
+        return self::getAccessToken($this->settings->registration,$shopId);
+    }
     public function sendInkasso($pkOrder)
     {
         if (DC()->settings->currentSetting->shopwareapibenutzen == 0) {
             return false;
         }
-        $auftragpos = $this->dataTypes->getAuftragPosQuery($pkOrder);
 
-        $soap = $this->API->mahnwesen();
-        if ($auftragpos['checksum'] >= 1) {
-            try {
-                $document = $auftragpos['document'] ? 'True' : 'False';
-                $user = $this->settings->registration['vopUser'];
-                $token = md5($this->settings->registration['vopToken']);
-                $res = $soap->newInkasso($user, $token, $auftragpos['csv'], $auftragpos['checksum'], $pkOrder, $document);
-                if ($res->status == 'ValidOrder' || $res->status == 'Duplicate') {
-                    if ($this->setVOPAuftrag(95, $pkOrder)) {
-                        $this->setVOPAuftragDetail($pkOrder);
-                        $this->Log('Inkasso', 'Inkassoauftrag erteilt', 0, (int)$pkOrder);
-                        $this->BoniGatewayBlackListe($pkOrder, 2, true);
-                        $this->dataTypes->changeOrder($pkOrder, null, $this->settings->currentSetting->statusIN, 0);
+        $order = $this->dataTypes->createApiOrderItem($pkOrder,"Inkasso");
+        $token  =  $this->getToken();
+       if($token != null){
 
-                        return true;
-                    }
+           $api = new \VOP\Rest\Api\DebitconnectorderApi(new \GuzzleHttp\Client(),self::getConfigWithToken($token));
+           $res = $api->debitconnectOrderNewOrderPost($order);
+            if($res->getSuccess() === true){
+                if ($this->setVOPAuftrag(95, $pkOrder)) {
+                    $this->setVOPAuftragDetail($pkOrder);
+                    $this->Log('Inkasso', 'Inkassoauftrag erteilt', 0, (int)$pkOrder);
+                    $this->BoniGatewayBlackListe($pkOrder, 2, true);
+                    $this->dataTypes->changeOrder($pkOrder, null, $this->settings->currentSetting->statusIN, 0);
+                    return true;
                 }
-            } catch (Exception $e) {
-                $this->smarty->assign('ERROR_MSG', $e->getMessage());
-
-                return false;
             }
-        }
+       }
     }
 
     public function sendPapierkorb()
@@ -1052,6 +1136,7 @@ class DebitConnectCore
 
         $this->listView->columns = $dataType['order'];
         $this->listView->setFilter(DC()->get('setFilter'));
+
         $res = $this->db->getSQLResults($dataType['query']);
         //if($type == "1")
 
@@ -1554,7 +1639,7 @@ class DebitConnectCore
                                 $addedTransfers[] = ['id' => $pkOrder, 'amount' => $dtaRow['amount']];
                                 $amountTransfer = $amountTransfer + $dtaRow['amount'];
                             } else {
-                                print_r($dtaRow);
+
                                 $this->View('ERROR_MSG', 'Fehler in Daten ' . print_r($dtaRow, true));
                             }
                         }
@@ -1751,7 +1836,7 @@ class DebitConnectCore
         $selectedShop = (int)$this->settings->selectedShop;
         $gatewaySettings = $this->getBoniGatewaySettings();
         $gatewayLanguage = $this->getBoniGatewayLanguage();
-
+        ini_set("display_errors",true);
         if ((DC()->hasvalue('gateway'))) {
             foreach (DC()->get('gateway') as $key => $value) {
                 if (array_key_exists($key, $gatewaySettings)) {
@@ -1767,6 +1852,7 @@ class DebitConnectCore
                     DC()->db->dbInsert('dc_gatewaymeta', $insert);
                 }
             }
+            EAPBoniGateway::unsetDatabaseToken($selectedShop);
         }
 
         if ((DC()->hasvalue('lang'))) {
@@ -1810,57 +1896,46 @@ class DebitConnectCore
         }
         try {
 
+            $token = EAPBoniGateway::getAccessToken($gatewaySettings,$selectedShop);;
 
+            if(strlen($token)>0){
+                $this->View('validAccount',$token);
 
+                $api = new \VOP\Rest\Api\BonigatewayconfigurationApi(new \GuzzleHttp\Client(),EAPBoniGateway::getConfigWithToken($token));
+                try {
 
+                    $res = $api->bonigatewayConfigurationGetProjectInformationGet();
 
-
-
-
-            $client = new SoapClient('https://api.eaponline.de/bonigateway.php?wsdl', ['cache_wsdl' => WSDL_CACHE_NONE]);
-            $gwusr = $gatewaySettings['username'];
-            $gwpwd = md5($gatewaySettings['passwd']);
-            if (strlen($gwusr) > 0 && strlen($gwpwd) == 32) {
-                $result = $client->getGatewayLogin($gwusr, $gwpwd);
-                if ($result->status == 'True') {
-                    $this->View('eap_state', 'LOGIN');
-                    $projekte = $client->getProject($gwusr, $gwpwd, '1');
-
-                    if (isset($projekte[0]->Error)) {
-                        $this->View('eap_state', 'NOPROJECT');
-                    } else {
-                        $encProjects = [];
-                        $b2bProjects = [];
-                        $b2bcount = 0;
-
-                        $b2ccount = 0;
-                        for ($i = 0, $iMax = count($projekte); $i < $iMax; ++$i) {
-                            if ($projekte[$i]->projecttype == 'B2C') {
-                                $encProjects[$b2ccount] = new stdClass();
-                                $encProjects[$b2ccount]->bezeichnung = ($projekte[$i]->bezeichnung);
-                                $encProjects[$b2ccount]->row = $b2ccount;
-                                $encProjects[$b2ccount]->projectvalue = ($projekte[$i]->projectvalue);
-                                ++$b2ccount;
-                            } else {
-                                $b2bProjects[$b2bcount] = new stdClass();
-                                $b2bProjects[$b2bcount]->bezeichnung = ($projekte[$i]->bezeichnung);
-                                $b2bProjects[$b2bcount]->row = $b2bcount;
-                                $b2bProjects[$b2bcount]->projectvalue = ($projekte[$i]->projectvalue);
-                                ++$b2bcount;
-                            }
-                        }
-
-                        $this->View('eap_projekte', $encProjects);
-                        $this->View('eap_projekteb2b', $b2bProjects);
+                    foreach($res->getB2cProjects() as $key =>  $item){
+                        $encProjects[$key] = new stdClass();
+                        $encProjects[$key]->bezeichnung = $item->getDescription();
+                        $encProjects[$key]->row = $key;
+                        $encProjects[$key]->projectvalue = $item->getMappedAmount();
                     }
-                } else {
-                    $this->View('eap_state', 'NOLOGIN');
+                    foreach($res->getB2bProjects() as $key => $item){
+                        $b2bProjects[$key] = new stdClass();
+                        $b2bProjects[$key]->bezeichnung = $item->getDescription();
+                        $b2bProjects[$key]->row = $key;
+                        $b2bProjects[$key]->projectvalue = $item->getMappedAmount();
+                    }
+
+
+                    $this->View('eap_projekte', $encProjects);
+                    $this->View('eap_projekteb2b', $b2bProjects);
+
+                }catch(Exception $e){
+
+
+                   $this->View("eap_state","LOGIN");
                 }
+            }else{
+                $this->View('eap_state', 'NOLOGIN');
             }// END IF STRLEN USER STRLEN PWD
         } catch (Exception $e) {
             $this->View('eap_state', 'COMERR');
             $this->View('eap_exception', $e);
         }
+
 
         $this->View('lang', $gatewayLanguage);
         $this->View('customergroups', $_customergroups);
@@ -1940,26 +2015,6 @@ class DebitConnectCore
                 $this->setAlert("danger", $e->getMessage());
             }
         }
-        /*
-        if (strlen($selectedProfile->profileData->blz) > 0 && strlen($selectedProfile->profileData->pin) > 0 && strlen($selectedProfile->profileData->url) > 0 && strlen($selectedProfile->profileData->alias) > 0) {
-            try {
-                $this->View('konten', DC()->hbci->returnKonten($selectedProfile));
-            } catch (Exception $e) {
-                $this->View('HBCI_FAULT', $e->getMessage());
-            }
-        }
-        if (DC()->hbci->hbci != null) {
-            $logger = (DC()->hbci->hbci->getLogger());
-            if (count($logger->msg_error) > 0) {
-                $errormsg = '';
-                foreach ($logger->msg_error as $message) {
-                    $errormsg .= $message . '<br>';
-                }
-                $this->View('HBCI_FAULT', $errormsg);
-            }
-        }
-    */
-
 
         $this->View('profile', $selectedProfile);
 
@@ -2099,68 +2154,17 @@ class DebitConnectCore
         $res = $this->db->singleResult('SELECT pkOrder from dc_auftrag where id = ' . (int)DC()->get('id'));
         $pkOrder = $res['pkOrder'];
 
-        if ((DC()->hasvalue('nachrichtsb'))) {
-            $msg = $soap->insertMSG($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int)$pkOrder, DC()->get('nachrichtsb'));
-            if ($msg->Error == 'OK') {
-                $this->View('SUCCESS_MSG', 'Die Nachricht wurde übermittelt');
-            } else {
-                $this->View('ERROR_MSG', 'Die Nachricht konnte nicht übermittelt werden');
-            }
-        }
 
-        try {
-            $schuldner = $soap->getSchuldner($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int)$pkOrder);
-            if ($schuldner->Error != 'Error') {
-                $this->View('schuldner', $schuldner);
-            } else {
-                $this->View('API_ERROR', 'Daten Konnten nicht abgerufen werden');
-            }
+        $token = $this->getToken($this->getShopId());
+        $case = new \VOP\Rest\Api\DebitconnectcaseApi(new \GuzzleHttp\Client(),self::getConfigWithToken($token));
 
-            $lea = $soap->getLEA($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int)$pkOrder);
-            if (count($lea) > 0) {
-                $this->View('lea', $lea);
-            } else {
-                $this->View('API_ERROR', 'Daten Konnten nicht abgerufen werden');
-            }
+        $param = new \VOP\Rest\Model\GetCaseInformationInputParameters();
+        $param->setInternalId($pkOrder);
+        $result = $case->debitconnectCaseGetCaseInformationPost($param);
+        $this->smarty->assign('case',$result);
 
-            $vbdaten = $soap->getVBDaten($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int)$pkOrder);
-            if ($vbdaten->Error != 'Error') {
-                $this->View('vbdaten', $vbdaten);
-            } else {
-                $this->View('API_ERROR', 'Daten Konnten nicht abgerufen werden');
-            }
+        return $result->getHtml();
 
-            $fkto = $soap->getFKTO($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), '', (int)$pkOrder);
-            if ($fkto->Error != 'Error') {
-                $_fkto['hauptforderung'] = ['soll' => number_format(round($fkto->Hauptforderung, 2), 2, ',', '.'),
-                    'haben' => number_format(round($fkto->ZEaufHaupt, 2), 2, ',', '.'),
-                    'saldo' => number_format((round($fkto->Hauptforderung, 2) - round($fkto->ZEaufHaupt, 2)), 2, ',', '.'),];
-
-                $_fkto['zinsen'] = ['soll' => number_format(round($fkto->Zinsen, 2), 2, ',', '.'),
-                    'haben' => number_format(round($fkto->ZEaufZinsen, 2), 2, ',', '.'), 'saldo' => number_format((round($fkto->Zinsen, 2) - round($fkto->ZEaufZinsen, 2)), 2, ',', '.'),];
-
-                $_fkto['ra'] = ['soll' => number_format(round($fkto->Kostenverzinschlich, 2), 2, ',', '.'),
-                    'haben' => number_format(round($fkto->ZEaufKostenVerzinslich, 2), 2, ',', '.'),
-                    'saldo' => number_format((round($fkto->Kostenverzinslich, 2) - round($fkto->ZEaufKostenVerzinslich, 2)), 2, ',', '.'),];
-
-                $_fkto['kosten'] = [
-                    'soll' => number_format(round($fkto->Kosten, 2), 2, ',', '.'), 'haben' => number_format(round($fkto->ZEaufKosten, 2), 2, ',', '.'), 'saldo' => number_format((round($fkto->Kosten, 2) - round($fkto->ZEaufKosten, 2)), 2, ',', '.'),];
-                $haben = number_format((round($fkto->ZEaufHaupt + $fkto->ZEaufZinsen + $fkto->ZEaufKostenVerzinslich + $fkto->ZEaufKosten, 2)), 2, ',', '.');
-
-                $_fkto['salden'] = ['soll' => number_format(round($fkto->Hauptforderung, 2) + round($fkto->Zinsen, 2) + round($fkto->Kostenverzinslich, 2) + round($fkto->Kosten, 2), 2, ',', '.'),
-                    'haben' => $haben,
-                    'saldo' => number_format((round($fkto->Hauptforderung, 2) - round($fkto->ZEaufHaupt, 2)) + (round($fkto->Zinsen, 2) - round($fkto->ZEaufZinsen, 2)) + (round($fkto->Kostenverzinslich, 2) - round($fkto->ZEaufKostenVerzinslich, 2)) + (round($fkto->Kosten, 2) - round($fkto->ZEaufKosten, 2)), 2, ',', '.'),];
-
-                $this->View('fkto', $_fkto);
-            } else {
-                $this->View('API_ERROR', 'Daten Konnten nicht abgerufen werden');
-            }
-        } catch (Exception $e) {
-            $this->View('API_ERROR', 'Daten Konnten nicht abgerufen werden');
-            $this->LOG('Akteneinsicht', $e, 10);
-        }
-
-        return $this->smarty->fetch(__DIR__ . '/../tpl/detailansicht.tpl');
     }
 
     public function zaLOG()
@@ -2630,21 +2634,7 @@ class DebitConnectCore
         return $embed;
     }
 
-    public function getLEADoc()
-    {
-        $soap = $this->API->mahnwesen();
-        $lea = $soap->getLEA();
 
-        try {
-            $doc = $soap->getLEAdoc($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), (int)DC()->get('doc'));
-            $download = "<a download='" . DC()->get('doc') . ".pdf' href='data:application/pdf;base64," . $doc->document . "' title='Download pdf document' />Download PDF</a>";
-            $embed = "$download<embed src='data:application/pdf;base64," . $doc->document . "' width='100%' height='100%' alt='pdf' pluginspage='http://www.adobe.com/products/acrobat/readstep2.html' type='application/pdf'>";
-        } catch (Exception $e) {
-            $this->View('API_ERROR', $e);
-        }
-
-        return $embed;
-    }
 
     public function hbcirequestmanuell()
     {
@@ -2773,25 +2763,7 @@ class DebitConnectCore
             $_mahnstopp[$mahnstopitem['nType']] = $mahnstopitem;
         }
 
-        /*
-        if(count($mahnstop)>0)
-        {
-            $values = array();
-            foreach($mahnstop as $lvl)
-            {
-                if($lvl["nType"] == 0){
-                     $values["order"] = $lvl["pk"];
-                }
-                if($lvl["resetDate"]){
-                    $dt = new dateTime($lvl["resetDate"]);
-                    $values["resetDate"] = $dt->format("d.m.Y");
-                }
-                if($lvl["nType"] == 1) $values["customer"] = $lvl["pk"];
-                $values["cCommentary"] = $lvl["cCommentary"];
-            }
-            $this->View("mahnstop",$values);
-        }
-        */
+
         $this->View('mahnstop', $_mahnstopp);
         $rs = DC()->db->singleResult('SELECT IFNULL(VOPStatus,0) as mahnwesenstatus,dc_status.fGesamt,dc_status.fOffen from dc_auftrag left OUTER join dc_status on dc_status.pkOrder = dc_auftrag.pkOrder where dc_auftrag.pkOrder = ' . (int)$pkOrder);
         $mahnwesenstatus = '';
@@ -2887,9 +2859,6 @@ class DebitConnectCore
                 break;
             case 'zasuche':
                 return $this->zaSuche();
-                break;
-            case 'leadoc':
-                return $this->getLEADoc();
                 break;
             case 'vorschau':
                 return $this->sendZahlungserinnerung((int)DC()->get('order'), true);
@@ -3129,12 +3098,7 @@ class DebitConnectCore
                 echo json_encode(['InstallationRequired' => true]);
             } else {
                 $this->View('version', DebitConnectCore::$DC_VERSION);
-                try {
-                    $soap = new SoapClient(DebitConnectCore::$SOAP);
-                    $handshake = $soap->handshake();
-                    $handshake = $handshake->status;
-                } catch (Exception $e) {
-                }
+               $handshake ="OK";
                 $this->View('handshake', $handshake);
 
                 if (!(DC()->hasvalue('install'))) {

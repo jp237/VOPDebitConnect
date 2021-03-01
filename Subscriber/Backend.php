@@ -32,6 +32,7 @@ class Backend implements SubscriberInterface
 
     public function onGetControllerPathBackend(\Enlight_Event_EventArgs $args)
     {
+
         return __DIR__ . '/../Controllers/Backend/VOPDebitConnect.php';
     }
 

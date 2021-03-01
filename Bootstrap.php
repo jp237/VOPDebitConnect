@@ -20,7 +20,7 @@ use VOPDebitConnect\Subscriber\Cronjob;
 use VOPDebitConnect\Subscriber\Frontend;
 use VOPDebitConnect\Subscriber\Order;
 
-
+require_once __DIR__."/vendor/autoload.php";
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 require_once __DIR__ . '/Components/Services/Cronjob.php';
 require_once __DIR__ . '/Subscriber/Backend.php';
@@ -125,6 +125,7 @@ class Shopware_Plugins_Backend_VOPDebitConnect_Bootstrap extends Shopware_Compon
 
     public function onStartDispatch(Enlight_Event_EventArgs $args)
     {
+        ini_set("display_errors",true);
         $this->Application()->Loader()->registerNamespace('\VOPDebitConnect', $this->Path());
 
         /** @var Shopware\Components\DependencyInjection\Container $container */

@@ -25,6 +25,8 @@ class EAP_Functions
     /** URL zur EAP-Schnittstelle **/
     private $url;
 
+    var $shopId;
+
     public function __construct($checkout_session)
     {
         $this->checkout_session = $checkout_session;
@@ -268,6 +270,7 @@ class EAP_Functions
 
     public function istGesperrt($kZahlungsart, $settingsPayments)
     {
+
         return in_array($kZahlungsart, $settingsPayments);
     }
 

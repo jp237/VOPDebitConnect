@@ -92,16 +92,106 @@ class DC_DataTypes
         return DC()->db->getSQLResults($query);
     }
 
+    public function createApiOrderItem($pkOrder,$type){
+        $order = new \VOP\Rest\Model\NewOrderInputParameters();
+        $query = $this->getAuftragposQuery($pkOrder)["query"];
+
+        $models =   Shopware()->Container()->get('models');
+        /** @var \Shopware\Models\Order\Repository $repository */
+        $repository = $models->getRepository(\Shopware\Models\Order\Order::class);
+        $obj = $repository->find($pkOrder);
+        $repo = Shopware()->Models()->getRepository("Shopware\Models\Order\Order");
+        /** @var \Shopware\Models\Order\Order $elem */
+        $elem = $repo->find($pkOrder);
+
+        $order->setCatalogueNumber(11);
+
+        $invoice = new \VOP\Rest\Model\OrderInformationData();
+        $correction = new \VOP\Rest\Model\OrderInformationData();
+
+        $order->setOrdertype($type);
+        $order->setSoftware("shopware_5");
+        $orderParams = new \VOP\Rest\Model\OrderInformationData();
+        $orderParams->setInternalId($pkOrder);
+        $orderParams->setPaymentName($elem->getPayment()->getName());
+        $orderParams->setDate($elem->getOrderTime()->format("Y-m-d"));
+        $orderParams->setNumber($elem->getNumber());
+        $orderParams->setAmount($elem->getInvoiceAmount());
+
+
+
+
+
+        $order->setOrder($orderParams);
+
+        $invoice = new \VOP\Rest\Model\OrderInformationData();
+        $invoice->setInternalId($pkOrder);
+
+        //$invoice->setAmount($elem->)
+
+        $_debtor = $elem->getBilling();
+        $debtor = new \VOP\Rest\Model\DebtorInformation();
+        $debtor->setCompany($_debtor->getCompany());
+        $debtor->setFirstname($_debtor->getFirstName());
+        $debtor->setLastname($_debtor->getLastName());
+        $debtor->setCity($_debtor->getCity());
+        $debtor->setZipcode($_debtor->getZipCode());
+        $debtor->setStreet($_debtor->getStreet());
+        $debtor->setEmail($_debtor->getCustomer()->getEmail());
+        $debtor->setDateofbirth($elem->getCustomer()->getBirthday());
+        $order->setDebtorInformation($debtor);
+
+        /** @var \Shopware\Models\Order\Document\Document $doc */
+        foreach($elem->getDocuments() as $doc){
+           if($doc->getTypeId() == 1){
+               $invoice->setAmount($doc->getAmount());
+               $invoice->setDocument($this->getDocumentById($doc->getId()));
+               $invoice->setNumber($doc->getDocumentId());
+               $invoice->setDate($doc->getDate()->format("Y-m-d"));
+           }else if($doc->getTypeId() == 3){
+               $correction->setAmount($doc->getAmount());
+               $correction->setDocument($this->getDocumentById($doc->getId()));
+               $correction->setNumber($doc->getDocumentId());
+               $correction->setDate($doc->getDate()->format("Y-m-d"));
+           }
+        }
+
+
+
+
+        $order->setCorrection($correction);
+        $order->setInvoice($invoice);
+
+
+        $payments = $this->getPaymentsByOrderId($pkOrder);
+        if(count($payments)>0){
+            $arr = [];
+            foreach($payments as $payment){
+                $item = new \VOP\Rest\Model\OrderInformationData();
+                $item->setDate($payment["date"]);
+                $item->setAmount($payment["amount"]);
+                $item->setInternalId($payment["id"]);
+                $arr[] = $item;
+            }
+            $order->setPayments($arr);
+        }
+
+        return $order;
+    }
+
+    public function getPaymentsByOrderId($pkOrder){
+        $rs = DC()->db->getSQLResults("SELECT dc_tzahlung.kZahlung as id,dc_umsatz.dBuchung as date,dc_tzahlung.fWert*-1 as amount FROM `dc_tzahlung` left join dc_umsatz on dc_umsatz.kUmsatz = dc_tzahlung.kUmsatz
+                            where dc_tzahlung.pkOrder = $pkOrder and dc_umsatz.nType = 0 
+                                UNION ALL 
+                            SELECT   dc_tzahlung.kZahlung as id,dc_umsatz.dBuchung as date,dc_tzahlung.fWert as amount  FROM `dc_tzahlung` left join dc_umsatz on dc_umsatz.kUmsatz = dc_tzahlung.kUmsatz
+                             where dc_tzahlung.pkOrder = $pkOrder and dc_umsatz.nType = 1 and dc_tzahlung.nType not in (1,8)
+");
+        return $rs;
+    }
+
     public function getAuftragposQuery($pkOrder)
     {
-        /*
-    4;Auftrag;788;10.04.2012 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;139,859962;0;0;;
-    4;Bankrücklastkosten;689;11.11.2016 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;23,000000;0;0;;
-    4;Korrektur;689;23.05.2017 15:10:22;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;-31,080000;22;GS-50001;;
-    4;Mahnkosten;689;23.05.2017 15:16:11;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;3,330000;0;0;;
-    4;Rechnung;689;21.01.2015 00:00:00;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;139,859962;0;0;;
-    4;Zahlung;689;23.05.2017 15:08:08;0;0;N;1350;;;;Siegbald;Otto;Am Zuckerhut. 50;39457;Siegen;Deutschland;;;jens.perzewski@inkasso-vop.de;;;;;;N;689;-13,000000;1750;0;;
-    */
+
         // AUFTRAGZEILE
         $query = "SELECT _order.subshopID,'Auftrag',_order.ordernumber,DATE_FORMAT(ordertime,'%d.%m.%Y 00:00:00'),0 as blank1,
                 '0' as blank2,'N',kunde.customernumber, billing.company, case billing.salutation when 'ms' then 'Frau' else 'Herr' end,'' as blank4,billing.firstname, billing.lastname, billing.street, billing.zipcode, billing.city, land.countryname ,billing.phone,'' as blank5,kunde.email ,'' as blank6
@@ -123,7 +213,7 @@ class DC_DataTypes
                 LEFT JOIN s_core_countries land on land.id = billing.countryID 
                 LEFT JOIN s_user_billingaddress userbilling ON kunde.id = userbilling.userID 
                 INNER JOIN s_order_documents rechnung on rechnung.orderID = _order.id and rechnung.type = 1 
-                where _order.`id` = " . (int) $pkOrder;
+                where _order.`id` = " . (int) $pkOrder ." ";
         //GUTSCHRIFT
 
         $query .= "  UNION ALL SELECT _order.subshopID,'Korrektur',korrektur.docID,DATE_FORMAT(korrektur.date,'%d.%m.%Y 00:00:00'),0 as blank1,
@@ -183,35 +273,10 @@ class DC_DataTypes
                 billing.city, land.countryname, billing.phone,kunde.email,' . $this->BIRTHDAY_TABLE . '.birthday,zahlung.pkOrder
                 HAVING  zahlung.pkOrder =' . (int) $pkOrder;
 
-        $retcsv = '';
-        $checksum = 0;
-        $rows = DC()->db->getSQLResults($query);
-        $found_invoice = false;
-        $data = [];
-        if ($rows[1]['Auftrag'] != 'Rechnung') {
-            // BEI B2B VORKASSE KLONE AUFTRAGSZEILE MIT KOMMENTAR ALS RECHNUNGSZEILE
-            $data[0] = $rows[0];
-            $clonedOrderRow = $rows[0];
-            $clonedOrderRow['Auftrag'] = 'Rechnung';
-            $clonedOrderRow['ordernumber'] .= '//Vorkasse';
-            $data[1] = $clonedOrderRow;
-            for ($i = 2, $iMax = count($rows); $i <= $iMax; ++$i) {
-                $data[$i] = $rows[$i - 1];
-            }
-        } else {
-            $data = $rows;
-        }
 
-        foreach ($data as $res) {
-            if (count($res) > 2) {
-                ++$checksum;
-                $retcsv .= implode(';', str_replace(';', '', $res)) . "\r\n";
-            }
-        }
-        $retval['csv'] = $retcsv;
 
-        $retval['document'] = $this->submitDocumentsVOP($pkOrder, true) > 0 ? 'True' : 'False';
-        $retval['checksum'] = $checksum;
+
+        $retval["query"] = $query;
 
         return $retval;
     }
@@ -583,41 +648,21 @@ class DC_DataTypes
 
         return $output;
     }
+    public function getDocumentById($id){
+       $key = DC()->db->singleResult("SELECT ID,hash from s_order_documents where id = $id") ;
 
-    public function submitDocumentsVOP($pkOrder, $dbUpload = false)
-    {
-        $ret = 0;
-        try {
-            $soap = DC()->API->mahnwesen();
-            foreach (DC()->db->getSQLResults('SELECT ID,hash from s_order_documents where orderID = ' . (int) $pkOrder) as $key) {
-                $request = [];
-                $docId = $key['ID'];
-                $user = DC()->settings->registration['vopUser'];
-                $pass = md5(DC()->settings->registration['vopToken']);
-                $path = __DIR__ . '/../../../../../../../../../files/documents/';
+            $request = [];
+            $docId = $key["ID"];
 
-                if (file_exists($path . $key['hash'] . '.pdf')) {
-                    $request['pdfDocument'] = base64_encode(file_get_contents($path . $key['hash'] . '.pdf'));
-                } else {
-                    $request = DC()->API->shopware->get('documents/' . $docId);
-                    $request = $request['data'];
-                }
+            $path = __DIR__ . '/../../../../../../../../../files/documents/';
 
-                if (strlen($request['pdfDocument']) > 10) {
-                    $res = $soap->newAllDoc($user, $pass, '1', $docId . '-shopware', '0', '0', '0', $request['pdfDocument'], $pkOrder, '0');
-                    if ($res->status == 'OK') {
-                        DC()->Log('Dokument', 'Dokument ' . $docId . ' übermittelt', 0);
-                        ++$ret;
-                    }
-                }
+            if (file_exists($path . $key['hash'] . '.pdf')) {
+                $request['pdfDocument'] = base64_encode(file_get_contents($path . $key['hash'] . '.pdf'));
+                return $request["pdfDocument"];
             }
-        } catch (Exception $e) {
-            DC()->smarty->assign('API_ERROR', $e->getMessage());
-            DC()->Log('API_ERROR', $e->getMessage(), 10);
-        }
-
-        return $ret;
+        return null;
     }
+
 
     public function getCustomerGroups()
     {
@@ -1028,7 +1073,7 @@ class DC_DataTypes
     public function getAuftragDetail($pkOrder)
     {
         $query = "SELECT docID as cNr ,CAST(`amount` as DECIMAL ( 12,2)) as fWert,`date` as datum,'Rechnung' as cArt,
-			  s_order_documents.ID as kDetail," . $pkOrder . ' as pkOrder  from s_order_documents where `type` =  1 and orderID = ' . (int) $pkOrder;
+			  s_order_documents.ID as kDetail," . $pkOrder . ' as pkOrder  from s_order_documents where `type` =  1 and orderID = ' . (int) $pkOrder." ";
         //STORNORECHNUNG
         $query .= " UNION ALL SELECT docID cNr ,CAST((`amount`*-1) as DECIMAL ( 12,2)) as fWert,`date` as datum,'Korrektur' as cArt,
 				s_order_documents.ID as kDetail," . $pkOrder . ' as pkOrder  from s_order_documents where `type` =  4 and orderID = ' . (int) $pkOrder;
@@ -1070,7 +1115,7 @@ public function getDTAList($limitStart, $limitEnd, $order, $filter, $fieldModes)
    LEFT OUTER JOIN s_order_documents rechnung on rechnung.orderID = _order.id and rechnung.type = 1
    left outer join s_order_documents gutschrift on gutschrift.orderID = _order.id and gutschrift.type = 3
    left outer join s_order_documents storno on storno.orderID = _order.id and storno.type = 4
-   LEFT JOIN s_core_countries land on land.id = billing.countryID 
+   LEFT JOIN s_core_countries land on    land.id = billing.countryID 
    LEFT OUTER JOIN s_core_states versandstatus on versandstatus.id = _order.status ';
 
     $query .= ' LEFT  JOIN s_core_paymentmeans zahlart on _order.paymentID = zahlart.id ';

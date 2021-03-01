@@ -28,6 +28,7 @@ class EAP_Bonitaetspruefung
     public $requestParams;
     public $responseData;
     public $authData;
+    /** @var EAP_Functions */
     public $functions;
     public $pluginSettings;
     public $settingsArray;
@@ -97,8 +98,7 @@ class EAP_Bonitaetspruefung
                 {
 
 
-
-                    $config = EAPBoniGateway::getConfigWithToken(EAPBoniGateway::getAccessToken($this->settingsArray));
+                    $config = EAPBoniGateway::getConfigWithToken(EAPBoniGateway::getAccessToken($this->settingsArray,$this->functions->shopId));
                     $api = new \VOP\Rest\Api\BonigatewaycustomerApi(     new GuzzleHttp\Client(), $config);
 
 
@@ -113,7 +113,13 @@ class EAP_Bonitaetspruefung
                     $addressData->setCountry($request["land"]);
                     $addressData->setCity($request["Ort"]);
                     $addressData->setSalutation($request["geschlecht"]);
-                    $addressData->setDateofbirth($request["geb"]);
+                    try{
+                        $dt = new DateTime($request["geb"]);
+                        $addressData->setDateofbirth($request["geb"] );
+                    }catch(Exception $ee){
+                        $addressData->setDateofbirth("00.00.0000");
+                    }
+
                     $project->setBasketAmount($warenkorb);
 
                     $params->setAdressdata($addressData);
@@ -190,6 +196,7 @@ class EAP_Bonitaetspruefung
                     if($this->settingsArray['jtl_eap_exception_boni_action']>0){
                         $this->setNonRequestResponse(false);
                     }
+
                 }
 
             }

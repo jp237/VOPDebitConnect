@@ -62,7 +62,7 @@ class Client implements HttpClient
     /**
      * {@inheritdoc}
      */
-    public function sendRequest(RequestInterface $request): ResponseInterface
+    public function sendRequest(RequestInterface $request)
     {
         $this->assertRequestHasValidBody($request);
 

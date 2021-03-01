@@ -68,6 +68,12 @@ class Frontend implements SubscriberInterface
         if (is_object(unserialize(Shopware()->Session()->boniGateway))) {
             $EAPBoniGateway = unserialize(Shopware()->Session()->boniGateway);
         }
+
+
+
+
+
+        $EAPBoniGateway->setShopId($this->getShopId());
         Shopware()->Session()->boniGatewayHandle = $EAPBoniGateway->requestParams['currenthandle'];
         $lastHandle = $EAPBoniGateway->requestParams['currenthandle'];
         $lastBasket = $EAPBoniGateway->requestParams['Warenkorb'];
@@ -133,6 +139,7 @@ class Frontend implements SubscriberInterface
         } elseif ($controller == 'checkout' && $action == 'confirm') {
             $settingsIdentCheck = $EAPBoniGateway->settingsArray['jtl_eap_identcheck_use'];
 
+
             if ($EAPBoniGateway->schufaBoni->checkEnabled($oPlugin, $EAPBoniGateway->smarty, $EAPBoniGateway->settingsArray)) {
                 $EAPBoniGateway->schufaBoni->requestParams = $EAPBoniGateway->requestParams;
                 if ($EAPBoniGateway->functions->istGesperrt($EAPBoniGateway->requestParams['Zahlungsart']->kZahlungsart, $EAPBoniGateway->settingsArray['boniPayments'])
@@ -147,8 +154,12 @@ class Frontend implements SubscriberInterface
                 }
 
                 $EAPBoniGateway->schufaBoni->doRequest($currentHandle);
-                if ($EAPBoniGateway->schufaBoni->requested && $EAPBoniGateway->schufaBoni->responseData->secure_payment
+
+                if ($EAPBoniGateway->schufaBoni->requested && $EAPBoniGateway->schufaBoni->responseData->getSecurePayment() === true
                     && $EAPBoniGateway->functions->istGesperrt($EAPBoniGateway->requestParams['Zahlungsart']->kZahlungsart, $EAPBoniGateway->settingsArray['boniPayments'])) {
+            print_r($EAPBoniGateway->schufaBoni->responseData);
+              echo ":.";
+              exit;
                     $this->redirectToPayentWall($arguments, $EAPBoniGateway);
 
                     return;
@@ -184,6 +195,13 @@ class Frontend implements SubscriberInterface
 
     // REDIRECT TO PAYMENT WALL
 
+    public function getShopId(){
+        $shop = Shopware()->Shop()->getMain() !== null ? Shopware()->Shop()->getMain() : Shopware()->Shop();
+        $selectedShop = $shop->getId();
+
+        return $selectedShop;
+    }
+
     public function getBoniGatewaySettings(\Enlight_Controller_ActionEventArgs $arguments)
     {
         try {
@@ -204,6 +222,8 @@ class Frontend implements SubscriberInterface
 
     public function redirectToPayentWall(\Enlight_Controller_ActionEventArgs $arguments, $EAPBoniGateway = null)
     {
+
+
         if ($EAPBoniGateway != null) {
             $this->writeBoniGatewaySession($EAPBoniGateway);
         }

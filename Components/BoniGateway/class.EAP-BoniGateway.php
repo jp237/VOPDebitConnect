@@ -14,10 +14,12 @@
  * Geschäftsführer: Thomas Pütz
  * Handelsregister HRA20499, Koblenz
  */
-
+    require_once __DIR__."/../../fix/psr7.php";
     include_once 'class.JTL-Shop.EAP.php';
     include_once 'class.EAP-Bonitaetspruefung.php';
     include_once 'class.EAP-IdentCheck.php';
+    require_once __DIR__."/../../vendor/autoload.php";
+
 class EAPBoniGateway
 {
     public $wsdlURL = 'https://api.eaponline.de/bonigateway.php?wsdl';
@@ -45,7 +47,7 @@ class EAPBoniGateway
     public $changed_card = 0;
     public $current_card = 0;
     // SHOPWARE ARGUMENTS
-
+    public static $exception;
     public $shopware;
     public $request;
     public $response;
@@ -55,6 +57,101 @@ class EAPBoniGateway
     public $targetAction;
     public $view;
     public $userId;
+//** @todo token v */
+    public static function isValidToken($shopId){
+
+        $dbToken = self::getTokenFromDataBase($shopId);
+        if($dbToken == null){
+            return false;
+        }
+
+        $token = explode(".",$dbToken);
+        $data = json_decode(base64_decode($token[1]));
+        if($data->exp <= time()){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function setShopId($shopId){
+        $this->functions->shopId = $shopId;
+    }
+
+    public static function unsetDatabaseToken($shopId){
+        Shopware()->Db()->query("delete from dc_oauth_token where shopId = $shopId");
+    }
+    public static function getTokenFromDataBase($shopId){
+
+        $db =Shopware()->Db()->fetchOne("SELECT token from dc_oauth_token where validTill > NOW() and shopId = $shopId order by id desc limit 1 ");
+
+        if($db == null) return null;
+
+        return $db;
+
+    }
+
+
+    public static function getConfigWithToken($token){
+        return   VOP\Rest\Configuration::getDefaultConfiguration()->setAccessToken($token);
+    }
+
+    public static function setDatabaseToken($token,$shopId){
+
+        $tokenExplode = explode(".",$token);
+        $data = json_decode(base64_decode($tokenExplode[1]));
+
+        $dt =  new DateTime();
+        $dt->setTimestamp($data->exp);
+
+         Shopware()->Db()->insert('dc_oauth_token',[
+            "token" => $token,
+            "shopId" => $shopId,
+            "validTill" => $dt->format("Y-m-d H:i:s")
+        ]);
+
+        return $token;
+    }
+
+    public static function getAccessToken($settings,$shopId){
+        try{
+
+
+            if(self::isValidToken($shopId)){
+                return self::getTokenFromDataBase($shopId);
+            }
+
+            if(isset($settings["username"])){
+                $settings["jtl_eap_userid"] = $settings["username"];
+                $settings["jtl_eap_passwort"] = $settings["passwd"];
+            }
+            $credentials = base64_encode($settings["jtl_eap_userid"].":".$settings["jtl_eap_passwort"]);
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'Authorization'   => "Basic $credentials",
+                ]
+            ]);
+            $api = new \VOP\Rest\Api\OauthApi($client);
+
+
+            $res  =  $api->oauthTokenPost();
+
+
+
+            return self::setDatabaseToken(
+                $res->getAccessToken(),$shopId
+            );
+
+
+
+        }catch(Exception $e){
+
+            self::$exception = $e;
+        }
+
+    }
+
 
     public function __construct()
     {
@@ -229,6 +326,7 @@ class EAPBoniGateway
 
     public function getCustomerGroupKey($groupkey)
     {
+
         $rs = Shopware()->Db()->fetchOne(
             'SELECT
                   id
