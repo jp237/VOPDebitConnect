@@ -227,12 +227,6 @@ class DebitConnectCore
         $this->loadModels();
 
 
-        // $profile = new hbciProfile();
-        // $profile->client_secret = "e320f8cb-7da2-40d1-b2e9-820fcfd47916";
-        //$profile->client_id = "7eef3f74-f638-4300-9a9b-bc47520e4007";
-
-        //      $this->finTS($profile);
-
 
         CoreInstance::$getCore = $this;
         /** @return  DebitConnectCore */
@@ -253,7 +247,7 @@ class DebitConnectCore
         }
         if ($this->API == null) {
             $this->API = new API_VOP();
-            $this->API->sendVersionInformation();
+
         }
 
     }
@@ -367,28 +361,34 @@ class DebitConnectCore
     {
         try {
             $blSettings = $this->settings->currentSetting->blackliste;
+            $vars = $this->dataTypes->BoniGatewayBlacklist($pkOrder);
+            $api = new \VOP\Rest\Api\BonigatewayblacklistApi(new \GuzzleHttp\Client(),self::getConfigWithToken($this->getToken($this->getShopId())));
+            $params = new \VOP\Rest\Model\SetBlacklistInputParameters();
+            $customer = new \VOP\Rest\Model\AddressData();
+            $customer->setFirstname($vars["firstname"]);
+            $customer->setLastName($vars["lastname"]);
+            $customer->setZipcode($vars["zipcode"]);
+            $customer->setCity($vars["city"]);
+            $customer->setStreet($vars["street"]);
+            $customer->setDateofbirth($vars["DateOfBirth"]);
+            $customer->setInternalId($pkOrder);
+            $params->setData($customer);
             if ($insert) {
                 if ($type >= $this->settings->currentSetting->blackliste && $blSettings > 0) {
-                    $vars = $this->dataTypes->BoniGatewayBlacklist($pkOrder);
-                    if (strlen($vars['company']) == 0) {
-                        $soap = $this->API->mahnwesen();
-                        $user = $this->settings->registration['vopUser'];
-                        $token = md5($this->settings->registration['vopToken']);
-                        $response = $soap->setBlackList($user, $token, $vars['firstname'], $vars['lastname'], $vars['zipcode'], $vars['city'], $vars['street'], $vars['DateOfBirth'], (int)$pkOrder);
-                        if ($response == 'ok') {
+
+                    $params->setCmd("INSERT");
+                    $params->setType(0);
+                    if ($api->bonigatewayBlacklistSetBlacklistPost($params)->getSuccess()) {
                             $update = new stdClass();
                             $update->nBlacklist = 1;
                             $this->db->dbUpdate('dc_auftrag', $update, 'pkOrder = ' . (int)$pkOrder);
                             $this->Log('Blackliste', 'Blackliste eingetragen', 0, (int)$pkOrder);
-                        }
                     }
                 }
             } else {
-                $soap = $this->API->mahnwesen();
-                $user = $this->settings->registration['vopUser'];
-                $token = md5($this->settings->registration['vopToken']);
-                $response = $soap->deleteFromBlackList($user, $token, (int)$pkOrder);
-                if ($response == 'ok') {
+                $params->setCmd("DELETE");
+                $params->setType(0);
+                if ($api->bonigatewayBlacklistSetBlacklistPost($params)->getSuccess()) {
                     $update = new stdClass();
                     $update->nBlacklist = 0;
                     $this->db->dbUpdate('dc_auftrag', $update, 'pkOrder = ' . (int)$pkOrder);
@@ -627,7 +627,7 @@ class DebitConnectCore
     {
         $ret = [];
         $ret['error'] = false;
-        $soap = $this->API->mahnwesen();
+
         $auftrag = $syncObject;
 
         try {
@@ -917,7 +917,9 @@ class DebitConnectCore
     }
 
 
-    public function getToken($shopId){
+    public function getToken($shopId = 0 ){
+
+        if($shopId  == 0) $shopId = $this->getShopId();
         return self::getAccessToken($this->settings->registration,$shopId);
     }
     public function sendInkasso($pkOrder)
@@ -1147,6 +1149,9 @@ class DebitConnectCore
         return $this->smarty->fetch($tpl);
     }
 
+    public function getApiSecToken(){
+        return md5("V0P!Regist3r___-3Asxxkk!".date("Ymd"));
+    }
     public function pageUserSettings($setting = 'reg')
     {
         $eindeutig = DC()->getConf('matched', 30, true);
@@ -1230,17 +1235,18 @@ class DebitConnectCore
 
         if ((DC()->hasvalue('userregistration'))) {
             $handle = md5('D3B!7C0NN3CT_' . date('Ymd') . 'AUTH_TOKEN');
-            $soap = $this->API->mahnwesen();
+
             if (DC()->get('activate')) {
                 $_reg = DC()->get('reg');
 
                 if ($this->settings->registration['vopToken'] == $_reg['key']) {
                     $user = explode(':', $this->settings->registration['vopUser']);
                     $pwd = $this->settings->registration['vopToken'];
-                    try {
-                        $res = $soap->activateNewCustomer($user[0], $pwd, $handle);
+                    $api = new \VOP\Rest\Api\DebitconnectregisterApi(new \GuzzleHttp\Client(),self::getConfigWithToken($this->getToken($this->getShopId())));
 
-                        if ($res->activated == 'yes') {
+                    try {
+                        $res = $api->debitconnectRegisterActivateCustomerGet();
+                        if ($res->getSuccess()) {
                             $dbUpdate = new stdClass();
                             $dbUpdate->activated = 1;
                             $this->db->dbUpdate('dc_firma', $dbUpdate, 'shopID = ' . (int)$this->settings->selectedShop);
@@ -1264,16 +1270,33 @@ class DebitConnectCore
                     foreach (DC()->get('reg') as $key => $val) {
                         $regVar[$key] = $this->db->dbEscape($val);
                     }
-
+                    $api = new \VOP\Rest\Api\DebitconnectregisterApi();
+                    $sec_token = md5("V0P!Regist3r___-3Asxxkk!".date("Ymd"));
                     if (!$sub) {
                         try {
-                            $res = $soap->registerNewCustomer($regVar['firma'], $regVar['unternehmer'], $regVar['strasse'], $regVar['plz'], $regVar['ort'], $regVar['land'], $regVar['tel'], $regVar['fax'], $regVar['email'], $CompanyData['host'], '', '', '', '', '', '', $regVar['ustid'], '', '', '', $regVar['unternehmer'], '', '', '', '', $regVar['email'], '', '', '', '', '', '', $handle, $regVar['vorsteuer']);
-                            if ($res->internID1 > 0) {
+
+
+                            $registerParams = new \VOP\Rest\Model\RegisterCustomerInputParameters();
+                            $registerParams->setProduct("DebitConnect_Shopware5");
+                            $customer = new \VOP\Rest\Model\CustomerAddressInformation();
+                            $customer->setCompany($regVar["firma"]);
+                            $customer->setZipcode($regVar["plz"]);
+                            $customer->setCity($regVar["ort"]);
+                            $customer->setEmail($regVar["email"]);
+                            $customer->setStreet($regVar["strasse"]);
+                            $customer->setVatId($regVar["ustid"]);
+
+                            $registerParams->setCustomer($customer);
+
+
+                            $res = $api->debitconnectRegisterRegisterCustomerSecuritytokenPost($sec_token,$registerParams );
+
+                             if ($res->getCustomer()->getInternalId1() > 0) {
                                 $submitted = true;
                                 $this->View('SUCCESS_MSG', 'Vielen Dank. Sie erhalten in Kürze eine E-Mail mit Ihrem Aktivierungcode an ' . $regVar['email']);
                                 $insert = new stdClass();
-                                $insert->vopUser = $res->internID1 . ':' . $res->internID2;
-                                $insert->vopToken = ($res->auth);
+                                $insert->vopUser = $res->getCustomer()->getInternalId1() . ':' . $res->getCustomer()->getInternalId2();
+                                $insert->vopToken = ($res->getCustomer()->getAuthToken());
                                 $insert->shopID = $this->settings->selectedShop;
                                 $insert->activated = 0;
                                 $insert->registerJson = json_encode($regVar);
@@ -1283,13 +1306,30 @@ class DebitConnectCore
                             $this->View('API_ERROR', $e);
                         }
                     } else {
-                        $res = $soap->addNewSub($sub['vopUser'], $sub['vopToken'], $regVar['firma'], $regVar['unternehmer'], $regVar['strasse'], $regVar['plz'], $regVar['ort'], $regVar['land'], $regVar['tel'], $regVar['fax'], $regVar['email'], $CompanyData['host'], '', '', '', '', '', '', $regVar['ustid'], '', '', '', $regVar['unternehmer'], '', '', '', '', $regVar['email'], '', '', '', '', '', '', $regVar['vorsteuer']);
 
-                        if ($res->internID1 > 0) {
+                        $expl = explode(":",$sub["vopUser"]);
+                        $registerParams = new \VOP\Rest\Model\RegisterCustomerInputParameters();
+                        $registerParams->setProduct("DebitConnect_Shopware5");
+
+
+                        $customer = new \VOP\Rest\Model\CustomerAddressInformation();
+                        $customer->setCompany($regVar["firma"]);
+                        $customer->setZipcode($regVar["plz"]);
+                        $customer->setCity($regVar["ort"]);
+                        $customer->setEmail($regVar["email"]);
+                        $customer->setStreet($regVar["strasse"]);
+                        $customer->setVatId($regVar["ustid"]);
+                        $customer->setInternalId1($expl[0]);
+                        $customer->setInternalId2(0);
+                        $customer->setAuthToken($sub['vopToken']);
+
+                        $registerParams->setCustomer($customer);
+                        $res = $api->debitconnectRegisterRegisterCustomerSecuritytokenPost($sec_token,$registerParams );
+                        if ($res->internID2 > 0) {
                             $submitted = true;
                             $this->View('SUCCESS_MSG', 'Registrierung abgeschlossen');
                             $insert = new stdClass();
-                            $insert->vopUser = $res->internID1 . ':' . $res->internID2;
+                            $insert->vopUser = $res->getCustomer()->getInternalId1() . ':' . $res->getCustomer()->getInternalId2();
                             $insert->vopToken = $sub['vopToken'];
                             $insert->shopID = $this->settings->selectedShop;
                             $insert->registerJson = json_encode($regVar);
@@ -2052,13 +2092,31 @@ class DebitConnectCore
     {
         try {
             $handle = md5('D3B!7C0NN3CT_' . date('Ymd') . 'AUTH_TOKEN');
-            $soap = $this->API->mahnwesen();
-            $musterList = $soap->getMusterArt($handle);
-            $this->View('musterList', $musterList);
-            if ((DC()->hasvalue('art'))) {
-                $musterArt = $soap->getMusterList($handle, DC()->get('art'));
-                $this->View('musterArt', $musterArt);
+
+            $api = new \VOP\Rest\Api\DebitconnectexampleApi();
+            $musterList =   $api->debitconnectExampleGetExampleListSecuritytokenGet($this->getApiSecToken());
+            $musterArt = [];
+
+            $muster= [];
+
+            foreach($musterList->getDocuments() as $item){
+                if(!in_array($item->getGroup(),$musterArt)) $musterArt[] = $item->getGroup();
+
+                $muster[$item->getGroup()][] = [
+                    "id" => $item->getId()
+                    ,"description" => $item->getDescription()
+                ];
             }
+
+
+
+            $selected = ($muster[$musterArt[DC()->get('art')]]);
+
+
+            $this->View("musterArt",$musterArt);
+
+            $this->View('selected', $selected);
+
 
             return $this->smarty->fetch(__DIR__ . '/../tpl/documentation.tpl');
         } catch (Exception $e) {
@@ -2150,7 +2208,7 @@ class DebitConnectCore
     public function akteneinsicht()
     {
         $this->lastSelected = (int)DC()->get('id');
-        $soap = $this->API->mahnwesen();
+
         $res = $this->db->singleResult('SELECT pkOrder from dc_auftrag where id = ' . (int)DC()->get('id'));
         $pkOrder = $res['pkOrder'];
 
@@ -2312,11 +2370,26 @@ class DebitConnectCore
             $explodeSVWZ = explode(' ', $umsatz['cVzweck']);
             if (strlen($explodeSVWZ[0]) == 19) {
                 try {
-                    $soap = $this->API->mahnwesen();
-                    $soapResponse = $soap->getPaymentFile($this->settings->registration['vopUser'], md5($this->settings->registration['vopToken']), $explodeSVWZ[0], $umsatz['fWert']);
-                    if ($soapResponse->Error == 'OK') {
-                        $SteuerDateifromSoap = base64_decode($soapResponse->bFile);
+                    $api = new \VOP\Rest\Api\DebitconnectpaymentApi(new \GuzzleHttp\Client(),self::getConfigWithToken($this->getToken()));
+                    $params = new \VOP\Rest\Model\GetPaymentTransactionDetailsInputParameters();
+                    $params->setTransactionId($explodeSVWZ[0]);
+                    $params->setAmount($umsatz["fWert"]);
+                    $ApiResponse =  $api->debitconnectPaymentGetPaymentTransactionDetailsPost($params);
+                    $SteuerDateifromSoap = new stdClass();
+                    $arr = [];
+                    foreach($ApiResponse->getDetails() as $item){
+                        $elem = new stdClass();
+                        $elem->nRechNr = $item->getInvoiceNumber();
+                        $elem->nRechJahr = $item->getInvoiceYear();
+                        $elem->nMandJahr = $item->getCaseYear();
+                        $elem->nMandNr = $item->getCaseNumber();
+                        $elem->fZahlbetrag = $item->getPaymentAmount();
+                        $elem->fMahnkosten = $item->getDunningCosts();
+                        $elem->fVorsteuer = $item->getInputTax();
+                        $elem->kRechnung  = implode(",",$item->getInternalIds());
+                        $arr[] = $elem;
                     }
+                    $SteuerDateifromSoap->rechnung = $arr;
                 } catch (Exception $e) {
                 }
             }
@@ -2809,11 +2882,12 @@ class DebitConnectCore
     {
         $doc = (int)$doc;
         if (DC()->get('doc') > 0) {
-            $handle = md5('D3B!7C0NN3CT_' . date('Ymd') . 'AUTH_TOKEN');
-            $soap = $this->API->mahnwesen();
-            $res = $soap->getMusterDokument($handle, $doc);
-            $download = "<a download='VOPRechnung-" . $doc . ".pdf' href='data:application/pdf;base64," . $res->file . "' title='Download pdf document' />Download PDF</a>";
-            $embed = "$download<embed src='data:application/pdf;base64," . $res->file . "' width='100%' height='100%' alt='pdf' pluginspage='http://www.adobe.com/products/acrobat/readstep2.html' type='application/pdf'>";
+
+            $api = new \VOP\Rest\Api\DebitconnectexampleApi();
+            $example  =   $api->debitconnectExampleGetExampleDocumentByIdSecuritytokenIdGet($this->getApiSecToken(),DC()->get('doc'));
+
+            $download = "<a download='VOPRechnung-" . $doc . ".pdf' href='data:application/pdf;base64," . $example->getDocument()->getBase64Document() . "' title='Download pdf document' />Download PDF</a>";
+            $embed = "$download<embed src='data:application/pdf;base64," . $example->getDocument()->getBase64Document() . "' width='100%' height='100%' alt='pdf' pluginspage='http://www.adobe.com/products/acrobat/readstep2.html' type='application/pdf'>";
         }
 
         return $embed;
