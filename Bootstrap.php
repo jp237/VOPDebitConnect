@@ -20,7 +20,7 @@ use VOPDebitConnect\Subscriber\Cronjob;
 use VOPDebitConnect\Subscriber\Frontend;
 use VOPDebitConnect\Subscriber\Order;
 
-require_once __DIR__."/vendor/autoload.php";
+
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 require_once __DIR__ . '/Components/Services/Cronjob.php';
 require_once __DIR__ . '/Subscriber/Backend.php';

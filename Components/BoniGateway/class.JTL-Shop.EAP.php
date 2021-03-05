@@ -440,6 +440,7 @@ class EAP_Functions
             20 => 'SCHUFA B2C',
             21 => 'B2C Offlinesuche',
             17 => 'Kreditlimit',
+            23 => 'Whitelist',
             22 => 'Blackliste',
             80 => 'Ungeprüft',
             30 => 'SCHUFA B2B',

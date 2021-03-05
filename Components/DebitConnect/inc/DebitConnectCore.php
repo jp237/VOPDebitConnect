@@ -76,6 +76,9 @@ class DebitConnectCore
     /** @var DebitConnect_Cronjob */
     public $cronJob = null;
 
+    public function __construct(){
+        require_once __DIR__."/../../../vendor/autoload.php";
+    }
     public static function getVersion()
     {
         return '0.0.2';

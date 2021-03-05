@@ -157,9 +157,7 @@ class Frontend implements SubscriberInterface
 
                 if ($EAPBoniGateway->schufaBoni->requested && $EAPBoniGateway->schufaBoni->responseData->getSecurePayment() === true
                     && $EAPBoniGateway->functions->istGesperrt($EAPBoniGateway->requestParams['Zahlungsart']->kZahlungsart, $EAPBoniGateway->settingsArray['boniPayments'])) {
-            print_r($EAPBoniGateway->schufaBoni->responseData);
-              echo ":.";
-              exit;
+
                     $this->redirectToPayentWall($arguments, $EAPBoniGateway);
 
                     return;

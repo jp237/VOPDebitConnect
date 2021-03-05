@@ -18,7 +18,7 @@
     include_once 'class.JTL-Shop.EAP.php';
     include_once 'class.EAP-Bonitaetspruefung.php';
     include_once 'class.EAP-IdentCheck.php';
-    require_once __DIR__."/../../vendor/autoload.php";
+
 
 class EAPBoniGateway
 {
@@ -57,7 +57,9 @@ class EAPBoniGateway
     public $targetAction;
     public $view;
     public $userId;
-//** @todo token v */
+
+
+
     public static function isValidToken($shopId){
 
         $dbToken = self::getTokenFromDataBase($shopId);
@@ -155,6 +157,7 @@ class EAPBoniGateway
 
     public function __construct()
     {
+          require_once __DIR__."/../../vendor/autoload.php";
         if ($this->checkout_session == null) {
             $this->checkout_session = md5(date('Ymd') . rand(1000, 99999) . 'VOP');
         }
